@@ -4,11 +4,22 @@
     <meta charset="UTF-8">
     <title>BankApp Login</title>
 </head>
+<style>
+    /* Center the whole container */
+    /* https://stackoverflow.com/questions/14123999/center-a-div-horizontally-and-vertically */
+    .login {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        -webkit-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+    }
+</style>
 <body>
-    <div class="title">
-        <h1>Welcome Back</h1>
-    </div>
     <div class="login">
+        <div class="title">
+            <h1>Welcome Back</h1>
+        </div>
         <form action="">
             <label for="username">Username:</label><br>
             <input type="text" id="username" name="username"><br><br>

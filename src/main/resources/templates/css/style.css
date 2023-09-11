@@ -7,3 +7,8 @@
     -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
 }
+
+/* Make all of the fonts the same */
+.title, p, label, input {
+        font-family: 'Noto Sans JP', sans-serif;
+    }

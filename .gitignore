@@ -39,3 +39,6 @@ out/
 
 ### Logs ###
 logs/
+
+### Users (temp) ###
+users.json

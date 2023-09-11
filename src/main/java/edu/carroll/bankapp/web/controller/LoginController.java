@@ -35,6 +35,8 @@ public class LoginController {
 
     @PostMapping("/login")
     public RedirectView loginPost(@Valid @ModelAttribute LoginForm loginForm, BindingResult result, RedirectAttributes attrs) {
+        System.out.println(loginForm.getUsername());
+        System.out.println(loginForm.getPassword());
         if (result.hasErrors()) {
             return new RedirectView("/login");
         }

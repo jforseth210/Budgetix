@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>BankApp Login</title>
@@ -13,11 +13,11 @@
     <div class="title">
         <h1>Welcome Back!</h1>
     </div>
-    <form action="">
+    <form action="#" th:action="@{/login}" th:object="${loginForm}" method="post">
         <label for="username">Username:</label><br>
-        <input type="text" id="username" name="username"><br><br>
+        <input type="text" th:field="*{username}" id="username" name="username"><br><br>
         <label for="password">Password:</label><br>
-        <input type="text" id="password" name="password"><br><br>
+        <input type="password" th:field="*{password}" id="password" name="password"><br><br>
         <input type="submit" value="Login">
     </form>
     <p>Don't have an account? <a href="/loginNew">

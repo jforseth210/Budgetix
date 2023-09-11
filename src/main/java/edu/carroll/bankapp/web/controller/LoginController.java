@@ -24,7 +24,13 @@ public class LoginController {
     @GetMapping("/login")
     public String loginGet(Model model) {
         model.addAttribute("loginForm", new LoginForm());
-        return "login";
+        return "loginExisting";
+    }
+
+    @GetMapping("/loginNew")
+    public String loginNewGet(Model model) {
+        //model.addAttribute("loginForm", new LoginForm());
+        return "loginNew";
     }
 
     @PostMapping("/login")

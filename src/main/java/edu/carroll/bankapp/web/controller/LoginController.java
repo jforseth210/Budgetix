@@ -1,12 +1,16 @@
 package edu.carroll.bankapp.web.controller;
 
 import edu.carroll.bankapp.service.LoginService;
+import edu.carroll.bankapp.service.LoginServiceImpl;
 import edu.carroll.bankapp.web.form.LoginForm;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,9 +19,9 @@ import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 public class LoginController {
-    private final LoginService loginService;
+    private final LoginServiceImpl loginService;
 
-    public LoginController(LoginService loginService) {
+    public LoginController(LoginServiceImpl loginService) {
         this.loginService = loginService;
     }
 
@@ -33,10 +37,18 @@ public class LoginController {
         return "loginNew";
     }
 
+    @GetMapping("/logout")
+    public RedirectView logout(@CookieValue(name = "session", defaultValue = "") String session, HttpServletResponse response) {
+        Cookie cookie = new Cookie("session", session);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        return new RedirectView("/");
+    }
+
+
     @PostMapping("/login")
-    public RedirectView loginPost(@Valid @ModelAttribute LoginForm loginForm, BindingResult result, RedirectAttributes attrs) {
-        System.out.println(loginForm.getUsername());
-        System.out.println(loginForm.getPassword());
+    public RedirectView loginPost(@Valid @ModelAttribute LoginForm loginForm, BindingResult result, RedirectAttributes attrs, HttpServletResponse response) {
         if (result.hasErrors()) {
             return new RedirectView("/login");
         }
@@ -44,7 +56,9 @@ public class LoginController {
             result.addError(new ObjectError("globalError", "Username and password do not match known users"));
             return new RedirectView("/login");
         }
-        attrs.addAttribute("username", loginForm.getUsername());
+        Cookie cookie = new Cookie("session", loginService.getUserFromUsername(loginForm.getUsername()).getToken());
+        cookie.setPath("/");
+        response.addCookie(cookie);
         return new RedirectView("/");
     }
 }

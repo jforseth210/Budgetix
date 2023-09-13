@@ -1,11 +1,14 @@
 package edu.carroll.bankapp.web.controller;
 
+import edu.carroll.bankapp.jpa.model.User;
 import edu.carroll.bankapp.jpa.repo.UserRepository;
 import edu.carroll.bankapp.service.LoginService;
 import edu.carroll.bankapp.web.form.LoginForm;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +50,18 @@ public class LoginController {
     public RedirectView logout(@CookieValue(name = "session", defaultValue = "") String session,
             HttpServletResponse response) {
         log.info("Logging user out");
+        List<User> users = userRepo.findByToken(session);
+        if (users.size() == 0) {
+            log.warn("Didn't find user with matching token");
+            return null;
+        }
+        if (users.size() > 1) {
+            log.error("Got more than one user from token");
+            return null;
+        }
+        User user = users.get(0);
+        user.resetToken();
+        userRepo.save(user);
         Cookie cookie = new Cookie("session", session);
         cookie.setPath("/");
         cookie.setMaxAge(0);

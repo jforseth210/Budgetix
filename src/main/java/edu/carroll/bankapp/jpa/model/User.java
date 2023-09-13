@@ -88,4 +88,9 @@ public class User {
     public long getTokenExpiry() {
         return tokenExpiry;
     }
+
+    public void resetToken() {
+        this.token = null;
+        this.tokenExpiry = 0;
+    }
 }

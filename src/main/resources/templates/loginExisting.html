@@ -14,11 +14,11 @@
         <h1>Welcome Back!</h1>
     </div>
     <form action="#" th:action="@{/login}" th:object="${loginForm}" method="post">
-        <label for="username">Username:</label><br>
-        <input type="text" th:field="*{username}" id="username" name="username"><br><br>
-        <label for="password">Password:</label><br>
-        <input type="password" th:field="*{password}" id="password" name="password"><br><br>
-        <input type="submit" value="Login">
+        <label for="username">Username:</label>
+        <input type="text" th:field="*{username}" id="username" name="username">
+        <label for="password">Password:</label>
+        <input type="password" th:field="*{password}" id="password" name="password"><br>
+        <input class="button" type="submit" value="Login">
     </form>
     <p>Don't have an account? <a href="/loginNew">
         <bold>Register</bold>

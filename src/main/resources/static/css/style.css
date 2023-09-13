@@ -11,4 +11,50 @@
 /* Make all of the fonts the same */
 .title, p, label, input {
         font-family: 'Noto Sans JP', sans-serif;
+        color: #4F3B38;
+        display: block;
     }
+
+/* Link Styling */
+a {
+   text-decoration: none; 
+   color: #9C6F69;
+}
+
+/* mouse over link */
+a:hover {
+  font-weight: bold;
+}
+
+.title {
+    font-size: 0.7em;
+}
+
+label {
+    display: block;
+    font-size: 0.9em;
+    padding-bottom: 10px;
+    padding-top: 5px;
+}
+
+p {
+    font-size: 0.9em;
+}
+
+input {
+    width: 145.85%;
+    border-radius: 25px;
+    border: 1px solid #9C6F69;
+    padding: 4px;
+}
+
+/* https://stackoverflow.com/questions/11497094/remove-border-from-buttons */
+
+.button {
+    width: 150%;
+    background: #9C6F69;
+    border-radius: 25px;
+    border: none;
+    color: white;
+    padding: 5px;
+}

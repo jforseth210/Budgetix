@@ -17,13 +17,13 @@
 
 /* Link Styling */
 a {
-   text-decoration: none; 
-   color: #9C6F69;
+    text-decoration: none;
+    color: #9C6F69;
 }
 
 /* mouse over link */
 a:hover {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 .title {
@@ -31,21 +31,20 @@ a:hover {
     margin: auto;
     font-size: 0.7em;
     text-align: center;
-    
-    
 }
 
 label {
     display: block;
     font-size: 0.9em;
-    padding-bottom: 10px;
-    padding-top: 5px;
+    padding-bottom: 15px;
+    padding-top: 10px;
 }
 
 p {
     font-size: 0.9em;
     text-align: center;
     width: 100%;
+    padding-top: 8px;
 }
 
 input {

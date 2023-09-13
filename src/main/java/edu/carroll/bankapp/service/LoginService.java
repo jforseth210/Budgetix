@@ -1,6 +1,7 @@
 package edu.carroll.bankapp.service;
 
-import edu.carroll.bankapp.User;
+
+import edu.carroll.bankapp.jpa.model.User;
 
 public interface LoginService {
     /**
@@ -19,13 +20,4 @@ public interface LoginService {
      * @return The User with that token
      */
     User getUserFromToken(String token);
-
-    /**
-     * as
-     * Get a User object given their username
-     *
-     * @param username
-     * @return User with that username
-     */
-    User getUserFromUsername(String username);
 }

@@ -21,8 +21,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation "org.mindrot:jbcrypt:0.4"
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'com.google.code.gson:gson:2.10.1'
-    runTimeOnly 'com.mysql:mysql-connector-j:'
+    runtimeOnly 'com.mysql:mysql-connector-j:'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 }
 

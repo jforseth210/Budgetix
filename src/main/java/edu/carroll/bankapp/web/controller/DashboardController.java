@@ -1,5 +1,6 @@
 package edu.carroll.bankapp.web.controller;
-import edu.carroll.bankapp.jpa.User;
+
+import edu.carroll.bankapp.jpa.model.User;
 import edu.carroll.bankapp.service.LoginService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,10 +14,14 @@ import org.slf4j.LoggerFactory;
 
 @Controller
 public class DashboardController {
-    LoginService loginService = new LoginServiceImpl();
+    LoginService loginService;
     private static final Logger log = LoggerFactory.getLogger(DashboardController.class);
 
     private String[] accounts = new String[]{"Checking", "Savings", "Credit", "Cash"};
+
+    public DashboardController(LoginService loginService) {
+        this.loginService = loginService;
+    }
 
     @GetMapping("/")
     public RedirectView index(@CookieValue(name = "session", defaultValue = "") String session) {

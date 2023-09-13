@@ -1,6 +1,7 @@
 package edu.carroll.bankapp.web.controller;
 
 import edu.carroll.bankapp.User;
+import edu.carroll.bankapp.service.LoginService;
 import edu.carroll.bankapp.service.LoginServiceImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 @Controller
 public class DashboardController {
-    LoginServiceImpl loginService = new LoginServiceImpl();
+    LoginService loginService = new LoginServiceImpl();
     private static final Logger log = LoggerFactory.getLogger(DashboardController.class);
 
     private String[] accounts = new String[]{"Checking", "Savings", "Credit", "Cash"};
@@ -23,6 +24,7 @@ public class DashboardController {
     public RedirectView index(@CookieValue(name = "session", defaultValue = "") String session) {
         User loggedInUser = loginService.getUserFromToken(session);
         if (loggedInUser == null) {
+            log.info("Redirecting from \"/\" to \"/login\"");
             return new RedirectView("/login");
         }
         log.debug("Request for \"/\", redirecting to \"/{}\"", accounts[0]);
@@ -33,6 +35,7 @@ public class DashboardController {
     public String index(@CookieValue(name = "session", defaultValue = "") String session, @PathVariable String account, Model model) {
         User loggedInUser = loginService.getUserFromToken(session);
         if (loggedInUser == null) {
+            log.info("Redirecting from \"/\" to \"/login\"");
             return "redirect:/login";
         }
         log.debug("Request for account: {}", account);

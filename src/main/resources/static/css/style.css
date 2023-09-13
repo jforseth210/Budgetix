@@ -10,10 +10,10 @@
 
 /* Make all of the fonts the same */
 .title, p, label, input {
-        font-family: 'Noto Sans JP', sans-serif;
-        color: #4F3B38;
-        display: block;
-    }
+    font-family: 'Noto Sans JP', sans-serif;
+    color: #4F3B38;
+    display: block;
+}
 
 /* Link Styling */
 a {
@@ -27,7 +27,12 @@ a:hover {
 }
 
 .title {
+    width: 100%;
+    margin: auto;
     font-size: 0.7em;
+    text-align: center;
+    
+    
 }
 
 label {
@@ -39,10 +44,12 @@ label {
 
 p {
     font-size: 0.9em;
+    text-align: center;
+    width: 100%;
 }
 
 input {
-    width: 145.85%;
+    width: 450px;
     border-radius: 25px;
     border: 1px solid #9C6F69;
     padding: 4px;
@@ -51,7 +58,7 @@ input {
 /* https://stackoverflow.com/questions/11497094/remove-border-from-buttons */
 
 .button {
-    width: 150%;
+    width: 460px;
     background: #9C6F69;
     border-radius: 25px;
     border: none;

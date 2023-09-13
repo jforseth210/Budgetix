@@ -1,7 +1,6 @@
 package edu.carroll.bankapp.service;
 
 import java.io.*;
-import java.util.Scanner;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -31,7 +30,6 @@ public class LoginServiceImpl implements LoginService {
             loadUsers();
         for (User user : users) {
             if (user.getUsername().equals(username) && checkPassword(password, user.getHashedPassword())) {
-
                 user.generateNewToken();
                 writeUsers();
                 return true;
@@ -74,7 +72,6 @@ public class LoginServiceImpl implements LoginService {
 
     private void writeUsers() {
         try (FileWriter writer = new FileWriter("users.json")) {
-
             gson.toJson(users, writer);
         } catch (IOException e) {
             e.printStackTrace();

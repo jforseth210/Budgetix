@@ -1,8 +1,6 @@
 package edu.carroll.bankapp.web.controller;
-
-import edu.carroll.bankapp.User;
+import edu.carroll.bankapp.jpa.User;
 import edu.carroll.bankapp.service.LoginService;
-import edu.carroll.bankapp.service.LoginServiceImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;

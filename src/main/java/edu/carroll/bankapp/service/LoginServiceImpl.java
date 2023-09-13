@@ -4,7 +4,7 @@ import java.io.*;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import edu.carroll.bankapp.User;
+import edu.carroll.bankapp.jpa.User;
 import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

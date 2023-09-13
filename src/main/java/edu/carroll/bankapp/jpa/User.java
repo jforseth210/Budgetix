@@ -1,6 +1,5 @@
-package edu.carroll.bankapp;
+package edu.carroll.bankapp.jpa;
 
-import edu.carroll.bankapp.web.controller.DashboardController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

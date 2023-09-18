@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 
 import java.util.List;
 
+import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -48,7 +49,7 @@ public class LoginController {
 
     @GetMapping("/logout")
     public RedirectView logout(@CookieValue(name = "session", defaultValue = "") String session,
-            HttpServletResponse response) {
+                               HttpServletResponse response) {
         log.info("Logging user out");
         List<User> users = userRepo.findByToken(session);
         if (users.size() == 0) {
@@ -59,19 +60,12 @@ public class LoginController {
             log.error("Got more than one user from token");
             return null;
         }
-        User user = users.get(0);
-        user.resetToken();
-        userRepo.save(user);
-        Cookie cookie = new Cookie("session", session);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
         return new RedirectView("/");
     }
 
     @PostMapping("/login")
     public RedirectView loginPost(@Valid @ModelAttribute LoginForm loginForm, BindingResult result,
-            RedirectAttributes attrs, HttpServletResponse response) {
+                                  RedirectAttributes attrs, HttpServletResponse response) {
         if (result.hasErrors()) {
             log.info("Log form has errors, redirecting back to login page");
             return new RedirectView("/login");
@@ -81,11 +75,6 @@ public class LoginController {
             result.addError(new ObjectError("globalError", "Username and password do not match known users"));
             return new RedirectView("/login");
         }
-        log.debug("Setting session cookie");
-        Cookie cookie = new Cookie("session",
-                userRepo.findByUsernameIgnoreCase(loginForm.getUsername()).get(0).getToken());
-        cookie.setPath("/");
-        response.addCookie(cookie);
         log.info("Redirecting to \"/\"");
         return new RedirectView("/");
     }

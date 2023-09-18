@@ -31,11 +31,6 @@ public class User {
     private String username;
     @Column(name = "hashed_password", nullable = false, unique = true)
     private String hashedPassword;
-    @Column(name = "token", unique = true)
-    private String token;
-
-    @Column(name = "token_expiry")
-    private long tokenExpiry;
 
     /**
      * Hibernate wants a default constructor
@@ -53,24 +48,6 @@ public class User {
     public User(String username, String hashedPassword) {
         this.username = username;
         this.hashedPassword = hashedPassword;
-
-    }
-
-    /**
-     * Produces a string of random text that can be used to authenticate the user
-     * for a certain period of time.
-     *
-     * @return token
-     */
-    public String generateNewToken() {
-        log.info("Generating new token");
-        byte[] randomBytes = new byte[24];
-        secureRandom.nextBytes(randomBytes);
-        this.token = base64Encoder.encodeToString(randomBytes);
-        this.tokenExpiry = System.currentTimeMillis() + EXPIRY_TIME_MS;
-        log.info("Token: " + token);
-        log.info("Token Expiry: " + tokenExpiry);
-        return token;
     }
 
     public String getUsername() {
@@ -80,17 +57,5 @@ public class User {
     public String getHashedPassword() {
         return hashedPassword;
     }
-
-    public String getToken() {
-        return token;
-    }
-
-    public long getTokenExpiry() {
-        return tokenExpiry;
-    }
-
-    public void resetToken() {
-        this.token = null;
-        this.tokenExpiry = 0;
-    }
 }
+

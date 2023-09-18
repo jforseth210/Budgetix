@@ -25,22 +25,12 @@ public class DashboardController {
 
     @GetMapping("/")
     public RedirectView index(@CookieValue(name = "session", defaultValue = "") String session) {
-        User loggedInUser = loginService.getUserFromToken(session);
-        if (loggedInUser == null) {
-            log.info("Redirecting from \"/\" to \"/login\"");
-            return new RedirectView("/login");
-        }
         log.debug("Request for \"/\", redirecting to \"/{}\"", accounts[0]);
         return new RedirectView("/account/" + accounts[0]);
     }
 
     @GetMapping("/account/{account}")
     public String index(@CookieValue(name = "session", defaultValue = "") String session, @PathVariable String account, Model model) {
-        User loggedInUser = loginService.getUserFromToken(session);
-        if (loggedInUser == null) {
-            log.info("Redirecting from \"/\" to \"/login\"");
-            return "redirect:/login";
-        }
         log.debug("Request for account: {}", account);
         model.addAttribute("accounts", accounts);
         model.addAttribute("currentAccount", account);

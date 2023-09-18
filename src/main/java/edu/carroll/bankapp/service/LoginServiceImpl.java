@@ -5,6 +5,8 @@ import edu.carroll.bankapp.jpa.repo.UserRepository;
 import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,43 +44,11 @@ public class LoginServiceImpl implements LoginService {
         User user = users.get(0);
 
         if (checkPassword(password, user.getHashedPassword())) {
-            user.generateNewToken();
-            userRepo.save(user);
             log.info(username + " logged in successfully");
             return true;
         }
         log.warn(username + " failed to log in");
         return false;
-    }
-
-    /**
-     * Look up a user given their token
-     *
-     * @param token the user's token
-     * @return The User with that token
-     */
-    public User getUserFromToken(String token) {
-        log.debug("Looking up user from token");
-        List<User> users = userRepo.findByToken(token);
-
-        if (users.size() == 0) {
-            log.warn("Didn't find user with matching token");
-            return null;
-        }
-        if (users.size() > 1) {
-            log.error("Got more than one user from token");
-            return null;
-        }
-        User user = users.get(0);
-        // The token check is redundant, but it doesn't hurt to double-check.
-        if (token.equals(user.getToken()) && System.currentTimeMillis() < user.getTokenExpiry()) {
-            log.info("Found user: " + user.getUsername());
-            return user;
-        } else if (token.equals(user.getToken()) && System.currentTimeMillis() > user.getTokenExpiry()) {
-            log.info(user.getUsername() + " token expired");
-        }
-
-        return null;
     }
 
     public static boolean checkPassword(String passwordToCheck, String hashedPassword) {

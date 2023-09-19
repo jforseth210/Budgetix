@@ -18,11 +18,6 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "user")
 public class User {
-    private static final long EXPIRY_TIME_MS = 1 * 60 * 60 * 1000;
-    private static final Logger log = LoggerFactory.getLogger(User.class);
-    // 1 hr
-    private static final SecureRandom secureRandom = new SecureRandom();
-    private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder();
 
     @Id
     @GeneratedValue
@@ -58,4 +53,3 @@ public class User {
         return hashedPassword;
     }
 }
-

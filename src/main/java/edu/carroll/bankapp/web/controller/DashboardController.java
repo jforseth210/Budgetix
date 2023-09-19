@@ -1,7 +1,5 @@
 package edu.carroll.bankapp.web.controller;
 
-import edu.carroll.bankapp.jpa.model.User;
-import edu.carroll.bankapp.service.LoginService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -14,23 +12,19 @@ import org.slf4j.LoggerFactory;
 
 @Controller
 public class DashboardController {
-    LoginService loginService;
     private static final Logger log = LoggerFactory.getLogger(DashboardController.class);
 
     private String[] accounts = new String[]{"Checking", "Savings", "Credit", "Cash"};
 
-    public DashboardController(LoginService loginService) {
-        this.loginService = loginService;
-    }
 
     @GetMapping("/")
-    public RedirectView index(@CookieValue(name = "session", defaultValue = "") String session) {
+    public RedirectView index() {
         log.debug("Request for \"/\", redirecting to \"/{}\"", accounts[0]);
         return new RedirectView("/account/" + accounts[0]);
     }
 
     @GetMapping("/account/{account}")
-    public String index(@CookieValue(name = "session", defaultValue = "") String session, @PathVariable String account, Model model) {
+    public String index(@PathVariable String account, Model model) {
         log.debug("Request for account: {}", account);
         model.addAttribute("accounts", accounts);
         model.addAttribute("currentAccount", account);

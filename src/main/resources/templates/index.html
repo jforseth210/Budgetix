@@ -28,18 +28,19 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
-                <li th:each="account: ${accounts}" class="nav-item"
-                >
-                    <a class="nav-link" th:classappend="${account == currentAccount ? 'active' : ''}"
-                       th:href="@{'/'+${account}}"
-                       th:text="${account}"/>
+                <li th:each="account: ${accounts}" class="nav-item">
+                    <a
+                            class="nav-link"
+                            th:classappend="${account == currentAccount ? 'active' : ''}"
+                            th:href="@{'/'+${account}}"
+                            th:text="${account}"
+                    />
                 </li>
             </ul>
             <ul class="navbar-nav ms-auto">
                 <li class="ms-auto nav-item">
                     <a class="nav-link" href="/logout">Logout</a>
                 </li>
-
             </ul>
         </div>
     </div>
@@ -55,7 +56,7 @@
         <tr>
             <td>Movie Ticket</td>
             <td>9/3/2023</td>
-            <td align="right" class="text-danger">-$6.00</td>
+            <td style="text-align: right" class="text-danger">-$6.00</td>
         </tr>
         </tbody>
     </table>

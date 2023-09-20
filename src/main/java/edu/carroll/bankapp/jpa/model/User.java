@@ -24,10 +24,6 @@ public class User {
     private String username;
     @Column(name = "hashed_password", nullable = false, unique = true)
     private String hashedPassword;
-    @Column(name = "token", unique = true)
-    private String token;
-    @Column(name = "token_expiry")
-    private long tokenExpiry;
 
     /**
      * Hibernate wants a default constructor

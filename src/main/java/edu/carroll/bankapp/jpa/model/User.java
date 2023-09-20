@@ -27,13 +27,16 @@ public class User {
     @Id
     @GeneratedValue
     private Integer id;
+    @Column(name = "fullName", nullable = false)
+    private String fullName;
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
     @Column(name = "username", nullable = false, unique = true)
     private String username;
     @Column(name = "hashed_password", nullable = false, unique = true)
     private String hashedPassword;
     @Column(name = "token", unique = true)
     private String token;
-
     @Column(name = "token_expiry")
     private long tokenExpiry;
 
@@ -47,13 +50,16 @@ public class User {
     /**
      * Initialize a user with username and hashed password
      *
+     * @param fullName
+     * @param email
      * @param username
      * @param hashedPassword
      */
-    public User(String username, String hashedPassword) {
+    public User(String fullName, String email, String username, String hashedPassword) {
+        this.fullName = fullName;
+        this.email = email;
         this.username = username;
         this.hashedPassword = hashedPassword;
-
     }
 
     /**

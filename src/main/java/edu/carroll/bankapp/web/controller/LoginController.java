@@ -4,12 +4,14 @@ import edu.carroll.bankapp.jpa.model.User;
 import edu.carroll.bankapp.jpa.repo.UserRepository;
 import edu.carroll.bankapp.service.LoginService;
 import edu.carroll.bankapp.web.form.LoginForm;
+import edu.carroll.bankapp.web.form.NewLoginForm;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 import java.util.List;
 
+import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -42,7 +44,7 @@ public class LoginController {
 
     @GetMapping("/loginNew")
     public String loginNewGet(Model model) {
-        // model.addAttribute("loginForm", new LoginForm());
+         model.addAttribute("loginForm", new NewLoginForm());
         return "loginNew";
     }
 
@@ -89,4 +91,31 @@ public class LoginController {
         log.info("Redirecting to \"/\"");
         return new RedirectView("/");
     }
+
+    @PostMapping("/loginNew")
+    public RedirectView loginNewPost(@Valid @ModelAttribute NewLoginForm loginFormNew, BindingResult result,
+                                  RedirectAttributes attrs, HttpServletResponse response) {
+        if (result.hasErrors()) {
+            log.info("Log form has errors, redirecting back to login page");
+            return new RedirectView("/loginNew");
+        }
+
+        if (!loginFormNew.getPassword().equals(loginFormNew.getConfirm())) {
+            log.error("Passwords must match");
+            return new RedirectView("/loginNew");
+        }
+
+        User defaultUser = new User(loginFormNew.getFullName(), loginFormNew.getEmail(),
+                loginFormNew.getUsername(), BCrypt.hashpw(loginFormNew.getPassword(), BCrypt.gensalt()));
+        userRepo.save(defaultUser);
+
+        log.debug("Setting session cookie");
+        Cookie cookie = new Cookie("session",
+                userRepo.findByUsernameIgnoreCase(loginFormNew.getUsername()).get(0).getToken());
+        cookie.setPath("/");
+        response.addCookie(cookie);
+        log.info("Redirecting to \"/\"");
+        return new RedirectView("/");
+    }
+
 }

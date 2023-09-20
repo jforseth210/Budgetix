@@ -8,6 +8,8 @@ import org.springframework.web.servlet.view.RedirectView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.security.Principal;
+
 
 @Controller
 public class DashboardController {
@@ -23,7 +25,8 @@ public class DashboardController {
     }
 
     @GetMapping("/account/{account}")
-    public String index(@PathVariable String account, Model model) {
+    public String index(@PathVariable String account, Principal principal, Model model) {
+        System.out.println(principal.getName());
         log.debug("Request for account: {}", account);
         model.addAttribute("accounts", accounts);
         model.addAttribute("currentAccount", account);

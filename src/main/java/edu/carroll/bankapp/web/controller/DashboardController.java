@@ -18,8 +18,6 @@ public class DashboardController {
     private AccountService accountService;
     private static final Logger log = LoggerFactory.getLogger(DashboardController.class);
 
-    private String[] accounts = new String[] { "Checking", "Savings", "Credit", "Cash" };
-
     public DashboardController(AccountService accountService) {
         this.accountService = accountService;
     }

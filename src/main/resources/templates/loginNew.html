@@ -14,7 +14,7 @@
         <h1>Create an Account</h1>
     </div>
     <form action="#" th:action="@{/loginNew}" th:object="${NewLoginForm}" method="post">
-        <span th:if="${#fields.hasGlobalErrors()}" th:errors="*{global}">Global Errors</span>
+<!--        <span th:if="${#fields.hasGlobalErrors()}" th:errors="*{global}">Global Errors</span>-->
         <label for="fullName">Full Name:</label>
         <input type="text" th:field="*{fullName}" id="fullName" name="fullName" required>
         <label for="username">Username:</label>

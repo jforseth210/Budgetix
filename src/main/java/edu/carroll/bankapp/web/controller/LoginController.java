@@ -1,6 +1,5 @@
 package edu.carroll.bankapp.web.controller;
 
-import edu.carroll.bankapp.jpa.repo.UserRepository;
 import edu.carroll.bankapp.web.form.LoginForm;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

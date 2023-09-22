@@ -47,4 +47,8 @@ public class User {
     public String getHashedPassword() {
         return hashedPassword;
     }
+
+    public Set<Account> getAccounts() {
+        return accounts;
+    }
 }

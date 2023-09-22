@@ -28,6 +28,10 @@
         <input type="password" th:field="*{confirm}" id="confirm" name="confirm" required><br><br>
         <p th:if="${#fields.hasErrors('password')}" th:class="error">Passwords must match</p>
         <input class="button" type="submit" value="Register">
+<!--   An attempt to fix the lack of error displays     -->
+        <div th:if="${param.error}">
+            <span th:text="#{login.error}"></span>
+        </div>
     </form>
     <p>Have an account? <a href="/login">
         <bold>Login</bold>

@@ -45,30 +45,33 @@ public class LoginController {
 
     @GetMapping("/loginNew")
     public String loginNewGet(Model model) {
-         model.addAttribute("loginForm", new NewLoginForm());
+         model.addAttribute("NewLoginForm", new NewLoginForm());
         return "loginNew";
     }
 
     @PostMapping("/loginNew")
-    public RedirectView loginNewPost(@Valid @ModelAttribute NewLoginForm loginFormNew, Model model, BindingResult result,
-                                  RedirectAttributes attrs, HttpServletResponse response) {
+    public String loginNewPost(@Valid @ModelAttribute NewLoginForm NewLoginForm, BindingResult result, Model model,
+                               RedirectAttributes attrs, HttpServletResponse response) {
         if (result.hasErrors()) {
             log.info("Log form has errors, redirecting back to login page");
             attrs.addFlashAttribute("org.springframework.validation.BindingResult.loginFormNew", result);
-            attrs.addFlashAttribute("loginFormNew", loginFormNew);
-            return new RedirectView("/loginNew");
+            attrs.addFlashAttribute("NewLoginForm", new NewLoginForm());
+            return "loginNew";
         }
 
-        if (!loginFormNew.getPassword().equals(loginFormNew.getConfirm())) {
-            log.error("Passwords must match");
-            return new RedirectView("/loginNew");
+        if (!NewLoginForm.getPassword().equals(NewLoginForm.getConfirm())) {
+            log.info("Passwords must match");
+            result.addError(new ObjectError("password", "Passwords must match"));
+            attrs.addFlashAttribute("org.springframework.validation.BindingResult.loginFormNew", result);
+            attrs.addAttribute("NewLoginForm", new NewLoginForm());
+            return "loginNew";
         }
 
-        User defaultUser = new User(loginFormNew.getFullName(), loginFormNew.getEmail(),
-                loginFormNew.getUsername(), BCrypt.hashpw(loginFormNew.getPassword(), BCrypt.gensalt()));
+        User defaultUser = new User(NewLoginForm.getFullName(), NewLoginForm.getEmail(),
+                NewLoginForm.getUsername(), BCrypt.hashpw(NewLoginForm.getPassword(), BCrypt.gensalt()));
         userRepo.save(defaultUser);
 
         log.info("Redirecting to \"/\"");
-        return new RedirectView("/");
+        return "redirect:/";
     }
 }

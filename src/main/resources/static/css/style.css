@@ -65,3 +65,9 @@ input {
     color: white;
     padding: 5px;
 }
+
+.error {
+    color: red;
+    font-weight: bold;
+    margin-top: 5px;
+}

@@ -8,6 +8,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.mindrot.jbcrypt.BCrypt;
@@ -49,10 +50,12 @@ public class LoginController {
     }
 
     @PostMapping("/loginNew")
-    public RedirectView loginNewPost(@Valid @ModelAttribute NewLoginForm loginFormNew, BindingResult result,
+    public RedirectView loginNewPost(@Valid @ModelAttribute NewLoginForm loginFormNew, Model model, BindingResult result,
                                   RedirectAttributes attrs, HttpServletResponse response) {
         if (result.hasErrors()) {
             log.info("Log form has errors, redirecting back to login page");
+            attrs.addFlashAttribute("org.springframework.validation.BindingResult.loginFormNew", result);
+            attrs.addFlashAttribute("loginFormNew", loginFormNew);
             return new RedirectView("/loginNew");
         }
 

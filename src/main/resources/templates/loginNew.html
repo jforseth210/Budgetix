@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>BankApp Login</title>
@@ -13,17 +13,17 @@
     <div class="title">
         <h1>Create an Account</h1>
     </div>
-    <form action="">
+    <form action="#" th:action="@{/loginNew}" th:object="${loginForm}" method="post">
         <label for="fullName">Full Name:</label>
-        <input type="text" id="fullName" name="fullName">
+        <input type="text" th:field="*{fullName}" id="fullName" name="fullName" required>
         <label for="username">Username:</label>
-        <input type="text" id="username" name="username">
+        <input type="text" th:field="*{username}" id="username" name="username" required>
         <label for="email">Email:</label>
-        <input type="text" id="email" name="email">
+        <input type="email" th:field="*{email}" id="email" name="email" required>
         <label for="password">Password:</label>
-        <input type="text" id="password" name="password">
+        <input type="password" th:field="*{password}" id="password" name="password" required>
         <label for="confirm">Confirm Password:</label>
-        <input type="text" id="confirm" name="confirm"><br><br>
+        <input type="password" th:field="*{confirm}" id="confirm" name="confirm" required><br><br>
         <input class="button" type="submit" value="Register">
     </form>
     <p>Have an account? <a href="/login">

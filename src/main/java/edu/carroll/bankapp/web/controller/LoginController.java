@@ -53,17 +53,12 @@ public class LoginController {
     public String loginNewPost(@Valid @ModelAttribute NewLoginForm newLoginForm, BindingResult result) {
         if (result.hasErrors()) {
             log.info("Log form has errors, redirecting back to login page");
-//            attrs.addFlashAttribute("org.springframework.validation.BindingResult.loginFormNew", result);
-//            attrs.addFlashAttribute("newLoginForm", new NewLoginForm());
             return "loginNew";
         }
 
         if (!newLoginForm.getPassword().equals(newLoginForm.getConfirm())) {
             log.info("Passwords must match");
             result.addError(new ObjectError("confirm", "Passwords must match"));
-//            result.addError(new ObjectError("globalError", "Username and password do not match known users"));
-//            attrs.addFlashAttribute("org.springframework.validation.BindingResult.loginFormNew", result);
-//            attrs.addAttribute("newLoginForm", new NewLoginForm());
             return "loginNew";
         }
 

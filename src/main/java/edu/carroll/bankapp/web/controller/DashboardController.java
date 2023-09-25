@@ -42,6 +42,7 @@ public class DashboardController {
 
         log.debug("Request for account: {}", account.getName());
         model.addAttribute("accounts", accounts);
+        model.addAttribute("currentUser", );
         model.addAttribute("currentAccount", account);
         return "index";
     }

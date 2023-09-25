@@ -1,8 +1,15 @@
 <!DOCTYPE html>
+<<<<<<< Updated upstream
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+=======
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+>>>>>>> Stashed changes
     <title>BudgetApp</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
@@ -42,6 +49,30 @@
               <a class="nav-link" href="/logout">Logout</a>
             </li>
           </ul>
+            <ul class="navbar-nav">
+                <li th:each="account: ${accounts}" class="nav-item">
+                    <a
+                            class="nav-link"
+                            th:classappend="${account == currentAccount ? 'active' : ''}"
+                            th:href="@{'/'+${account}}"
+                            th:text="${account}"
+                    />
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        Dropdown
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="#">Action</a></li>
+                        <li><a class="dropdown-item" href="#">Another action</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    </ul>
+                </li>
+            </ul>
         </div>
       </div>
     </nav>

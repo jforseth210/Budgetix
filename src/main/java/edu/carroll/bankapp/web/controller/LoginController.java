@@ -45,30 +45,30 @@ public class LoginController {
 
     @GetMapping("/loginNew")
     public String loginNewGet(Model model) {
-         model.addAttribute("NewLoginForm", new NewLoginForm());
+         model.addAttribute("newLoginForm", new NewLoginForm());
         return "loginNew";
     }
 
     @PostMapping("/loginNew")
-    public String loginNewPost(@Valid @ModelAttribute NewLoginForm NewLoginForm, BindingResult result, Model model,
-                               RedirectAttributes attrs, HttpServletResponse response) {
+    public String loginNewPost(@Valid @ModelAttribute NewLoginForm newLoginForm, BindingResult result) {
         if (result.hasErrors()) {
             log.info("Log form has errors, redirecting back to login page");
-            attrs.addFlashAttribute("org.springframework.validation.BindingResult.loginFormNew", result);
-            attrs.addFlashAttribute("NewLoginForm", new NewLoginForm());
+//            attrs.addFlashAttribute("org.springframework.validation.BindingResult.loginFormNew", result);
+//            attrs.addFlashAttribute("newLoginForm", new NewLoginForm());
             return "loginNew";
         }
 
-        if (!NewLoginForm.getPassword().equals(NewLoginForm.getConfirm())) {
+        if (!newLoginForm.getPassword().equals(newLoginForm.getConfirm())) {
             log.info("Passwords must match");
-            result.addError(new ObjectError("password", "Passwords must match"));
-            attrs.addFlashAttribute("org.springframework.validation.BindingResult.loginFormNew", result);
-            attrs.addAttribute("NewLoginForm", new NewLoginForm());
+            result.addError(new ObjectError("confirm", "Passwords must match"));
+//            result.addError(new ObjectError("globalError", "Username and password do not match known users"));
+//            attrs.addFlashAttribute("org.springframework.validation.BindingResult.loginFormNew", result);
+//            attrs.addAttribute("newLoginForm", new NewLoginForm());
             return "loginNew";
         }
 
-        User defaultUser = new User(NewLoginForm.getFullName(), NewLoginForm.getEmail(),
-                NewLoginForm.getUsername(), BCrypt.hashpw(NewLoginForm.getPassword(), BCrypt.gensalt()));
+        User defaultUser = new User(newLoginForm.getFullName(), newLoginForm.getEmail(),
+                newLoginForm.getUsername(), BCrypt.hashpw(newLoginForm.getPassword(), BCrypt.gensalt()));
         userRepo.save(defaultUser);
 
         log.info("Redirecting to \"/\"");

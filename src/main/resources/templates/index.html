@@ -1,74 +1,81 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
-<head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>BudgetApp</title>
     <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-            integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
-            crossorigin="anonymous"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
+      crossorigin="anonymous"
     />
-</head>
-<body>
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-    <div class="container-fluid">
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <div class="container-fluid">
         <a class="navbar-brand" href="#">BudgetApp</a>
         <button
-                class="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarNav"
-                aria-controls="navbarNav"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
         >
-            <span class="navbar-toggler-icon"></span>
+          <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li th:each="account: ${accounts}" class="nav-item">
-                    <a
-                            class="nav-link"
-                            th:classappend="${account == currentAccount ? 'active' : ''}"
-                            th:href="@{'/'+${account}}"
-                            th:text="${account}"
-                    />
-                </li>
-            </ul>
-            <ul class="navbar-nav ms-auto">
-                <li class="ms-auto nav-item">
-                    <a class="nav-link" href="/logout">Logout</a>
-                </li>
-            </ul>
+          <ul class="navbar-nav">
+            <li th:each="account: ${accounts}" class="nav-item">
+              <a
+                class="nav-link"
+                th:classappend="${account.getName() == currentAccount.getName() ? 'active' : ''}"
+                th:href="@{'/'+${account.getId()}}"
+                th:text="${account.getName()}"
+              />
+            </li>
+          </ul>
+          <ul class="navbar-nav ms-auto">
+            <li class="ms-auto nav-item">
+              <a class="nav-link" href="/logout">Logout</a>
+            </li>
+          </ul>
         </div>
-    </div>
-</nav>
-<div class="container mt-3">
-    <table class="table">
+      </div>
+    </nav>
+    <div class="container mt-3">
+      <table class="table">
         <thead>
-        <th>Transaction Name</th>
-        <th>Date</th>
-        <th>Price</th>
+          <th>Transaction Name</th>
+          <th>To/From</th>
+          <th>Price</th>
         </thead>
         <tbody>
-        <tr>
-            <td>Movie Ticket</td>
-            <td>9/3/2023</td>
-            <td style="text-align: right" class="text-danger">-$6.00</td>
-        </tr>
+          <tr th:each="transaction: ${currentAccount.getTransactions()}">
+            <td th:text="${transaction.getName()}"></td>
+            <td th:text="${transaction.getToFrom()}"></td>
+            <td
+              style="text-align: right"
+              class="text-danger"
+              th:text="${transaction.getAmountInDollars()}"
+            ></td>
+          </tr>
         </tbody>
-    </table>
-    <div class="d-flex">
+      </table>
+      <div class="d-flex">
         <button class="btn btn-primary">Log a Transaction</button>
-        <p class="text-danger ms-auto me-1">-$6.00</p>
+        <p
+          class="text-danger ms-auto me-1"
+          th:text="${currentAccount.getBalanceInDollars()}"
+        ></p>
+      </div>
     </div>
-</div>
-<script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
-        crossorigin="anonymous"
-></script>
-</body>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+      crossorigin="anonymous"
+    ></script>
+  </body>
 </html>

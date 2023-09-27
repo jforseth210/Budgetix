@@ -1,10 +1,8 @@
 package edu.carroll.bankapp.jpa.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
+import java.util.Set;
 
 /**
  * A user with credentials in the system.
@@ -24,10 +22,9 @@ public class User {
     private String username;
     @Column(name = "hashed_password", nullable = false, unique = true)
     private String hashedPassword;
-    @Column(name = "token", unique = true)
-    private String token;
-    @Column(name = "token_expiry")
-    private long tokenExpiry;
+
+    @OneToMany
+    private Set<Account> accounts;
 
     /**
      * Hibernate wants a default constructor
@@ -57,5 +54,9 @@ public class User {
 
     public String getHashedPassword() {
         return hashedPassword;
+    }
+
+    public Set<Account> getAccounts() {
+        return accounts;
     }
 }

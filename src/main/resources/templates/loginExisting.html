@@ -13,7 +13,8 @@
     <div class="title">
         <h1>Welcome Back!</h1>
     </div>
-    <form action="#" th:action="@{/login}" th:object="${loginForm}" method="post">
+    <form action="#" class="error" th:action="@{/login}" th:object="${loginForm}" method="post">
+        <span class="error" th:if="${#fields.hasGlobalErrors()}" th:errors="*{global}">Global Errors</span>
         <label for="username">Username:</label>
         <input type="text" th:field="*{username}" id="username" name="username" required>
         <label for="password">Password:</label>
@@ -25,4 +26,23 @@
     </a></p>
 </div>
 </body>
+<script type="text/javascript">
+    function validate() {
+        if (document.f.username.value == "" && document.f.password.value == "") {
+            alert("Username and password are required");
+            document.f.username.focus();
+            return false;
+        }
+        if (document.f.username.value == "") {
+            alert("Username is required");
+            document.f.username.focus();
+            return false;
+        }
+        if (document.f.password.value == "") {
+            alert("Password is required");
+            document.f.password.focus();
+            return false;
+        }
+    }
+</script>
 </html>

@@ -43,6 +43,21 @@ public class LoginController {
         return "loginExisting";
     }
 
+//    @PostMapping("/login")
+//    public String loginPost(@Valid @ModelAttribute LoginForm loginForm, BindingResult result) {
+//        if (result.hasErrors()) {
+//            log.info("Log form has errors, redirecting back to login page");
+//            return "loginNew";
+//        }
+//
+//        if (!userRepo.equals(loginForm.getUsername())) {
+//            result.addError(new ObjectError("global", "User not found"));
+//            return "loginNew";
+//        }
+//
+//        return "redirect:/";
+//    }
+
     @GetMapping("/loginNew")
     public String loginNewGet(Model model) {
          model.addAttribute("newLoginForm", new NewLoginForm());

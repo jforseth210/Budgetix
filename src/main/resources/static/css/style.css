@@ -65,3 +65,11 @@ input {
     color: white;
     padding: 5px;
 }
+
+.error {
+    display: block;
+    color: darkred;
+    font-family: 'Noto Sans JP', sans-serif;
+    margin-top: 5px;
+    font-size: 0.9em;
+}

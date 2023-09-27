@@ -8,6 +8,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.mindrot.jbcrypt.BCrypt;
@@ -44,28 +45,28 @@ public class LoginController {
 
     @GetMapping("/loginNew")
     public String loginNewGet(Model model) {
-         model.addAttribute("loginForm", new NewLoginForm());
+         model.addAttribute("newLoginForm", new NewLoginForm());
         return "loginNew";
     }
 
     @PostMapping("/loginNew")
-    public RedirectView loginNewPost(@Valid @ModelAttribute NewLoginForm loginFormNew, BindingResult result,
-                                  RedirectAttributes attrs, HttpServletResponse response) {
+    public String loginNewPost(@Valid @ModelAttribute NewLoginForm newLoginForm, BindingResult result) {
         if (result.hasErrors()) {
             log.info("Log form has errors, redirecting back to login page");
-            return new RedirectView("/loginNew");
+            return "loginNew";
         }
 
-        if (!loginFormNew.getPassword().equals(loginFormNew.getConfirm())) {
-            log.error("Passwords must match");
-            return new RedirectView("/loginNew");
+        if (!newLoginForm.getPassword().equals(newLoginForm.getConfirm())) {
+            log.info("Passwords must match");
+            result.addError(new ObjectError("confirm", "Passwords must match"));
+            return "loginNew";
         }
 
-        User defaultUser = new User(loginFormNew.getFullName(), loginFormNew.getEmail(),
-                loginFormNew.getUsername(), BCrypt.hashpw(loginFormNew.getPassword(), BCrypt.gensalt()));
+        User defaultUser = new User(newLoginForm.getFullName(), newLoginForm.getEmail(),
+                newLoginForm.getUsername(), BCrypt.hashpw(newLoginForm.getPassword(), BCrypt.gensalt()));
         userRepo.save(defaultUser);
 
         log.info("Redirecting to \"/\"");
-        return new RedirectView("/");
+        return "redirect:/";
     }
 }

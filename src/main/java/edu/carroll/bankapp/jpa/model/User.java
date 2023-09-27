@@ -12,7 +12,7 @@ import java.util.Set;
 public class User {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     @Column(name = "fullName", nullable = false)
     private String fullName;
@@ -22,9 +22,6 @@ public class User {
     private String username;
     @Column(name = "hashed_password", nullable = false, unique = true)
     private String hashedPassword;
-
-    @OneToMany
-    private Set<Account> accounts;
 
     /**
      * Hibernate wants a default constructor
@@ -56,7 +53,4 @@ public class User {
         return hashedPassword;
     }
 
-    public Set<Account> getAccounts() {
-        return accounts;
-    }
 }

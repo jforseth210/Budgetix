@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size;
 
 public class LoginForm {
     @NotNull
-    @Size(min = 6, message = "Username must be at least 6 characters long")
+    @Size(min = 4, message = "Username must be at least 4 characters long")
     private String username;
 
     @NotNull

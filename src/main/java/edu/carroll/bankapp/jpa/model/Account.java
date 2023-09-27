@@ -8,7 +8,7 @@ import java.util.Set;
 @Table(name = "account")
 public class Account {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     @ManyToOne
     private User owner;
@@ -20,7 +20,7 @@ public class Account {
     // software for years and years and years won't like it
     @Column(name = "balance_in_cents", nullable = false)
     private Integer balanceInCents;
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     public String getName() {

@@ -30,9 +30,7 @@ public class AccountService {
         if (loggedInUser == null) {
             return null;
         }
-        Set<Account> accountsSet = loggedInUser.getAccounts();
-        List<Account> accountsList = new ArrayList<Account>();
-        accountsList.addAll(accountsSet);
+        List<Account> accountsList = accountRepo.findByOwner(loggedInUser);
         return accountsList;
     }
 

@@ -25,8 +25,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This controller is responible for the primary account management routes.
+ * Account and transaction creation, reading, modification, deletion.
+ */
 @Controller
 public class DashboardController {
     private AccountService accountService;
@@ -41,36 +46,72 @@ public class DashboardController {
         this.userService = userService;
     }
 
+    /**
+     * Redirect from the root path to the first user account found
+     *
+     * @return
+     */
     @GetMapping("/")
     public RedirectView index() {
+        // Get all of the user's accounts
         List<Account> accounts = accountService.getUserAccounts();
+        // Deal with the user not having any accounts
         if (accounts == null || accounts.size() == 0) {
-            return new RedirectView("/account/0");
+            return new RedirectView("/add-account");
         }
         log.debug("Request for \"/\", redirecting to \"/{}\"", accounts.get(0).getId());
+        // Redirect to the first account found
         return new RedirectView("/account/" + accounts.get(0).getId());
     }
 
+    /**
+     * Page for viewing an account
+     *
+     * @param accountId the id of the account being viewed
+     * @param model     data to pass to Thymeleaf
+     * @return
+     */
     @GetMapping("/account/{accountId}")
-    public String index(@PathVariable Integer accountId, Principal principal, Model model) {
+    public String index(@PathVariable Integer accountId, Model model) {
+        model.addAttribute("currentUser", userService.getLoggedInUser());
+        model.addAttribute("newAccountForm", new NewAccountForm());
+        if (accountId == 0 && accountService.getUserAccounts().size() > 0) {
+            return "redirect:/";
+        }
+        if (accountId == 0) {
+            return "redirect:/add-account";
+        }
         List<Account> accounts = accountService.getUserAccounts();
         final Account account = accountService.getUserAccount(accountId);
         log.debug("Request for account: {}", account.getName());
         model.addAttribute("accounts", accounts);
-        model.addAttribute("currentUser", userService.getLoggedInUser());
         model.addAttribute("currentAccount", account);
-        model.addAttribute("newAccountForm", new NewAccountForm());
 
         return "index";
     }
 
+    @GetMapping("/add-account")
+    public String addAccountPage(Model model) {
+        model.addAttribute("currentUser", userService.getLoggedInUser());
+        model.addAttribute("newAccountForm", new NewAccountForm());
+        return "addAccountPage";
+    }
+
+    /**
+     * Accept form submissions for (financial) account creation
+     *
+     * @param newAccountForm
+     * @return
+     */
     @PostMapping("/add-account")
     public RedirectView addAccount(@Valid @ModelAttribute NewAccountForm newAccountForm) {
+        // Create and save a new account
         Account account = new Account();
         account.setName(newAccountForm.getAccountName());
         account.setBalanceInCents(newAccountForm.getAccountBalance().intValue() * 100);
         account.setOwner(userService.getLoggedInUser());
         accountRepo.save(account);
+        // Redirect back to the root path
         return new RedirectView("/");
     }
 }

@@ -26,6 +26,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
+/**
+ * This controller is responsible for all authentication routes. Logging in/out,
+ * signing up, etc.
+ */
 @Controller
 public class LoginController {
 
@@ -37,18 +41,37 @@ public class LoginController {
         this.userRepo = userRepo;
     }
 
+    /**
+     * The login page
+     * 
+     * @param model
+     * @return
+     */
     @GetMapping("/login")
     public String loginGet(Model model) {
         model.addAttribute("loginForm", new LoginForm());
         return "loginExisting";
     }
 
+    /**
+     * The sign up pages
+     * 
+     * @param model
+     * @return
+     */
     @GetMapping("/loginNew")
     public String loginNewGet(Model model) {
-         model.addAttribute("newLoginForm", new NewLoginForm());
+        model.addAttribute("newLoginForm", new NewLoginForm());
         return "loginNew";
     }
 
+    /**
+     * This page accepts form submissions for (user) account creation
+     * 
+     * @param newLoginForm The data collected from the form
+     * @param result       Form errors (if any)
+     * @return
+     */
     @PostMapping("/loginNew")
     public String loginNewPost(@Valid @ModelAttribute NewLoginForm newLoginForm, BindingResult result) {
         if (result.hasErrors()) {
@@ -62,8 +85,13 @@ public class LoginController {
             return "loginNew";
         }
 
-        User defaultUser = new User(newLoginForm.getFullName(), newLoginForm.getEmail(),
-                newLoginForm.getUsername(), BCrypt.hashpw(newLoginForm.getPassword(), BCrypt.gensalt()));
+        // Create new user object from form object
+        User defaultUser = new User(
+                newLoginForm.getFullName(),
+                newLoginForm.getEmail(),
+                newLoginForm.getUsername(),
+                BCrypt.hashpw(newLoginForm.getPassword(), BCrypt.gensalt()));
+        // Save user to database
         userRepo.save(defaultUser);
 
         log.info("Redirecting to \"/\"");

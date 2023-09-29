@@ -7,6 +7,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+/**
+ * A service to handle business logic related to managing users
+ */
 @Service
 public class UserService {
     private final UserRepository userRepo;
@@ -15,6 +18,10 @@ public class UserService {
         this.userRepo = userRepo;
     }
 
+    /**
+     * Get the currently logged-in user (if any).
+     * @return 
+     */
     public User getLoggedInUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {

@@ -3,6 +3,9 @@ package edu.carroll.bankapp.jpa.model;
 
 import jakarta.persistence.*;
 
+/**
+ * A transaction within the system
+ */
 @Entity
 @Table(name = "transaction")
 public class Transaction {

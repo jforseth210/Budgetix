@@ -6,11 +6,13 @@ import edu.carroll.bankapp.jpa.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
- * Magic provided by Hibernate for looking up users
+ * Interface implemented by Hibernate for querying User information from the database
  */
 public interface UserRepository extends JpaRepository<User, Integer> {
-    // JPA throws an exception if we attempt to return a single object that doesn't
-    // exist, so return a list even though we only expect either an empty list of a
-    // single element.
+    /**
+     * Case-insensitively fetch a User based on their username.
+     * @param username
+     * @return
+     */
     List<User> findByUsernameIgnoreCase(String username);
 }

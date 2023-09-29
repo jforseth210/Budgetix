@@ -12,11 +12,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 /**
- * Uses UserRepository to lookup users for SecurityConfig. Complains if user
- * doesn't exist, or is duplicated
+ * Implements the UserDetailsService required by Spring Security
  */
+@Service
 public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepo;
 
@@ -28,7 +27,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        // Lookup the user
         List<User> users = userRepo.findByUsernameIgnoreCase(username);
+        // Complain if we don't get exactly one user
         if (users.size() == 0) {
             log.warn("Didn't find user with username: " + username);
             throw new UsernameNotFoundException(username, null);
@@ -37,6 +38,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             log.error("Got more than one user with username: " + username);
             throw new IllegalStateException("Multiple users with username: " + username, null);
         }
+        // Return the user
         User user = users.get(0);
         return new SecurityUser(user);
     }

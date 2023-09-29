@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 
 import java.util.Set;
 
+/**
+ * An account within the application (i.e checking, savings)
+ */
 @Entity
 @Table(name = "account")
 public class Account {
@@ -17,7 +20,7 @@ public class Account {
     private Set<Transaction> transactions;
 
     // No money in floating points because Nate who's worked in financial
-    // software for years and years and years won't like it
+    // software for years and years and years would make fun of us
     @Column(name = "balance_in_cents", nullable = false)
     private Integer balanceInCents;
     @Column(name = "name", nullable = false, unique = true)

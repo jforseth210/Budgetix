@@ -4,6 +4,11 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 
+/**
+ * This form collects all of the information to create a new account (I.E.
+ * checking, savings, credit) within the application. Not to be confused with a
+ * user account.
+ */
 public class NewAccountForm {
 
     @NotNull

@@ -15,17 +15,17 @@
     </div>
     <form action="#" th:action="@{/loginNew}" th:object="${newLoginForm}" method="post">
         <label for="fullName">Full Name:</label>
-        <input type="text" th:field="*{fullName}" id="fullName" name="fullName" required>
+        <input class="login-bar" type="text" th:field="*{fullName}" id="fullName" name="fullName" required>
         <label for="username">Username:</label>
-        <input type="text" th:field="*{username}" id="username" name="username" required>
+        <input class="login-bar" type="text" th:field="*{username}" id="username" name="username" required>
         <span class="error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Username must be longer than 6 characters</span>
         <label for="email">Email:</label>
-        <input type="email" th:field="*{email}" id="email" name="email" required>
+        <input class="login-bar" type="email" th:field="*{email}" id="email" name="email" required>
         <span class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Invalid Email</span>
         <label for="password">Password:</label>
-        <input type="password" th:field="*{password}" id="password" name="password" required>
+        <input class="login-bar" type="password" th:field="*{password}" id="password" name="password" required>
         <label for="confirm">Confirm Password:</label>
-        <input type="password" th:field="*{confirm}" id="confirm" name="confirm" required>
+        <input class="login-bar" type="password" th:field="*{confirm}" id="confirm" name="confirm" required>
         <span class="error" th:if="${#fields.hasErrors('confirm')}" th:errors="*{confirm}">Passwords must match</span>
 <!--    This global is required to display the login errors    -->
         <span class="error" th:if="${#fields.hasGlobalErrors()}" th:errors="*{global}">Global Errors</span><br><br>

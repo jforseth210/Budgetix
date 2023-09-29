@@ -1,13 +1,16 @@
 package edu.carroll.bankapp.web.controller;
 
 import edu.carroll.bankapp.jpa.model.Account;
+import edu.carroll.bankapp.jpa.model.Transaction;
 import edu.carroll.bankapp.jpa.model.User;
 import edu.carroll.bankapp.jpa.repo.AccountRepository;
+import edu.carroll.bankapp.jpa.repo.TransactionRepository;
 import edu.carroll.bankapp.service.AccountService;
 import edu.carroll.bankapp.service.UserService;
 
 import edu.carroll.bankapp.web.form.LoginForm;
 import edu.carroll.bankapp.web.form.NewAccountForm;
+import edu.carroll.bankapp.web.form.TransactionForm;
 import edu.carroll.bankapp.web.form.NewLoginForm;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -32,13 +35,15 @@ public class DashboardController {
     private AccountService accountService;
     private AccountRepository accountRepo;
     private UserService userService;
+    private TransactionRepository transactionRepository;
 
     private static final Logger log = LoggerFactory.getLogger(DashboardController.class);
 
-    public DashboardController(AccountService accountService, AccountRepository accountRepo, UserService userService) {
+    public DashboardController(AccountService accountService, AccountRepository accountRepo, UserService userService, TransactionRepository transRepo) {
         this.accountService = accountService;
         this.accountRepo = accountRepo;
         this.userService = userService;
+        this.transactionRepository = transRepo;
     }
 
     @GetMapping("/")
@@ -56,11 +61,11 @@ public class DashboardController {
         List<Account> accounts = accountService.getUserAccounts();
         final Account account = accountService.getUserAccount(accountId);
         log.debug("Request for account: {}", account.getName());
+        model.addAttribute("newTransaction", new TransactionForm());
         model.addAttribute("accounts", accounts);
         model.addAttribute("currentUser", userService.getLoggedInUser());
         model.addAttribute("currentAccount", account);
         model.addAttribute("newAccountForm", new NewAccountForm());
-
         return "index";
     }
 
@@ -71,6 +76,18 @@ public class DashboardController {
         account.setBalanceInCents(newAccountForm.getAccountBalance().intValue() * 100);
         account.setOwner(userService.getLoggedInUser());
         accountRepo.save(account);
+        return new RedirectView("/");
+    }
+
+    @PostMapping("/add-transaction")
+    public RedirectView addTransaction(@Valid @ModelAttribute TransactionForm newTransaction) {
+        Transaction trans = new Transaction();
+        trans.setName(newTransaction.getName());
+        trans.setAmountInCents(newTransaction.getAmountInCents().intValue() * 100);
+        trans.setToFrom(newTransaction.getToFrom());
+        Account transactionAccount = accountRepo.findById(newTransaction.getAccountId()).get();
+        trans.setAccount(transactionAccount);
+        transactionRepository.save(trans);
         return new RedirectView("/");
     }
 }

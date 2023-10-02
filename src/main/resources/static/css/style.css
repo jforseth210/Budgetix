@@ -48,17 +48,20 @@ p {
 }
 
 /* https://www.w3schools.com/css/tryit.asp?filename=trycss_form_focus2 */
-input {
+.login-bar {
+    display: block;
+    padding: 0.375em 0.75em;
     width: 450px;
     border-radius: 25px;
     border: 1px solid #9C6F69;
-    padding: 4px;
+    background-clip: padding-box;
 }
 
 /* https://stackoverflow.com/questions/11497094/remove-border-from-buttons */
 
 .button {
-    width: 460px;
+    width: 472.5px;
+    height: 32.5px;
     background: #9C6F69;
     border-radius: 25px;
     border: none;

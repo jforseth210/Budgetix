@@ -16,9 +16,9 @@
     <form action="#" class="error" th:action="@{/login}" th:object="${loginForm}" method="post">
         <span class="error" th:if="${#fields.hasGlobalErrors()}" th:errors="*{global}">Global Errors</span>
         <label for="username">Username:</label>
-        <input type="text" th:field="*{username}" id="username" name="username" required>
+        <input class="login-bar" type="text" th:field="*{username}" id="username" name="username" required>
         <label for="password">Password:</label>
-        <input type="password" th:field="*{password}" id="password" name="password" required><br><br>
+        <input class="login-bar" type="password" th:field="*{password}" id="password" name="password" required><br><br>
         <input class="button" type="submit" value="Login">
     </form>
     <p>Don't have an account? <a href="/loginNew">

@@ -25,12 +25,19 @@ public class CustomUserDetailsService implements UserDetailsService {
         this.userRepo = userRepo;
     }
 
+    /**
+     * Fetch a SecurityUser using the given username
+     *
+     * @param username the username identifying the user whose data is required.
+     * @return
+     * @throws UsernameNotFoundException
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // Lookup the user
         List<User> users = userRepo.findByUsernameIgnoreCase(username);
-        // Complain if we don't get exactly one user
         if (users.size() == 0) {
+            // The UserDetailsService contract requires us to throw an exception instead of returning null.
             log.warn("Didn't find user with username: " + username);
             throw new UsernameNotFoundException(username, null);
         }

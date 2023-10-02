@@ -13,6 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service for managing accounts.
+ */
 @Service
 public class AccountService {
     private static final Logger log = LoggerFactory.getLogger(DashboardController.class);
@@ -25,6 +28,11 @@ public class AccountService {
         this.accountRepo = accountRepo;
     }
 
+    /**
+     * Returns a list of Accounts owned by the currently logged-in user
+     *
+     * @return
+     */
     public List<Account> getUserAccounts() {
         User loggedInUser = userService.getLoggedInUser();
         if (loggedInUser == null) {
@@ -34,6 +42,13 @@ public class AccountService {
         return accountsList;
     }
 
+    /**
+     * Returns the Account matching the given id, if the account is owned by the currently logged-in user.
+     * Returns null if the requested account is owned by someone else.
+     *
+     * @param id the id of the requested account
+     * @return
+     */
     public Account getUserAccount(int id) {
         Account account = accountRepo.findById(id).get(0);
         String currentUser = userService.getLoggedInUser().getUsername();

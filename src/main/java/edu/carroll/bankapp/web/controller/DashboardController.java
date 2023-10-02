@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This controller is responible for the primary account management routes.
+ * This controller is responsible for the primary account management routes.
  * Account and transaction creation, reading, modification, deletion.
  */
 @Controller

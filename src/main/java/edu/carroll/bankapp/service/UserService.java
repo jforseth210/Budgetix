@@ -1,6 +1,6 @@
 package edu.carroll.bankapp.service;
 
-import edu.carroll.bankapp.jpa.model.User;
+import edu.carroll.bankapp.jpa.model.SiteUser;
 import edu.carroll.bankapp.jpa.repo.UserRepository;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,14 +20,17 @@ public class UserService {
 
     /**
      * Get the currently logged-in user (if any).
-     * @return 
+     *
+     * @return
      */
-    public User getLoggedInUser() {
+    public SiteUser getLoggedInUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            String currentUserName = authentication.getName();
-            return userRepo.findByUsernameIgnoreCase(currentUserName).get(0);
+        if (authentication == null)
+            return null;
+        if (authentication instanceof AnonymousAuthenticationToken) {
+            return null;
         }
-        return null;
+        String currentUserName = authentication.getName();
+        return userRepo.findByUsernameIgnoreCase(currentUserName).get(0);
     }
 }

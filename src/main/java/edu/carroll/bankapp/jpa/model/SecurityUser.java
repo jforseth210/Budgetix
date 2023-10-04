@@ -8,20 +8,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * A wrapper around our User model that implements the methods that Spring
+ * A wrapper around our SiteUser model that implements the methods that Spring
  * Security expects from the UserDetails interface.
  */
 public class SecurityUser implements UserDetails {
 
-    private final User user;
+    private final SiteUser siteUser;
 
     /**
      * Main Constructor for generating secure users
      *
-     * @param user
+     * @param siteUser
      */
-    public SecurityUser(User user) {
-        this.user = user;
+    public SecurityUser(SiteUser siteUser) {
+        this.siteUser = siteUser;
     }
 
     /**
@@ -31,7 +31,7 @@ public class SecurityUser implements UserDetails {
      */
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return siteUser.getUsername();
     }
 
     /**
@@ -41,7 +41,7 @@ public class SecurityUser implements UserDetails {
      */
     @Override
     public String getPassword() {
-        return user.getHashedPassword();
+        return siteUser.getHashedPassword();
     }
 
     /**

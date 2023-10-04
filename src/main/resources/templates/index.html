@@ -51,7 +51,7 @@
                 <th>Price</th>
             </thead>
             <tbody>
-                <tr th:if="${currentAccount != null}" th:each="transaction: ${currentAccount.getTransactions()}">
+                <tr th:each="transaction: ${currentAccount.getTransactions()}">
                     <td th:text="${transaction.getName()}"></td>
                     <td th:text="${transaction.getToFrom()}"></td>
                     <td style="text-align: right" class="text-danger" th:text="${transaction.getAmountInDollars()}">
@@ -59,69 +59,44 @@
                 </tr>
             </tbody>
         </table>
-        <div class="d-flex">
-            <button class="btn btn-primary">Log a Transaction</button>
-            <p class="text-danger ms-auto me-1" th:text="${currentAccount.getBalanceInDollars()}"></p>
-        </div>
-    </div>
-</nav>
-<div class="container mt-3">
-    <table class="table">
-        <thead>
-        <th>Transaction Name</th>
-        <th>To/From</th>
-        <th>Price</th>
-        </thead>
-        <tbody>
-        <tr th:each="transaction: ${currentAccount.getTransactions()}">
-            <td th:text="${transaction.getName()}"></td>
-            <td th:text="${transaction.getToFrom()}"></td>
-            <td
-                    style="text-align: right"
-                    class="text-danger"
-                    th:text="${transaction.getAmountInDollars()}"
-            ></td>
-        </tr>
-        </tbody>
-    </table>
-    <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">
-        Log a Transaction
-    </button>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">
+            Log a Transaction
+        </button>
 
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Log a Transaction</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+            aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Log a Transaction</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 
-                </div>
-                <div class="modal-body">
-                    <form id="newTransaction" action="#" th:action="@{/add-transaction}" th:object="${newTransaction}"
-                          method="POST">
-                        <label for="newTransaction">Transaction Amount</label>
-                        <input type="number" class="mb-2 form-control" id="newAmount" th:field="*{amountInCents}"/>
-                        <label for="newTransaction">Transaction Name</label>
-                        <input type="text" value="0" class="mb-2 form-control" id="newName"
-                               th:field="*{name}"/>
-                        <label for="newTransaction">From Where?</label>
-                        <input type="text" value="0" class="mb-2 form-control" id="newToFrom"
-                               th:field="*{toFrom}"/>
-                        <input type="number" class="mb-2 form-control" id="accountOrigin" hidden aria-hidden
-                               name="accountId" th:value="${currentAccount.getId()}"/>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary" form="newTransaction">Add</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="newTransaction" action="#" th:action="@{/add-transaction}"
+                            th:object="${newTransaction}" method="POST">
+                            <label for="newTransaction">Transaction Amount</label>
+                            <input type="number" class="mb-2 form-control" id="newAmount" th:field="*{amountInCents}" />
+                            <label for="newTransaction">Transaction Name</label>
+                            <input type="text" value="0" class="mb-2 form-control" id="newName" th:field="*{name}" />
+                            <label for="newTransaction">From Where?</label>
+                            <input type="text" value="0" class="mb-2 form-control" id="newToFrom"
+                                th:field="*{toFrom}" />
+                            <input type="number" class="mb-2 form-control" id="accountOrigin" hidden aria-hidden
+                                name="accountId" th:value="${currentAccount.getId()}" />
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" form="newTransaction">Add</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-</div>
+    </div>
 
     <div class="modal fade" id="addAccountModal" tabindex="-1" aria-labelledby="addAccountModalButton"
         aria-hidden="true">

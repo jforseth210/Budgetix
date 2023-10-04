@@ -1,15 +1,10 @@
 package edu.carroll.bankapp.web.controller;
 
-import edu.carroll.bankapp.jpa.model.User;
+import edu.carroll.bankapp.jpa.model.SiteUser;
 import edu.carroll.bankapp.jpa.repo.UserRepository;
 import edu.carroll.bankapp.web.form.LoginForm;
 import edu.carroll.bankapp.web.form.NewLoginForm;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
@@ -19,12 +14,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.view.RedirectView;
 
 /**
  * This controller is responsible for all authentication routes. Logging in/out,
@@ -43,7 +35,7 @@ public class LoginController {
 
     /**
      * The login page
-     * 
+     *
      * @param model
      * @return
      */
@@ -55,7 +47,7 @@ public class LoginController {
 
     /**
      * The sign up pages
-     * 
+     *
      * @param model
      * @return
      */
@@ -67,7 +59,7 @@ public class LoginController {
 
     /**
      * This page accepts form submissions for (user) account creation
-     * 
+     *
      * @param newLoginForm The data collected from the form
      * @param result       Form errors (if any)
      * @return
@@ -86,13 +78,13 @@ public class LoginController {
         }
 
         // Create new user object from form object
-        User defaultUser = new User(
+        SiteUser defaultSiteUser = new SiteUser(
                 newLoginForm.getFullName(),
                 newLoginForm.getEmail(),
                 newLoginForm.getUsername(),
                 BCrypt.hashpw(newLoginForm.getPassword(), BCrypt.gensalt()));
         // Save user to database
-        userRepo.save(defaultUser);
+        userRepo.save(defaultSiteUser);
 
         log.info("Redirecting to \"/\"");
         return "redirect:/";

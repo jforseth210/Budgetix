@@ -14,7 +14,7 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     @ManyToOne
-    private User owner;
+    private SiteUser owner;
 
     @OneToMany
     private Set<Transaction> transactions;
@@ -67,8 +67,8 @@ public class Account {
      *
      * @return owner - User - the owner of the account
      */
-    public User getOwner() {
-        return this.owner;
+    public SiteUser getOwner() {
+        return owner;
     }
 
     /**
@@ -76,7 +76,7 @@ public class Account {
      *
      * @param owner - User - the owner of the account
      */
-    public void setOwner(User owner) {
+    public void setOwner(SiteUser owner) {
         this.owner = owner;
     }
 

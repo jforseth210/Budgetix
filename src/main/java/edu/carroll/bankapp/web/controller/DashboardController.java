@@ -2,37 +2,28 @@ package edu.carroll.bankapp.web.controller;
 
 import edu.carroll.bankapp.jpa.model.Account;
 import edu.carroll.bankapp.jpa.model.Transaction;
-import edu.carroll.bankapp.jpa.model.User;
 import edu.carroll.bankapp.jpa.repo.AccountRepository;
 import edu.carroll.bankapp.jpa.repo.TransactionRepository;
 import edu.carroll.bankapp.service.AccountService;
 import edu.carroll.bankapp.service.UserService;
 
-import edu.carroll.bankapp.web.form.LoginForm;
 import edu.carroll.bankapp.web.form.NewAccountForm;
 import edu.carroll.bankapp.web.form.TransactionForm;
-import edu.carroll.bankapp.web.form.NewLoginForm;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This controller is responible for the primary account management routes.
+ * This controller is responsible for the primary account management routes.
  * Account and transaction creation, reading, modification, deletion.
  */
 @Controller

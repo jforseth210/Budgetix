@@ -2,14 +2,12 @@ package edu.carroll.bankapp.jpa.model;
 
 import jakarta.persistence.*;
 
-import java.util.Set;
-
 /**
  * A user with credentials in the system.
  */
 @Entity
-@Table(name = "user")
-public class User {
+@Table(name = "site_user")
+public class SiteUser {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
@@ -25,7 +23,7 @@ public class User {
     /**
      * Hibernate wants a default constructor
      */
-    public User() {
+    public SiteUser() {
 
     }
 
@@ -37,7 +35,7 @@ public class User {
      * @param username
      * @param hashedPassword
      */
-    public User(String fullName, String email, String username, String hashedPassword) {
+    public SiteUser(String fullName, String email, String username, String hashedPassword) {
         this.fullName = fullName;
         this.email = email;
         this.username = username;

@@ -16,7 +16,7 @@ public class Account {
     @ManyToOne
     private SiteUser owner;
 
-    @OneToMany
+    @OneToMany(mappedBy = "account")
     private Set<Transaction> transactions;
 
     // No money in floating points because Nate who's worked in financial

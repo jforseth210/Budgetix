@@ -35,6 +35,14 @@ public class DashboardController {
 
     private static final Logger log = LoggerFactory.getLogger(DashboardController.class);
 
+    /**
+     * Default Constructor - helps to set up our database
+     *
+     * @param accountService
+     * @param accountRepo
+     * @param userService
+     * @param transRepo
+     */
     public DashboardController(AccountService accountService, AccountRepository accountRepo, UserService userService, TransactionRepository transRepo) {
         this.accountService = accountService;
         this.accountRepo = accountRepo;
@@ -87,6 +95,12 @@ public class DashboardController {
         return "index";
     }
 
+    /**
+     * Page for adding an account
+     *
+     * @param model data to pass to Thymeleaf
+     * @return redirect view
+     */
     @GetMapping("/add-account")
     public String addAccountPage(Model model) {
         model.addAttribute("currentUser", userService.getLoggedInUser());
@@ -112,6 +126,12 @@ public class DashboardController {
         return new RedirectView("/");
     }
 
+    /**
+     * Accept form submission for transaction addition
+     *
+     * @param newTransaction
+     * @return redirect view to page showing new transaction
+     */
     @PostMapping("/add-transaction")
     public RedirectView addTransaction(@Valid @ModelAttribute TransactionForm newTransaction) {
         Transaction trans = new Transaction();

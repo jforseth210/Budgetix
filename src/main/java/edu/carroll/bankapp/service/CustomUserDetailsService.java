@@ -1,7 +1,7 @@
 package edu.carroll.bankapp.service;
 
 import edu.carroll.bankapp.jpa.model.SecurityUser;
-import edu.carroll.bankapp.jpa.model.User;
+import edu.carroll.bankapp.jpa.model.SiteUser;
 import edu.carroll.bankapp.jpa.repo.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,19 +34,19 @@ public class CustomUserDetailsService implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // Lookup the user
-        List<User> users = userRepo.findByUsernameIgnoreCase(username);
-        if (users.size() == 0) {
+        // Lookup the siteUser
+        List<SiteUser> siteUsers = userRepo.findByUsernameIgnoreCase(username);
+        if (siteUsers.size() == 0) {
             // The UserDetailsService contract requires us to throw an exception instead of returning null.
-            log.warn("Didn't find user with username: " + username);
+            log.warn("Didn't find siteUser with username: " + username);
             throw new UsernameNotFoundException(username, null);
         }
-        if (users.size() > 1) {
-            log.error("Got more than one user with username: " + username);
-            throw new IllegalStateException("Multiple users with username: " + username, null);
+        if (siteUsers.size() > 1) {
+            log.error("Got more than one siteUser with username: " + username);
+            throw new IllegalStateException("Multiple siteUsers with username: " + username, null);
         }
-        // Return the user
-        User user = users.get(0);
-        return new SecurityUser(user);
+        // Return the siteUser
+        SiteUser siteUser = siteUsers.get(0);
+        return new SecurityUser(siteUser);
     }
 }

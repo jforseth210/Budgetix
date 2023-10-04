@@ -8,25 +8,25 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * A wrapper around our User model that implements the methods that Spring
+ * A wrapper around our SiteUser model that implements the methods that Spring
  * Security expects from the UserDetails interface.
  */
 public class SecurityUser implements UserDetails {
 
-    private final User user;
+    private final SiteUser siteUser;
 
-    public SecurityUser(User user) {
-        this.user = user;
+    public SecurityUser(SiteUser siteUser) {
+        this.siteUser = siteUser;
     }
 
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return siteUser.getUsername();
     }
 
     @Override
     public String getPassword() {
-        return user.getHashedPassword();
+        return siteUser.getHashedPassword();
     }
 
     @Override

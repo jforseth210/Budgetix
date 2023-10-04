@@ -42,10 +42,20 @@ public class SiteUser {
         this.hashedPassword = hashedPassword;
     }
 
+    /**
+     * Gets and returns the user's username
+     *
+     * @return username - String
+     */
     public String getUsername() {
         return username;
     }
 
+    /**
+     * Gets and returns the hashed password for a user
+     *
+     * @return hashed password - String
+     */
     public String getHashedPassword() {
         return hashedPassword;
     }

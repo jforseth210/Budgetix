@@ -21,6 +21,12 @@ public class AccountService {
     private AccountRepository accountRepo;
     private UserService userService;
 
+    /**
+     * Default constructor
+     *
+     * @param userService - user
+     * @param accountRepo - account
+     */
     public AccountService(UserService userService, AccountRepository accountRepo) {
         this.userService = userService;
         this.accountRepo = accountRepo;
@@ -29,7 +35,7 @@ public class AccountService {
     /**
      * Returns a list of Accounts owned by the currently logged-in user
      *
-     * @return
+     * @return accountsList - list of accounts
      */
     public List<Account> getUserAccounts() {
         SiteUser loggedInSiteUser = userService.getLoggedInUser();
@@ -45,7 +51,7 @@ public class AccountService {
      * Returns null if the requested account is owned by someone else.
      *
      * @param id the id of the requested account
-     * @return
+     * @return account/null
      */
     public Account getUserAccount(int id) {
         Account account = accountRepo.findById(id).get(0);

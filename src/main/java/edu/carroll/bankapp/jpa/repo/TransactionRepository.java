@@ -5,5 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
+/**
+ * Interface implemented by Hibernate for querying Transaction information from the database
+ */
 public interface TransactionRepository extends JpaRepository<Transaction, Integer> {
 }

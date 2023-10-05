@@ -7,8 +7,9 @@ import edu.carroll.bankapp.jpa.repo.TransactionRepository;
 import edu.carroll.bankapp.service.AccountService;
 import edu.carroll.bankapp.service.UserService;
 
+import edu.carroll.bankapp.web.form.DeleteTransactionForm;
 import edu.carroll.bankapp.web.form.NewAccountForm;
-import edu.carroll.bankapp.web.form.TransactionForm;
+import edu.carroll.bankapp.web.form.NewTransactionForm;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -80,10 +81,11 @@ public class DashboardController {
         List<Account> accounts = accountService.getUserAccounts();
         final Account account = accountService.getUserAccount(accountId);
         log.debug("Request for account: {}", account.getName());
-        model.addAttribute("newTransaction", new TransactionForm());
+        model.addAttribute("newTransactionForm", new NewTransactionForm());
         model.addAttribute("accounts", accounts);
         model.addAttribute("currentAccount", account);
         model.addAttribute("newAccountForm", new NewAccountForm());
+        model.addAttribute("deleteTransactionForm", new DeleteTransactionForm());
         return "index";
     }
 
@@ -113,7 +115,7 @@ public class DashboardController {
     }
 
     @PostMapping("/add-transaction")
-    public RedirectView addTransaction(@Valid @ModelAttribute TransactionForm newTransaction) {
+    public RedirectView addTransaction(@Valid @ModelAttribute NewTransactionForm newTransaction) {
         Transaction trans = new Transaction();
         trans.setName(newTransaction.getName());
         trans.setAmountInCents(newTransaction.getAmountInCents().intValue() * 100);
@@ -122,5 +124,18 @@ public class DashboardController {
         trans.setAccount(transactionAccount);
         transactionRepository.save(trans);
         return new RedirectView("/");
+    }
+
+    @PostMapping("/delete-transaction")
+    public String deleteTransaction(@ModelAttribute("deleteTransactionForm") DeleteTransactionForm form) {
+        // Extract the transaction ID from the form
+        int transactionId = form.getTransactionId();
+
+        // Use Spring Data JPA to find and delete the transaction by ID
+        Transaction transaction = transactionRepository.findById(transactionId).get(0);
+        Integer accountId = transaction.getAccount().getId();
+        transactionRepository.delete(transaction);
+        // Redirect or return the appropriate view
+        return "redirect:/account/" + accountId.toString(); // Replace with your desired view or redirect
     }
 }

@@ -9,4 +9,6 @@ import java.util.List;
  * Interface implemented by Hibernate for querying Transaction information from the database
  */
 public interface TransactionRepository extends JpaRepository<Transaction, Integer> {
+    List<Transaction> findById(int id);
+
 }

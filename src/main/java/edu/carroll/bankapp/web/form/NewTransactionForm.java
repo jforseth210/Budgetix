@@ -1,7 +1,7 @@
 package edu.carroll.bankapp.web.form;
 
 
-public class TransactionForm {
+public class NewTransactionForm {
 
     private String toFrom;
 
@@ -12,7 +12,7 @@ public class TransactionForm {
     private Integer accountId;
 
 
-    public TransactionForm() {
+    public NewTransactionForm() {
     }
 
     public String getToFrom() {

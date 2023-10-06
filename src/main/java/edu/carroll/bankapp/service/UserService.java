@@ -14,6 +14,11 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepository userRepo;
 
+    /**
+     * Default Constructor - takes userRepo as argument
+     *
+     * @param userRepo - userRepository
+     */
     public UserService(UserRepository userRepo) {
         this.userRepo = userRepo;
     }
@@ -21,7 +26,7 @@ public class UserService {
     /**
      * Get the currently logged-in user (if any).
      *
-     * @return
+     * @return user
      */
     public SiteUser getLoggedInUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

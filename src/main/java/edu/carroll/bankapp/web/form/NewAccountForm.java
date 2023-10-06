@@ -19,18 +19,38 @@ public class NewAccountForm {
     @PositiveOrZero(message = "Account balance can't be negative")
     private Double accountBalance;
 
+    /**
+     * Gets the name of the user's account
+     *
+     * @return accountName - String - name of account
+     */
     public String getAccountName() {
         return accountName;
     }
 
+    /**
+     * Sets the name of the user's account
+     *
+     * @param accountName - String - name of account
+     */
     public void setAccountName(String accountName) {
         this.accountName = accountName;
     }
 
+    /**
+     * Gets the account balance of a user's account
+     *
+     * @return accountBalance - double - balance of account
+     */
     public Double getAccountBalance() {
         return accountBalance;
     }
 
+    /**
+     * Sets the account balance of a user's account
+     *
+     * @param accountBalance - double - balance of account
+     */
     public void setAccountBalance(Double accountBalance) {
         this.accountBalance = accountBalance;
     }

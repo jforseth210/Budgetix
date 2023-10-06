@@ -21,6 +21,11 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private static final Logger log = LoggerFactory.getLogger(CustomUserDetailsService.class);
 
+    /**
+     * Default Constructor - takes a userRepo as argument
+     *
+     * @param userRepo - UserRepository
+     */
     public CustomUserDetailsService(UserRepository userRepo) {
         this.userRepo = userRepo;
     }
@@ -29,7 +34,7 @@ public class CustomUserDetailsService implements UserDetailsService {
      * Fetch a SecurityUser using the given username
      *
      * @param username the username identifying the user whose data is required.
-     * @return
+     * @return siteUser - a user that is using our site
      * @throws UsernameNotFoundException
      */
     @Override

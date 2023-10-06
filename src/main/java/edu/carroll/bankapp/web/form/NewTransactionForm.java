@@ -5,7 +5,7 @@ public class NewTransactionForm {
 
     private String toFrom;
 
-    private Integer amountInCents;
+    private double amountInDollars;
 
     private String name;
 
@@ -23,16 +23,16 @@ public class NewTransactionForm {
         this.toFrom = toFrom;
     }
 
-    public Integer getAmountInCents() {
-        return amountInCents;
-    }
-
     public double getAmountInDollars() {
-        return (double) amountInCents / (double) 100;
+        return amountInDollars;
     }
 
-    public void setAmountInCents(Integer amountInCents) {
-        this.amountInCents = amountInCents;
+    public double getAmountInCents() {
+        return (double) amountInDollars * (double) 100;
+    }
+
+    public void setAmountInDollars(double amountInDollars) {
+        this.amountInDollars = amountInDollars;
     }
 
     public String getName() {

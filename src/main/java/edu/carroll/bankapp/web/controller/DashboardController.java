@@ -37,7 +37,7 @@ public class DashboardController {
     private static final Logger log = LoggerFactory.getLogger(DashboardController.class);
 
     public DashboardController(AccountService accountService, AccountRepository accountRepo, UserService userService,
-            TransactionRepository transRepo) {
+                               TransactionRepository transRepo) {
         this.accountService = accountService;
         this.accountRepo = accountRepo;
         this.userService = userService;
@@ -120,7 +120,7 @@ public class DashboardController {
     public RedirectView addTransaction(@Valid @ModelAttribute NewTransactionForm newTransaction) {
         Transaction trans = new Transaction();
         trans.setName(newTransaction.getName());
-        trans.setAmountInCents(newTransaction.getAmountInCents().intValue() * 100);
+        trans.setAmountInCents((int) newTransaction.getAmountInCents());
         trans.setToFrom(newTransaction.getToFrom());
         Account transactionAccount = accountRepo.findById(newTransaction.getAccountId()).get();
         trans.setAccount(transactionAccount);

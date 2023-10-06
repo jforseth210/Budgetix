@@ -30,9 +30,7 @@ public class UserService {
      */
     public SiteUser getLoggedInUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null)
-            return null;
-        if (authentication instanceof AnonymousAuthenticationToken) {
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
             return null;
         }
         String currentUserName = authentication.getName();

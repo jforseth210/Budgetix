@@ -35,9 +35,6 @@ public class LoginController {
 
     /**
      * The login page
-     *
-     * @param model
-     * @return
      */
     @GetMapping("/login")
     public String loginGet(Model model) {
@@ -47,9 +44,6 @@ public class LoginController {
 
     /**
      * The sign up pages
-     *
-     * @param model
-     * @return
      */
     @GetMapping("/loginNew")
     public String loginNewGet(Model model) {
@@ -71,6 +65,7 @@ public class LoginController {
             return "loginNew";
         }
 
+        // Make sure password and confirm password match
         if (!newLoginForm.getPassword().equals(newLoginForm.getConfirm())) {
             log.info("Passwords must match");
             result.addError(new ObjectError("confirm", "Passwords must match"));

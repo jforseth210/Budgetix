@@ -43,14 +43,15 @@ public class CustomUserDetailsService implements UserDetailsService {
         List<SiteUser> siteUsers = userRepo.findByUsernameIgnoreCase(username);
         if (siteUsers.size() == 0) {
             // The UserDetailsService contract requires us to throw an exception instead of returning null.
-            log.warn("Didn't find siteUser with username: " + username);
+            log.warn("Didn't find siteUser with username: {}", username);
             throw new UsernameNotFoundException(username, null);
         }
         if (siteUsers.size() > 1) {
-            log.error("Got more than one siteUser with username: " + username);
+            log.error("Got more than one siteUser with username: {}", username);
             throw new IllegalStateException("Multiple siteUsers with username: " + username, null);
         }
-        // Return the siteUser
+
+
         SiteUser siteUser = siteUsers.get(0);
         return new SecurityUser(siteUser);
     }

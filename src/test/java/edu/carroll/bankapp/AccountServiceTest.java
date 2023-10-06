@@ -88,6 +88,7 @@ public class AccountServiceTest {
         List<Account> accountList = accountService.getUserAccounts();
         assertNotNull(accountList);
         assertEquals(accountList.size(), 2);
+        // Not necessarily ordered this way
         assertEquals(accountList.get(0).getName(), "John's Savings Account");
         assertEquals(accountList.get(1).getName(), "John's Checking Account");
 
@@ -110,13 +111,13 @@ public class AccountServiceTest {
     @Test
     public void testGetUserAccountsNotLoggedIn() {
         List<Account> accountList = accountService.getUserAccounts();
-        assertNull(accountList);
+        assertTrue(accountList.isEmpty());
     }
 
     @Test
     @WithUserDetails("alicejohnson")
     public void testGetUserAccountsNoAccounts() {
         List<Account> accountList = accountService.getUserAccounts();
-        assertEquals(accountList.size(), 0);
+        assertTrue(accountList.isEmpty());
     }
 }

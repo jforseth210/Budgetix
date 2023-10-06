@@ -18,8 +18,8 @@ import org.springframework.stereotype.Service;
 public class AccountService {
     private static final Logger log = LoggerFactory.getLogger(DashboardController.class);
 
-    private AccountRepository accountRepo;
-    private UserService userService;
+    private final AccountRepository accountRepo;
+    private final UserService userService;
 
     /**
      * Default constructor
@@ -42,8 +42,7 @@ public class AccountService {
         if (loggedInSiteUser == null) {
             return null;
         }
-        List<Account> accountsList = accountRepo.findByOwner(loggedInSiteUser);
-        return accountsList;
+        return accountRepo.findByOwner(loggedInSiteUser);
     }
 
     /**
@@ -55,10 +54,10 @@ public class AccountService {
      */
     public Account getUserAccount(int id) {
         Account account = accountRepo.findById(id).get(0);
-        String currentUser = userService.getLoggedInUser().getUsername();
+        String currentUsername = userService.getLoggedInUser().getUsername();
         String accountOwner = account.getOwner().getUsername();
-        if (!accountOwner.equals(currentUser)) {
-            log.warn(currentUser + " attempted to access one of" + accountOwner + "'s accounts");
+        if (!accountOwner.equals(currentUsername)) {
+            log.warn("{} attempted to access one of {}'s accounts", currentUsername, accountOwner);
             return null;
         }
         return account;

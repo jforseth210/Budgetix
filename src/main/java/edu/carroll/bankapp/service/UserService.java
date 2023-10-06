@@ -4,6 +4,8 @@ import edu.carroll.bankapp.jpa.model.SiteUser;
 import edu.carroll.bankapp.jpa.repo.UserRepository;
 import edu.carroll.bankapp.web.form.NewLoginForm;
 
+import java.util.List;
+
 import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,24 +40,63 @@ public class UserService {
     public SiteUser getLoggedInUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+            log.info("No one currently logged in");
             return null;
         }
         String currentUserName = authentication.getName();
-        return userRepo.findByUsernameIgnoreCase(currentUserName).get(0);
+        return getUser(currentUserName);
     }
 
     /**
      * Get a user from the given user id
      */
     public SiteUser getUser(int userId) {
-        return userRepo.findById(userId).get(0);
+        log.debug("Getting user with id: {}", userId);
+        List<SiteUser> siteUsers = userRepo.findById(userId);
+        if (siteUsers.size() == 0) {
+            log.warn("Didn't find siteUser with id: {}", userId);
+            return null;
+        }
+        if (siteUsers.size() > 1) {
+            log.error("Got more than one siteUser with id: {}", userId);
+            throw new IllegalStateException("Multiple siteUsers with id: " + userId, null);
+        }
+        return siteUsers.get(0);
     }
 
     /**
      * Get a user from the given username
      */
     public SiteUser getUser(String username) {
-        return userRepo.findByUsernameIgnoreCase(username).get(0);
+        log.debug("Getting user with username: {}", username);
+        List<SiteUser> siteUsers = userRepo.findByUsernameIgnoreCase(username);
+        if (siteUsers.size() == 0) {
+            log.warn("Didn't find siteUser with username: {}", username);
+            return null;
+        }
+        if (siteUsers.size() > 1) {
+            log.error("Got more than one siteUser with username: {}", username);
+            throw new IllegalStateException("Multiple siteUsers with username: " + username, null);
+        }
+        return siteUsers.get(0);
+    }
+
+    /**
+     * Create a username and save it in the database (without confirm password)
+     * 
+     * @return
+     */
+    public SiteUser createUser(String fullName, String email, String username, String rawPassword) {
+        log.info("Creating a user with username: {}", username);
+        // Create new user object from form object
+        SiteUser newUser = new SiteUser(
+                fullName,
+                email,
+                username,
+                BCrypt.hashpw(rawPassword, BCrypt.gensalt()));
+        // Save user to database
+        userRepo.save(newUser);
+        return newUser;
     }
 
     /**
@@ -77,18 +118,6 @@ public class UserService {
         return createUser(fullName, email, username, rawPassword);
     }
 
-    public SiteUser createUser(String fullName, String email, String username, String rawPassword) {
-        // Create new user object from form object
-        SiteUser newUser = new SiteUser(
-                fullName,
-                email,
-                username,
-                BCrypt.hashpw(rawPassword, BCrypt.gensalt()));
-        // Save user to database
-        userRepo.save(newUser);
-        return newUser;
-    }
-
     /**
      * Overloaded method to accept a NewLoginForm with the neccessary data instead
      * of a bunch of arguments
@@ -102,6 +131,7 @@ public class UserService {
     }
 
     public void deleteAllSiteUsers() {
+        log.warn("Deleting all users");
         userRepo.deleteAll();
     }
 }

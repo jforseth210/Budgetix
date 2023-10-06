@@ -66,7 +66,15 @@ public class AccountService {
      * @return account/null
      */
     public Account getUserAccount(int id) {
-        Account account = accountRepo.findById(id).get(0);
+        List<Account> accounts = accountRepo.findById(id);
+        if (accounts.isEmpty()) {
+            log.warn("Account with id {} doesn't exist", id);
+            return null;
+        } else if (accounts.size() > 1) {
+            log.error("Got multiple accounts with id {}. Bailing out", id);
+            throw new IllegalStateException();
+        }
+        Account account = accounts.get(0);
         if (userService.getLoggedInUser().owns(account)) {
             return account;
         }

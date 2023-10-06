@@ -19,15 +19,10 @@ import java.util.List;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
     private static final Logger log = LoggerFactory.getLogger(CustomUserDetailsService.class);
-    private final UserRepository userRepo;
+    private final UserService userService;
 
-    /**
-     * Default Constructor - takes a userRepo as argument
-     *
-     * @param userRepo - UserRepository
-     */
-    public CustomUserDetailsService(UserRepository userRepo) {
-        this.userRepo = userRepo;
+    public CustomUserDetailsService(UserService userService) {
+        this.userService = userService;
     }
 
     /**
@@ -40,19 +35,14 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // Lookup the siteUser
-        List<SiteUser> siteUsers = userRepo.findByUsernameIgnoreCase(username);
-        if (siteUsers.size() == 0) {
-            // The UserDetailsService contract requires us to throw an exception instead of
-            // returning null.
-            log.warn("Didn't find siteUser with username: {}", username);
-            throw new UsernameNotFoundException(username, null);
-        }
-        if (siteUsers.size() > 1) {
-            log.error("Got more than one siteUser with username: {}", username);
-            throw new IllegalStateException("Multiple siteUsers with username: " + username, null);
-        }
+        SiteUser siteUser = userService.getUser(username);
 
-        SiteUser siteUser = siteUsers.get(0);
+        
+        // UserDetailsService contract requires us to throw an exception instead of
+        // returning null
+        if (siteUser == null) {
+            throw new UsernameNotFoundException("Didn't find user with username: " + username);
+        }
         return new SecurityUser(siteUser);
     }
 }

@@ -1,5 +1,7 @@
 package edu.carroll.bankapp.service;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,7 @@ public class TransactionService {
      * Create and save a new transaction in the database
      */
     public Transaction createTransaction(String name, double amountInDollars, String toFrom, Account account) {
+        log.info("Creating transaction with name: {} and account: {}", name, account.getName());
         Transaction newTransaction = new Transaction();
         newTransaction.setName(name);
         newTransaction.setAmountInDollars(amountInDollars);
@@ -54,11 +57,22 @@ public class TransactionService {
      * Get a transaction from the given id (and make sure it belongs to the current
      * user)
      */
-    public Transaction getUserTransaction(int transactionId) {
-        // Use Spring Data JPA to find and delete the transaction by ID
-        Transaction transaction = transactionRepo.findById(transactionId).get(0);
+    public Transaction getUserTransaction(int id) {
+        List<Transaction> transactions = transactionRepo.findById(id);
+        if (transactions.isEmpty()) {
+            log.warn("Account with id {} doesn't exist", id);
+            return null;
+        } else if (transactions.size() > 1) {
+            log.error("Got multiple accounts with id {}. Bailing out", id);
+            throw new IllegalStateException();
+        }
+        Transaction transaction = transactions.get(0);
         if (userService.getLoggedInUser().owns(transaction)) {
             return transaction;
+        } else {
+            log.warn("{} tried to access transaction \"{}\" belonging to {}",
+                    userService.getLoggedInUser().getUsername(),
+                    transaction.getName(), transaction.getOwner());
         }
         return null;
     }
@@ -69,6 +83,11 @@ public class TransactionService {
     public void deleteTransaction(Transaction transaction) {
         if (userService.getLoggedInUser().owns(transaction)) {
             transactionRepo.delete(transaction);
+            log.info("Deleted transaction: {}", transaction.getName());
+        } else {
+            log.warn("{} tried to delete transaction \"{}\" belonging to {}",
+                    userService.getLoggedInUser().getUsername(),
+                    transaction.getName(), transaction.getOwner());
         }
     }
 }

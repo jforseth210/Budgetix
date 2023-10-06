@@ -1,5 +1,6 @@
 package edu.carroll.bankapp.jpa.model;
 
+import edu.carroll.bankapp.Ownable;
 import jakarta.persistence.*;
 
 /**
@@ -61,17 +62,9 @@ public class SiteUser {
     }
 
     /**
-     * Whether or not this user owns the given transaction
+     * Whether or not this user owns the given object
      */
-    public boolean owns(Transaction transaction) {
-        return transaction.getAccount().getOwner().equals(this);
+    public boolean owns(Ownable transaction) {
+        return transaction.getOwner().equals(this);
     }
-
-    /**
-     * Whether or not this user owns the given account
-     */
-    public boolean owns(Account account) {
-        return account.getOwner().equals(this);
-    }
-
 }

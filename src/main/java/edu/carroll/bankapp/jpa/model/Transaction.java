@@ -1,5 +1,6 @@
 package edu.carroll.bankapp.jpa.model;
 
+import edu.carroll.bankapp.Ownable;
 import jakarta.persistence.*;
 
 /**
@@ -7,7 +8,7 @@ import jakarta.persistence.*;
  */
 @Entity
 @Table(name = "transaction")
-public class Transaction {
+public class Transaction implements Ownable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
@@ -28,6 +29,13 @@ public class Transaction {
      * Default Constructor
      */
     public Transaction() {
+    }
+
+    /**
+     * Get the SiteUser that owns this transaction
+     */
+    public SiteUser getOwner() {
+        return getAccount().getOwner();
     }
 
     /**

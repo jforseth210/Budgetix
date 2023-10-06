@@ -4,12 +4,14 @@ import jakarta.persistence.*;
 
 import java.util.Set;
 
+import edu.carroll.bankapp.Ownable;
+
 /**
  * An account within the application (i.e checking, savings)
  */
 @Entity
 @Table(name = "account")
-public class Account {
+public class Account implements Ownable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;

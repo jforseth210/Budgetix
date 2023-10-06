@@ -6,7 +6,7 @@ import edu.carroll.bankapp.jpa.repo.AccountRepository;
 import edu.carroll.bankapp.jpa.repo.TransactionRepository;
 import edu.carroll.bankapp.service.AccountService;
 import edu.carroll.bankapp.service.UserService;
-
+import edu.carroll.bankapp.web.form.DeleteAccountForm;
 import edu.carroll.bankapp.web.form.DeleteTransactionForm;
 import edu.carroll.bankapp.web.form.NewAccountForm;
 import edu.carroll.bankapp.web.form.NewTransactionForm;
@@ -36,7 +36,8 @@ public class DashboardController {
 
     private static final Logger log = LoggerFactory.getLogger(DashboardController.class);
 
-    public DashboardController(AccountService accountService, AccountRepository accountRepo, UserService userService, TransactionRepository transRepo) {
+    public DashboardController(AccountService accountService, AccountRepository accountRepo, UserService userService,
+            TransactionRepository transRepo) {
         this.accountService = accountService;
         this.accountRepo = accountRepo;
         this.userService = userService;
@@ -86,6 +87,7 @@ public class DashboardController {
         model.addAttribute("currentAccount", account);
         model.addAttribute("newAccountForm", new NewAccountForm());
         model.addAttribute("deleteTransactionForm", new DeleteTransactionForm());
+        model.addAttribute("deleteAccountForm", new DeleteAccountForm());
         return "index";
     }
 
@@ -136,6 +138,18 @@ public class DashboardController {
         Integer accountId = transaction.getAccount().getId();
         transactionRepository.delete(transaction);
         // Redirect or return the appropriate view
-        return "redirect:/account/" + accountId.toString(); // Replace with your desired view or redirect
+        return "redirect:/account/" + accountId.toString();
+    }
+
+    @PostMapping("/delete-account")
+    public String deleteAccount(@ModelAttribute("deleteAccountForm") DeleteAccountForm form) {
+        // Extract the account ID from the form
+        int accountId = form.getAccountId();
+
+        // Use Spring Data JPA to find and delete the transaction by ID
+        Account account = accountRepo.findById(accountId).get(0);
+        accountRepo.delete(account);
+        // Redirect or return the appropriate view
+        return "redirect:/";
     }
 }

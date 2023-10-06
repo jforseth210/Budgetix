@@ -60,4 +60,18 @@ public class SiteUser {
         return hashedPassword;
     }
 
+    /**
+     * Whether or not this user owns the given transaction
+     */
+    public boolean owns(Transaction transaction) {
+        return transaction.getAccount().getOwner().equals(this);
+    }
+
+    /**
+     * Whether or not this user owns the given account
+     */
+    public boolean owns(Account account) {
+        return account.getOwner().equals(this);
+    }
+
 }

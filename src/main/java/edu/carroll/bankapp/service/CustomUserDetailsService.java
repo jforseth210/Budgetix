@@ -3,6 +3,7 @@ package edu.carroll.bankapp.service;
 import edu.carroll.bankapp.jpa.model.SecurityUser;
 import edu.carroll.bankapp.jpa.model.SiteUser;
 import edu.carroll.bankapp.jpa.repo.UserRepository;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,9 +18,8 @@ import java.util.List;
  */
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
-    private final UserRepository userRepo;
-
     private static final Logger log = LoggerFactory.getLogger(CustomUserDetailsService.class);
+    private final UserRepository userRepo;
 
     /**
      * Default Constructor - takes a userRepo as argument
@@ -42,7 +42,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         // Lookup the siteUser
         List<SiteUser> siteUsers = userRepo.findByUsernameIgnoreCase(username);
         if (siteUsers.size() == 0) {
-            // The UserDetailsService contract requires us to throw an exception instead of returning null.
+            // The UserDetailsService contract requires us to throw an exception instead of
+            // returning null.
             log.warn("Didn't find siteUser with username: {}", username);
             throw new UsernameNotFoundException(username, null);
         }
@@ -50,7 +51,6 @@ public class CustomUserDetailsService implements UserDetailsService {
             log.error("Got more than one siteUser with username: {}", username);
             throw new IllegalStateException("Multiple siteUsers with username: " + username, null);
         }
-
 
         SiteUser siteUser = siteUsers.get(0);
         return new SecurityUser(siteUser);

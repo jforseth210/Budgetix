@@ -1,6 +1,5 @@
 package edu.carroll.bankapp.jpa.model;
 
-
 import jakarta.persistence.*;
 
 /**
@@ -95,6 +94,16 @@ public class Transaction {
     }
 
     /**
+     * Sets the transaction amount in US dollars
+     * 
+     * @param amountInDollars - Double - transaction abount in US dollars (anything
+     *                        less than a penny will be lost)
+     */
+    public void setAmountInDollars(double amountInDollars) {
+        setAmountInCents((int) (amountInDollars * 100));
+    }
+
+    /**
      * Gets the name for the transaction
      *
      * @return name - String - name of transaction
@@ -129,4 +138,5 @@ public class Transaction {
     public void setAccount(Account account) {
         this.account = account;
     }
+
 }

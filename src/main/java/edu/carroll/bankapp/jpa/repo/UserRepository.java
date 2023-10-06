@@ -6,7 +6,8 @@ import edu.carroll.bankapp.jpa.model.SiteUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
- * Interface implemented by Hibernate for querying SiteUser information from the database
+ * Interface implemented by Hibernate for querying SiteUser information from the
+ * database
  */
 public interface UserRepository extends JpaRepository<SiteUser, Integer> {
     /**
@@ -16,4 +17,12 @@ public interface UserRepository extends JpaRepository<SiteUser, Integer> {
      * @return
      */
     List<SiteUser> findByUsernameIgnoreCase(String username);
+
+    /**
+     * Fetch a SiteUser based on the id.
+     * 
+     * @param id
+     * @return
+     */
+    List<SiteUser> findById(int id);
 }

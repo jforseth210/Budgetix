@@ -2,9 +2,8 @@ package edu.carroll.bankapp.web.controller;
 
 import edu.carroll.bankapp.jpa.model.Account;
 import edu.carroll.bankapp.jpa.model.Transaction;
-import edu.carroll.bankapp.jpa.repo.AccountRepository;
-import edu.carroll.bankapp.jpa.repo.TransactionRepository;
 import edu.carroll.bankapp.service.AccountService;
+import edu.carroll.bankapp.service.TransactionService;
 import edu.carroll.bankapp.service.UserService;
 import edu.carroll.bankapp.web.form.DeleteAccountForm;
 import edu.carroll.bankapp.web.form.DeleteTransactionForm;
@@ -29,10 +28,9 @@ import java.util.List;
  */
 @Controller
 public class DashboardController {
-    private AccountService accountService;
-    private AccountRepository accountRepo;
-    private UserService userService;
-    private TransactionRepository transactionRepository;
+    private final AccountService accountService;
+    private final UserService userService;
+    private final TransactionService transactionService;
 
     private static final Logger log = LoggerFactory.getLogger(DashboardController.class);
 
@@ -44,11 +42,11 @@ public class DashboardController {
      * @param userService
      * @param transRepo
      */
-    public DashboardController(AccountService accountService, AccountRepository accountRepo, UserService userService, TransactionRepository transRepo) {
+    public DashboardController(AccountService accountService, UserService userService,
+            TransactionService transactionService) {
         this.accountService = accountService;
-        this.accountRepo = accountRepo;
         this.userService = userService;
-        this.transactionRepository = transRepo;
+        this.transactionService = transactionService;
     }
 
     /**
@@ -80,14 +78,14 @@ public class DashboardController {
     public String index(@PathVariable Integer accountId, Model model) {
         model.addAttribute("currentUser", userService.getLoggedInUser());
         model.addAttribute("newAccountForm", new NewAccountForm());
-        if (accountId == 0 && accountService.getUserAccounts().size() > 0) {
-            return "redirect:/";
-        }
-        if (accountId == 0) {
+        if (accountId == 0 && accountService.getUserAccounts().isEmpty()) {
             return "redirect:/add-account";
         }
-        List<Account> accounts = accountService.getUserAccounts();
         final Account account = accountService.getUserAccount(accountId);
+        if (account == null) {
+            return "redirect:/";
+        }
+        List<Account> accounts = accountService.getUserAccounts();
         log.debug("Request for account: {}", account.getName());
         model.addAttribute("newTransactionForm", new NewTransactionForm());
         model.addAttribute("accounts", accounts);
@@ -119,12 +117,7 @@ public class DashboardController {
      */
     @PostMapping("/add-account")
     public RedirectView addAccount(@Valid @ModelAttribute NewAccountForm newAccountForm) {
-        // Create and save a new account
-        Account account = new Account();
-        account.setName(newAccountForm.getAccountName());
-        account.setBalanceInCents(newAccountForm.getAccountBalance().intValue() * 100);
-        account.setOwner(userService.getLoggedInUser());
-        accountRepo.save(account);
+        accountService.createAccount(newAccountForm);
         // Redirect back to the root path
         return new RedirectView("/");
     }
@@ -132,43 +125,27 @@ public class DashboardController {
     /**
      * Accept form submission for transaction addition
      *
-     * @param newTransaction
+     * @param newTransactionForm
      * @return redirect view to page showing new transaction
      */
     @PostMapping("/add-transaction")
-    public RedirectView addTransaction(@Valid @ModelAttribute NewTransactionForm newTransaction) {
-        Transaction trans = new Transaction();
-        trans.setName(newTransaction.getName());
-        trans.setAmountInCents((int) newTransaction.getAmountInCents());
-        trans.setToFrom(newTransaction.getToFrom());
-        Account transactionAccount = accountRepo.findById(newTransaction.getAccountId()).get();
-        trans.setAccount(transactionAccount);
-        transactionRepository.save(trans);
+    public RedirectView addTransaction(@Valid @ModelAttribute NewTransactionForm newTransactionForm) {
+        transactionService.createTransaction(newTransactionForm);
         return new RedirectView("/");
     }
 
     @PostMapping("/delete-transaction")
     public String deleteTransaction(@ModelAttribute("deleteTransactionForm") DeleteTransactionForm form) {
-        // Extract the transaction ID from the form
-        int transactionId = form.getTransactionId();
-
-        // Use Spring Data JPA to find and delete the transaction by ID
-        Transaction transaction = transactionRepository.findById(transactionId).get(0);
-        Integer accountId = transaction.getAccount().getId();
-        transactionRepository.delete(transaction);
-        // Redirect or return the appropriate view
-        return "redirect:/account/" + accountId.toString();
+        Transaction transaction = transactionService.getUserTransaction(form.getTransactionId());
+        transactionService.deleteTransaction(transaction);
+        return "redirect:/account/" + transaction.getAccount().getId().toString();
     }
 
     @PostMapping("/delete-account")
     public String deleteAccount(@ModelAttribute("deleteAccountForm") DeleteAccountForm form) {
-        // Extract the account ID from the form
-        int accountId = form.getAccountId();
-
-        // Use Spring Data JPA to find and delete the transaction by ID
-        Account account = accountRepo.findById(accountId).get(0);
-        accountRepo.delete(account);
+        accountService.deleteAccount(form.getAccountId());
         // Redirect or return the appropriate view
         return "redirect:/";
     }
+
 }

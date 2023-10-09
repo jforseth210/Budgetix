@@ -4,19 +4,21 @@ import jakarta.persistence.*;
 
 import java.util.Set;
 
+import edu.carroll.bankapp.Ownable;
+
 /**
  * An account within the application (i.e checking, savings)
  */
 @Entity
 @Table(name = "account")
-public class Account {
+public class Account implements Ownable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     @ManyToOne
     private SiteUser owner;
 
-    @OneToMany(mappedBy = "account")
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Transaction> transactions;
 
     // No money in floating points because Nate who's worked in financial

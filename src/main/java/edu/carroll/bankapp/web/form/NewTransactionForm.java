@@ -6,24 +6,23 @@ import jakarta.validation.constraints.NotNull;
  * This form collects and validates the necessary information to create a new
  * transaction
  */
-public class TransactionForm {
-
+public class NewTransactionForm {
     @NotNull
     private String toFrom;
 
     @NotNull
-    private Integer amountInCents;
+    private double amountInDollars;
 
     @NotNull
     private String name;
 
     private Integer accountId;
 
-
     /**
      * Default constructor for Hibernate
      */
-    public TransactionForm() {
+    public NewTransactionForm() {
+
     }
 
     /**
@@ -44,33 +43,29 @@ public class TransactionForm {
         this.toFrom = toFrom;
     }
 
-    /**
-     * Get the amount in cents for the transaction
-     *
-     * @return amountInCents - Integer - amount of transaction in US cents
-     */
-    public Integer getAmountInCents() {
-        return amountInCents;
-    }
-
+    
     /**
      * Get the amount in dollars for the transaction (via math conversion)
      *
      * @return amount in dollars - double - monetary amount in dollars
      */
     public double getAmountInDollars() {
-        return (double) amountInCents / (double) 100;
+        return amountInDollars;
     }
-
+    
+    
     /**
-     * Set the amount in cents for the transaction
+     * Get the amount in cents for the transaction
      *
-     * @param amountInCents - Integer - amount of transaction in US cents
+     * @return amountInCents - Integer - amount of transaction in US cents
      */
-    public void setAmountInCents(Integer amountInCents) {
-        this.amountInCents = amountInCents;
+    public double getAmountInCents() {
+        return (double) amountInDollars * (double) 100;
     }
 
+    public void setAmountInDollars(double amountInDollars) {
+        this.amountInDollars = amountInDollars;
+    }
     /**
      * Get the name of the transaction
      *

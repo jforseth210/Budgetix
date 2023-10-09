@@ -1,5 +1,6 @@
 package edu.carroll.bankapp.jpa.model;
 
+import edu.carroll.bankapp.Ownable;
 import jakarta.persistence.*;
 
 /**
@@ -60,4 +61,10 @@ public class SiteUser {
         return hashedPassword;
     }
 
+    /**
+     * Whether or not this user owns the given object
+     */
+    public boolean owns(Ownable transaction) {
+        return transaction.getOwner().equals(this);
+    }
 }

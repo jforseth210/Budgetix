@@ -1,6 +1,6 @@
 package edu.carroll.bankapp.jpa.model;
 
-
+import edu.carroll.bankapp.Ownable;
 import jakarta.persistence.*;
 
 /**
@@ -8,7 +8,7 @@ import jakarta.persistence.*;
  */
 @Entity
 @Table(name = "transaction")
-public class Transaction {
+public class Transaction implements Ownable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
@@ -29,6 +29,13 @@ public class Transaction {
      * Default Constructor
      */
     public Transaction() {
+    }
+
+    /**
+     * Get the SiteUser that owns this transaction
+     */
+    public SiteUser getOwner() {
+        return getAccount().getOwner();
     }
 
     /**
@@ -95,6 +102,16 @@ public class Transaction {
     }
 
     /**
+     * Sets the transaction amount in US dollars
+     * 
+     * @param amountInDollars - Double - transaction abount in US dollars (anything
+     *                        less than a penny will be lost)
+     */
+    public void setAmountInDollars(double amountInDollars) {
+        setAmountInCents((int) (amountInDollars * 100));
+    }
+
+    /**
      * Gets the name for the transaction
      *
      * @return name - String - name of transaction
@@ -129,4 +146,5 @@ public class Transaction {
     public void setAccount(Account account) {
         this.account = account;
     }
+
 }

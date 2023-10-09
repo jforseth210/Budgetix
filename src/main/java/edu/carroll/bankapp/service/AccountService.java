@@ -35,6 +35,13 @@ public class AccountService {
     }
 
     /**
+     * Save changes made to an account using setters
+     */
+    public Account saveAccount(Account account) {
+        return accountRepo.save(account);
+    }
+
+    /**
      * Returns a list of Accounts owned by the currently logged-in user
      *
      * @return list of accounts

@@ -6,12 +6,14 @@ import edu.carroll.bankapp.web.form.LoginForm;
 import edu.carroll.bankapp.web.form.NewLoginForm;
 import jakarta.validation.Valid;
 
+import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -63,5 +65,23 @@ public class LoginController {
         }
         log.info("Redirecting to \"/\"");
         return "redirect:/";
+
+//        if (result.hasErrors()) {
+//            log.info("Log form has errors, redirecting back to login page");
+//            return "loginNew";
+//        }
+//
+//        if (!newLoginForm.getPassword().equals(newLoginForm.getConfirm())) {
+//            log.info("Passwords must match");
+//            result.addError(new ObjectError("confirm", "Passwords must match"));
+//            return "loginNew";
+//        }
+//
+//        User defaultUser = new User(newLoginForm.getFullName(), newLoginForm.getEmail(),
+//                newLoginForm.getUsername(), BCrypt.hashpw(newLoginForm.getPassword(), BCrypt.gensalt()));
+//        userRepo.save(defaultUser);
+//
+//        log.info("Redirecting to \"/\"");
+//        return "redirect:/";
     }
 }

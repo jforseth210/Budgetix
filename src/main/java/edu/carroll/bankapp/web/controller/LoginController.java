@@ -60,10 +60,17 @@ public class LoginController {
     @PostMapping("/loginNew")
     public String loginNewPost(@Valid @ModelAttribute NewLoginForm newLoginForm, BindingResult result) {
         SiteUser createdUser = userService.createUser(newLoginForm);
-        if (createdUser != null || result.hasErrors()) {
+        if (result.hasErrors()) {
             return "loginNew";
         }
-        log.info("Redirecting to \"/\"");
+
+        if (!newLoginForm.getPassword().equals(newLoginForm.getConfirm())) {
+            log.info("Passwords must match: ", createdUser.getUsername());
+            result.addError(new ObjectError("confirm", "Passwords must match"));
+            return "loginNew";
+        }
+
+        log.info("Created a new user: ", createdUser.getUsername());
         return "redirect:/";
 
 //        if (result.hasErrors()) {
@@ -71,11 +78,7 @@ public class LoginController {
 //            return "loginNew";
 //        }
 //
-//        if (!newLoginForm.getPassword().equals(newLoginForm.getConfirm())) {
-//            log.info("Passwords must match");
-//            result.addError(new ObjectError("confirm", "Passwords must match"));
-//            return "loginNew";
-//        }
+
 //
 //        User defaultUser = new User(newLoginForm.getFullName(), newLoginForm.getEmail(),
 //                newLoginForm.getUsername(), BCrypt.hashpw(newLoginForm.getPassword(), BCrypt.gensalt()));

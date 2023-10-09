@@ -40,6 +40,8 @@ public class TransactionService {
         newTransaction.setToFrom(toFrom);
         newTransaction.setAccount(account);
         transactionRepo.save(newTransaction);
+        account.subtractBalanceInCents(newTransaction.getAmountInCents());
+        accountService.saveAccount(account);
         return newTransaction;
     }
 
@@ -82,6 +84,9 @@ public class TransactionService {
      */
     public void deleteTransaction(Transaction transaction) {
         if (userService.getLoggedInUser().owns(transaction)) {
+            transaction.getAccount().addBalanceInCents(transaction.getAmountInCents());
+            accountService.saveAccount(transaction.getAccount());
+
             transactionRepo.delete(transaction);
             log.info("Deleted transaction: {}", transaction.getName());
         } else {

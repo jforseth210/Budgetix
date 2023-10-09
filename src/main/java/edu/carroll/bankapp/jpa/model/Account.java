@@ -29,6 +29,13 @@ public class Account implements Ownable {
     private String name;
 
     /**
+     * Hibernate wants a default constructor
+     */
+    public Account() {
+
+    }
+
+    /**
      * Returns the name of the account
      *
      * @return name - String - the name of the account
@@ -127,10 +134,14 @@ public class Account implements Ownable {
         this.balanceInCents = balanceInCents;
     }
 
-    /**
-     * Hibernate wants a default constructor
-     */
-    public Account() {
-
+    public void addBalanceInCents(Integer additionalAmount) {
+        this.balanceInCents += additionalAmount;
+        
     }
+
+    public void subtractBalanceInCents(Integer subtractionAmount) {
+        this.balanceInCents -= subtractionAmount;
+        
+    }
+
 }

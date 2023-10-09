@@ -2,7 +2,6 @@ package edu.carroll.bankapp.service;
 
 import edu.carroll.bankapp.jpa.model.SecurityUser;
 import edu.carroll.bankapp.jpa.model.SiteUser;
-import edu.carroll.bankapp.jpa.repo.UserRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,8 +9,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * Implements the UserDetailsService required by Spring Security
@@ -37,7 +34,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         // Lookup the siteUser
         SiteUser siteUser = userService.getUser(username);
 
-        
         // UserDetailsService contract requires us to throw an exception instead of
         // returning null
         if (siteUser == null) {

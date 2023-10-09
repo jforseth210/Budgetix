@@ -55,7 +55,7 @@ public class LoginController {
      *
      * @param newLoginForm The data collected from the form
      * @param result       Form errors (if any)
-     * @return
+     * @return String redirect view - redirect leads user to new page based on submission
      */
     @PostMapping("/loginNew")
     public String loginNewPost(@Valid @ModelAttribute NewLoginForm newLoginForm, BindingResult result) {

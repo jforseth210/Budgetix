@@ -15,10 +15,6 @@
     </div>
     <form action="#" class="error" th:action="@{/login}" th:object="${loginForm}" method="post">
         <span class="error" th:if="${#fields.hasGlobalErrors()}" th:errors="*{global}">Global Errors</span>
-        <!-- Tells the user if they have a failed login attempt ('Bad Credentials') -->
-        <div th:if="${param.error != null}"
-             th:text="${session[SPRING_SECURITY_LAST_EXCEPTION].message}" class="alert alert-danger">
-        </div>
         <label for="username">Username:</label>
         <input class="login-bar" type="text" th:field="*{username}" id="username" name="username" required>
         <label for="password">Password:</label>
@@ -30,23 +26,4 @@
     </a></p>
 </div>
 </body>
-<script type="text/javascript">
-    function validate() {
-        if (document.f.username.value == "" && document.f.password.value == "") {
-            alert("Username and password are required");
-            document.f.username.focus();
-            return false;
-        }
-        if (document.f.username.value == "") {
-            alert("Username is required");
-            document.f.username.focus();
-            return false;
-        }
-        if (document.f.password.value == "") {
-            alert("Password is required");
-            document.f.password.focus();
-            return false;
-        }
-    }
-</script>
 </html>

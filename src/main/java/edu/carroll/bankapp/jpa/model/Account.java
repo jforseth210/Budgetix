@@ -26,7 +26,7 @@ public class Account implements Ownable {
     // software for years and years and years would make fun of us
     @Column(name = "balance_in_cents", nullable = false)
     private Integer balanceInCents;
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false)
     private String name;
 
     /**

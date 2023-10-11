@@ -4,7 +4,6 @@ import edu.carroll.bankapp.jpa.model.Account;
 import edu.carroll.bankapp.jpa.model.SiteUser;
 import edu.carroll.bankapp.jpa.repo.AccountRepository;
 import edu.carroll.bankapp.web.controller.DashboardController;
-import edu.carroll.bankapp.web.form.NewAccountForm;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,6 +84,13 @@ public class AccountService {
      * Create an account and save it in the database
      */
     public boolean createAccount(String accountName, double balanceInDollars, SiteUser owner) {
+        List<Account> ownerAccounts = getUserAccounts(owner);
+        for (Account account : ownerAccounts) {
+            if (account.getName().equals(accountName)) {
+                log.info("{} tried to create two accounts named {}", accountName);
+                return false;
+            }
+        }
         // Create and save a new account
         Account newAccount = new Account();
         newAccount.setName(accountName);
@@ -92,14 +98,6 @@ public class AccountService {
         newAccount.setOwner(owner);
         accountRepo.save(newAccount);
         return true;
-    }
-
-    /**
-     * Account creation that unpacks a newAccountForm
-     */
-    public boolean createAccount(SiteUser loggedInUser, NewAccountForm newAccountForm) {
-        return createAccount(newAccountForm.getAccountName(), newAccountForm.getAccountBalance(),
-                loggedInUser);
     }
 
     /**
@@ -120,6 +118,10 @@ public class AccountService {
      */
     public void deleteAccount(SiteUser loggedInUser, int accountID) {
         Account account = getUserAccount(loggedInUser, accountID);
+        if (account == null) {
+            log.warn("Tried to delete")
+            return;
+        }
         deleteAccount(loggedInUser, account);
     }
 

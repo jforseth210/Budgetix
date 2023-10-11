@@ -35,14 +35,6 @@ public class DashboardController {
     private final TransactionService transactionService;
     private final AuthHelper authHelper;
 
-    /**
-     * Default Constructor - helps to set up our database
-     *
-     * @param accountService
-     * @param accountRepo
-     * @param userService
-     * @param transRepo
-     */
     public DashboardController(AccountService accountService, UserService userService,
             TransactionService transactionService, AuthHelper authHelper) {
         this.accountService = accountService;
@@ -127,7 +119,8 @@ public class DashboardController {
      */
     @PostMapping("/add-account")
     public RedirectView addAccount(@Valid @ModelAttribute NewAccountForm newAccountForm) {
-        accountService.createAccount(authHelper.getLoggedInUser(), newAccountForm);
+        accountService.createAccount(newAccountForm.getAccountName(), newAccountForm.getAccountBalance(),
+                authHelper.getLoggedInUser());
         // Redirect back to the root path
         return new RedirectView("/");
     }
@@ -140,7 +133,10 @@ public class DashboardController {
      */
     @PostMapping("/add-transaction")
     public RedirectView addTransaction(@Valid @ModelAttribute NewTransactionForm newTransactionForm) {
-        transactionService.createTransaction(authHelper.getLoggedInUser(), newTransactionForm);
+        Account account = accountService.getUserAccount(authHelper.getLoggedInUser(),
+                newTransactionForm.getAccountId());
+        transactionService.createTransaction(newTransactionForm.getName(), newTransactionForm.getAmountInDollars(),
+                newTransactionForm.getToFrom(), account);
         return new RedirectView("/");
     }
 

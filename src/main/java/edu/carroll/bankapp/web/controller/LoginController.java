@@ -58,11 +58,11 @@ public class LoginController {
      * @param newLoginForm The data collected from the form
      * @param result       Form errors (if any)
      * @return String redirect view - redirect leads user to new page based on
-     *         submission
+     * submission
      */
     @PostMapping("/loginNew")
     public String loginNewPost(HttpServletRequest request, @Valid @ModelAttribute NewLoginForm newLoginForm,
-            BindingResult result) {
+                               BindingResult result) {
         if (result.hasErrors()) {
             return "loginNew";
         }
@@ -72,9 +72,9 @@ public class LoginController {
             result.addError(new ObjectError("confirm", "Passwords must match"));
             return "loginNew";
         }
-        SiteUser createdUser = userService.createUser(newLoginForm);
+        SiteUser createdUser = userService.createUser(newLoginForm.getFullName(), newLoginForm.getEmail(), newLoginForm.getUsername(), newLoginForm.getPassword());
         log.info("Created a new user: {}", createdUser.getUsername());
-        
+
         try {
             request.login(newLoginForm.getUsername(), newLoginForm.getPassword());
         } catch (ServletException e) {

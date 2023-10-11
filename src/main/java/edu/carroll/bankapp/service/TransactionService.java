@@ -10,7 +10,6 @@ import edu.carroll.bankapp.jpa.model.Account;
 import edu.carroll.bankapp.jpa.model.SiteUser;
 import edu.carroll.bankapp.jpa.model.Transaction;
 import edu.carroll.bankapp.jpa.repo.TransactionRepository;
-import edu.carroll.bankapp.web.form.NewTransactionForm;
 
 /**
  * Service for managing accounts.
@@ -21,13 +20,10 @@ public class TransactionService {
 
     private final TransactionRepository transactionRepo;
     private final AccountService accountService;
-    private final UserService userService;
 
-    public TransactionService(TransactionRepository transactionRepository, AccountService accountService,
-            UserService userService) {
+    public TransactionService(TransactionRepository transactionRepository, AccountService accountService) {
         this.transactionRepo = transactionRepository;
         this.accountService = accountService;
-        this.userService = userService;
     }
 
     /**
@@ -44,16 +40,6 @@ public class TransactionService {
         account.subtractBalanceInCents(newTransaction.getAmountInCents());
         accountService.saveAccount(account);
         return newTransaction;
-    }
-
-    /**
-     * Create and save a new transaction for the logged-in user from a
-     * newTransactionForm
-     */
-    public Transaction createTransaction(SiteUser loggedInUser, NewTransactionForm newTransactionForm) {
-        Account account = accountService.getUserAccount(loggedInUser, newTransactionForm.getAccountId());
-        return createTransaction(newTransactionForm.getName(), newTransactionForm.getAmountInDollars(),
-                newTransactionForm.getToFrom(), account);
     }
 
     /**

@@ -3,6 +3,8 @@ package edu.carroll.bankapp.jpa.model;
 import edu.carroll.bankapp.Ownable;
 import jakarta.persistence.*;
 
+import java.util.Objects;
+
 /**
  * A transaction within the system
  */
@@ -103,7 +105,7 @@ public class Transaction implements Ownable {
 
     /**
      * Sets the transaction amount in US dollars
-     * 
+     *
      * @param amountInDollars - Double - transaction abount in US dollars (anything
      *                        less than a penny will be lost)
      */
@@ -147,4 +149,16 @@ public class Transaction implements Ownable {
         this.account = account;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Transaction that = (Transaction) o;
+        return Objects.equals(toFrom, that.toFrom) && Objects.equals(amountInCents, that.amountInCents) && Objects.equals(name, that.name) && Objects.equals(account, that.account);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(toFrom, amountInCents, name, account);
+    }
 }

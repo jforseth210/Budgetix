@@ -14,7 +14,6 @@
         <h1>Welcome Back!</h1>
     </div>
     <form action="#" class="error" th:action="@{/login}" th:object="${loginForm}" method="post">
-        <span class="error" th:if="${#fields.hasGlobalErrors()}" th:errors="*{global}">Global Errors</span>
         <!-- Tells the user if they have a failed login attempt ('Bad Credentials') -->
         <div th:if="${param.error != null}"
              th:text="${session[SPRING_SECURITY_LAST_EXCEPTION].message}" class="alert alert-danger">
@@ -48,5 +47,6 @@
             return false;
         }
     }
+
 </script>
 </html>

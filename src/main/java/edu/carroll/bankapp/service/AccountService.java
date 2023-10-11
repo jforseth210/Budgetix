@@ -42,25 +42,15 @@ public class AccountService {
     }
 
     /**
-     * Returns a list of Accounts owned by the currently logged-in user
-     *
-     * @return list of accounts
-     */
-    public List<Account> getUserAccounts() {
-        SiteUser loggedInSiteUser = userService.getLoggedInUser();
-        if (loggedInSiteUser == null) {
-            return new ArrayList<Account>();
-        }
-        return getUserAccounts(loggedInSiteUser);
-    }
-
-    /**
      * Returns a list of Accounts owned by the given user
      * 
      * @param user the user to get accounts for
      * @return list of accounts
      */
     public List<Account> getUserAccounts(SiteUser user) {
+        if (user == null) {
+            return new ArrayList<Account>();
+        }
         return accountRepo.findByOwner(user);
     }
 
@@ -72,7 +62,7 @@ public class AccountService {
      * @param id the id of the requested account
      * @return account/null
      */
-    public Account getUserAccount(int id) {
+    public Account getUserAccount(SiteUser loggedInUser, int id) {
         List<Account> accounts = accountRepo.findById(id);
         if (accounts.isEmpty()) {
             log.warn("Account with id {} doesn't exist", id);
@@ -82,10 +72,10 @@ public class AccountService {
             throw new IllegalStateException();
         }
         Account account = accounts.get(0);
-        if (userService.getLoggedInUser().owns(account)) {
+        if (loggedInUser.owns(account)) {
             return account;
         }
-        String currentUsername = userService.getLoggedInUser().getUsername();
+        String currentUsername = loggedInUser.getUsername();
         String accountOwnerUsername = account.getOwner().getUsername();
         log.warn("{} attempted to access one of {}'s accounts", currentUsername, accountOwnerUsername);
         return null;
@@ -107,9 +97,9 @@ public class AccountService {
     /**
      * Account creation that unpacks a newAccountForm
      */
-    public boolean createAccount(NewAccountForm newAccountForm) {
+    public boolean createAccount(SiteUser loggedInUser, NewAccountForm newAccountForm) {
         return createAccount(newAccountForm.getAccountName(), newAccountForm.getAccountBalance(),
-                userService.getLoggedInUser());
+                loggedInUser);
     }
 
     /**
@@ -117,8 +107,8 @@ public class AccountService {
      * 
      * @param account
      */
-    public void deleteAccount(Account account) {
-        if (userService.getLoggedInUser().owns(account)) {
+    public void deleteAccount(SiteUser loggedInUser, Account account) {
+        if (loggedInUser.owns(account)) {
             accountRepo.delete(account);
         }
     }
@@ -128,9 +118,9 @@ public class AccountService {
      * 
      * @param accountID
      */
-    public void deleteAccount(int accountID) {
-        Account account = getUserAccount(accountID);
-        deleteAccount(account);
+    public void deleteAccount(SiteUser loggedInUser, int accountID) {
+        Account account = getUserAccount(loggedInUser, accountID);
+        deleteAccount(loggedInUser, account);
     }
 
     /**

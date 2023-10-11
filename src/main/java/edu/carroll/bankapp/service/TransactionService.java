@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import edu.carroll.bankapp.jpa.model.Account;
+import edu.carroll.bankapp.jpa.model.SiteUser;
 import edu.carroll.bankapp.jpa.model.Transaction;
 import edu.carroll.bankapp.jpa.repo.TransactionRepository;
 import edu.carroll.bankapp.web.form.NewTransactionForm;
@@ -49,8 +50,8 @@ public class TransactionService {
      * Create and save a new transaction for the logged-in user from a
      * newTransactionForm
      */
-    public Transaction createTransaction(NewTransactionForm newTransactionForm) {
-        Account account = accountService.getUserAccount(newTransactionForm.getAccountId());
+    public Transaction createTransaction(SiteUser loggedInUser, NewTransactionForm newTransactionForm) {
+        Account account = accountService.getUserAccount(loggedInUser, newTransactionForm.getAccountId());
         return createTransaction(newTransactionForm.getName(), newTransactionForm.getAmountInDollars(),
                 newTransactionForm.getToFrom(), account);
     }
@@ -59,7 +60,7 @@ public class TransactionService {
      * Get a transaction from the given id (and make sure it belongs to the current
      * user)
      */
-    public Transaction getUserTransaction(int id) {
+    public Transaction getUserTransaction(SiteUser loggedInUser, int id) {
         List<Transaction> transactions = transactionRepo.findById(id);
         if (transactions.isEmpty()) {
             log.warn("Account with id {} doesn't exist", id);
@@ -69,11 +70,11 @@ public class TransactionService {
             throw new IllegalStateException();
         }
         Transaction transaction = transactions.get(0);
-        if (userService.getLoggedInUser().owns(transaction)) {
+        if (loggedInUser.owns(transaction)) {
             return transaction;
         } else {
             log.warn("{} tried to access transaction \"{}\" belonging to {}",
-                    userService.getLoggedInUser().getUsername(),
+                    loggedInUser.getUsername(),
                     transaction.getName(), transaction.getOwner());
         }
         return null;
@@ -82,8 +83,8 @@ public class TransactionService {
     /**
      * Delete the given transaction if owned by the currently logged-in user
      */
-    public void deleteTransaction(Transaction transaction) {
-        if (userService.getLoggedInUser().owns(transaction)) {
+    public void deleteTransaction(SiteUser loggedInUser, Transaction transaction) {
+        if (loggedInUser.owns(transaction)) {
             transaction.getAccount().addBalanceInCents(transaction.getAmountInCents());
             accountService.saveAccount(transaction.getAccount());
 
@@ -91,7 +92,7 @@ public class TransactionService {
             log.info("Deleted transaction: {}", transaction.getName());
         } else {
             log.warn("{} tried to delete transaction \"{}\" belonging to {}",
-                    userService.getLoggedInUser().getUsername(),
+                    loggedInUser.getUsername(),
                     transaction.getName(), transaction.getOwner());
         }
     }

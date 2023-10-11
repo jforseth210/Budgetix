@@ -33,21 +33,6 @@ public class UserService {
     }
 
     /**
-     * Get the currently logged-in user (if any).
-     *
-     * @return user
-     */
-    public SiteUser getLoggedInUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
-            log.info("No one currently logged in");
-            return null;
-        }
-        String currentUserName = authentication.getName();
-        return getUser(currentUserName);
-    }
-
-    /**
      * Get a user from the given user id
      */
     public SiteUser getUser(int userId) {

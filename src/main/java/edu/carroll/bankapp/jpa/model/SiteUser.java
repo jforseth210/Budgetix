@@ -5,12 +5,17 @@ import jakarta.persistence.*;
 
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * A user with credentials in the system.
  */
 @Entity
 @Table(name = "site_user")
 public class SiteUser {
+    private static final Logger log = LoggerFactory.getLogger(SiteUser.class);
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
@@ -63,20 +68,27 @@ public class SiteUser {
         return hashedPassword;
     }
 
-
     /**
      * Whether or not this user owns the given object
      */
-    public boolean owns(Ownable transaction) {
-        return transaction.getOwner().equals(this);
+    public boolean owns(Ownable item) {
+        if (item == null) {
+            log.warn("Attempt to check ownership on null object for user {}", username);
+            return false;
+        }
+        return item.getOwner().equals(this);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         SiteUser siteUser = (SiteUser) o;
-        return Objects.equals(fullName, siteUser.fullName) && Objects.equals(email, siteUser.email) && Objects.equals(username, siteUser.username) && Objects.equals(hashedPassword, siteUser.hashedPassword);
+        return Objects.equals(fullName, siteUser.fullName) && Objects.equals(email, siteUser.email)
+                && Objects.equals(username, siteUser.username)
+                && Objects.equals(hashedPassword, siteUser.hashedPassword);
     }
 
     @Override

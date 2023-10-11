@@ -4,6 +4,8 @@ import edu.carroll.bankapp.jpa.model.SiteUser;
 import edu.carroll.bankapp.service.UserService;
 import edu.carroll.bankapp.web.form.LoginForm;
 import edu.carroll.bankapp.web.form.NewLoginForm;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 import org.slf4j.Logger;
@@ -56,12 +58,20 @@ public class LoginController {
      * @return
      */
     @PostMapping("/loginNew")
-    public String loginNewPost(@Valid @ModelAttribute NewLoginForm newLoginForm, BindingResult result) {
-        SiteUser createdUser = userService.createUser(newLoginForm);
-        if (createdUser != null || result.hasErrors()) {
+    public String loginNewPost(HttpServletRequest request, @Valid @ModelAttribute NewLoginForm newLoginForm,
+            BindingResult result) {
+        userService.createUser(newLoginForm);
+        if (result.hasErrors()) {
             return "loginNew";
         }
-        log.info("Redirecting to \"/\"");
+
+        try {
+            request.login(newLoginForm.getUsername(), newLoginForm.getPassword());
+        } catch (ServletException e) {
+            log.error("Error logging {} in after signup:", newLoginForm.getUsername(), e);
+        }
+
+        log.info("New user {} logged in, redirecting to \"/\"", newLoginForm.getUsername());
         return "redirect:/";
     }
 }

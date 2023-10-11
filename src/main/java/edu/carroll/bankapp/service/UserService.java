@@ -38,7 +38,7 @@ public class UserService {
     public SiteUser getUser(int userId) {
         log.debug("Getting user with id: {}", userId);
         List<SiteUser> siteUsers = userRepo.findById(userId);
-        if (siteUsers.size() == 0) {
+        if (siteUsers.isEmpty()) {
             log.warn("Didn't find siteUser with id: {}", userId);
             return null;
         }
@@ -115,6 +115,9 @@ public class UserService {
                 newLoginForm.getPassword(), newLoginForm.getConfirm());
     }
 
+    /**
+     * Should ONLY be used for testing
+     */
     public void deleteAllSiteUsers() {
         log.warn("Deleting all users");
         userRepo.deleteAll();

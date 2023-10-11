@@ -5,6 +5,7 @@ import edu.carroll.bankapp.jpa.model.SiteUser;
 import edu.carroll.bankapp.service.AccountService;
 import edu.carroll.bankapp.service.UserService;
 
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Transactional
 @SpringBootTest
 public class AccountServiceTest {
     @Autowired
@@ -21,15 +23,8 @@ public class AccountServiceTest {
     @Autowired
     private UserService userService;
 
-    private AccountServiceTest() {
-
-    }
-
     @BeforeEach
     public void setUp() {
-        accountService.deleteAllAccounts();
-        userService.deleteAllSiteUsers();
-
         SiteUser john = userService.createUser("John Doe", "john@example.com", "johndoe", "password123");
         SiteUser jane = userService.createUser("Jane Smith", "jane@example.com", "janesmith", "letmein456");
         userService.createUser("Alice Johnson", "alice@example.com", "alicejohnson", "mysecret123");

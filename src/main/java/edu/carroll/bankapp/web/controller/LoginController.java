@@ -8,12 +8,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
+import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,16 +57,24 @@ public class LoginController {
      *
      * @param newLoginForm The data collected from the form
      * @param result       Form errors (if any)
-     * @return
+     * @return String redirect view - redirect leads user to new page based on
+     *         submission
      */
     @PostMapping("/loginNew")
     public String loginNewPost(HttpServletRequest request, @Valid @ModelAttribute NewLoginForm newLoginForm,
             BindingResult result) {
-        userService.createUser(newLoginForm);
         if (result.hasErrors()) {
             return "loginNew";
         }
-
+        if (!newLoginForm.getPassword().equals(newLoginForm.getConfirm())) {
+            log.info("A user, {}, attempted to make an account with non-matching passwords",
+                    newLoginForm.getUsername());
+            result.addError(new ObjectError("confirm", "Passwords must match"));
+            return "loginNew";
+        }
+        SiteUser createdUser = userService.createUser(newLoginForm);
+        log.info("Created a new user: {}", createdUser.getUsername());
+        
         try {
             request.login(newLoginForm.getUsername(), newLoginForm.getPassword());
         } catch (ServletException e) {

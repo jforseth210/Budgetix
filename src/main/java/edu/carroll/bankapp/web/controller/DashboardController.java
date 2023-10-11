@@ -106,6 +106,14 @@ public class DashboardController {
      */
     @GetMapping("/add-account")
     public String addAccountPage(Model model) {
+        // If the user already has accounts, they shouldn't be on the initial account
+        // creation page
+        SiteUser loggedInUser = authHelper.getLoggedInUser();
+        if (!accountService.getUserAccounts(loggedInUser).isEmpty()) {
+            log.info("User {} already has accounts, redirecting to \"/\"", loggedInUser.getUsername());
+            return "redirect:/";
+        }
+
         model.addAttribute("currentUser", authHelper.getLoggedInUser());
         model.addAttribute("newAccountForm", new NewAccountForm());
         return "addAccountPage";

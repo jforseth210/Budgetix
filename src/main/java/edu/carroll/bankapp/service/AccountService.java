@@ -42,7 +42,7 @@ public class AccountService {
 
     /**
      * Returns a list of Accounts owned by the given user
-     * 
+     *
      * @param user the user to get accounts for
      * @return list of accounts
      */
@@ -102,7 +102,7 @@ public class AccountService {
 
     /**
      * Delete the given account
-     * 
+     *
      * @param account
      */
     public void deleteAccount(SiteUser loggedInUser, Account account) {
@@ -113,13 +113,13 @@ public class AccountService {
 
     /**
      * Delete the account with the given id
-     * 
+     *
      * @param accountID
      */
     public void deleteAccount(SiteUser loggedInUser, int accountID) {
         Account account = getUserAccount(loggedInUser, accountID);
         if (account == null) {
-            log.warn("Tried to delete")
+            log.warn("{} tried to delete account {} belonging to {}", loggedInUser.getUsername(), account.getName(), account.getOwner().getUsername());
             return;
         }
         deleteAccount(loggedInUser, account);

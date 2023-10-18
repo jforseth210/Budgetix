@@ -27,7 +27,7 @@ dependencies {
     runtimeOnly 'com.mysql:mysql-connector-j:'
     runtimeOnly 'com.h2database:h2'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'com.mariadb.jdbc:mariadb-java-client:3.2.0'
+    //implementation 'com.mariadb.jdbc:mariadb-java-client:3.2.0'
 }
 
 tasks.named('test') {

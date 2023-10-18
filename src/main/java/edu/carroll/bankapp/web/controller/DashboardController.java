@@ -136,8 +136,9 @@ public class DashboardController {
         Account account = accountService.getUserAccount(authHelper.getLoggedInUser(),
                 newTransactionForm.getAccountId());
 
-        if (!newTransactionForm.getType().equals("expense") || !newTransactionForm.getType().equals("income")) {
+        if (!newTransactionForm.getType().equals("expense") && !newTransactionForm.getType().equals("income")) {
             log.info("Invalid transaction type {}", newTransactionForm.getType());
+            return new RedirectView("/");
         }
 
         if (newTransactionForm.getType().equals("expense")) {

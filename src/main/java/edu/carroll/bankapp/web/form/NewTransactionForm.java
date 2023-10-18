@@ -64,8 +64,7 @@ public class NewTransactionForm {
     }
 
     public void setAmountInDollars(double amountInDollars) {
-        // Don't allow negative amounts
-        this.amountInDollars = Math.abs(amountInDollars);
+        this.amountInDollars = amountInDollars;
     }
 
     /**

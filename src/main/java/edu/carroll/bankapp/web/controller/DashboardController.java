@@ -37,7 +37,7 @@ public class DashboardController {
     private final AuthHelper authHelper;
 
     public DashboardController(AccountService accountService, UserService userService,
-            TransactionService transactionService, AuthHelper authHelper) {
+                               TransactionService transactionService, AuthHelper authHelper) {
         this.accountService = accountService;
         this.transactionService = transactionService;
         this.authHelper = authHelper;
@@ -137,6 +137,16 @@ public class DashboardController {
     public RedirectView addTransaction(@Valid @ModelAttribute NewTransactionForm newTransactionForm) {
         Account account = accountService.getUserAccount(authHelper.getLoggedInUser(),
                 newTransactionForm.getAccountId());
+
+        if (!newTransactionForm.getType().equals("expense") && !newTransactionForm.getType().equals("income")) {
+            log.info("Invalid transaction type {}", newTransactionForm.getType());
+            return new RedirectView("/");
+        }
+
+        if (newTransactionForm.getType().equals("expense")) {
+            newTransactionForm.setAmountInDollars(-1 * newTransactionForm.getAmountInDollars());
+        }
+
         transactionService.createTransaction(newTransactionForm.getName(), newTransactionForm.getAmountInDollars(),
                 newTransactionForm.getToFrom(), account);
         return new RedirectView("/");

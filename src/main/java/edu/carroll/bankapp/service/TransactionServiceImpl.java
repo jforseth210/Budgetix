@@ -19,11 +19,11 @@ public class TransactionServiceImpl implements TransactionService {
     private static final Logger log = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
     private final TransactionRepository transactionRepo;
-    private final AccountServiceImpl accountServiceImpl;
+    private final AccountService accountService;
 
-    public TransactionServiceImpl(TransactionRepository transactionRepository, AccountServiceImpl accountServiceImpl) {
+    public TransactionServiceImpl(TransactionRepository transactionRepository, AccountService accountService) {
         this.transactionRepo = transactionRepository;
-        this.accountServiceImpl = accountServiceImpl;
+        this.accountService = accountService;
     }
 
     /**
@@ -37,15 +37,11 @@ public class TransactionServiceImpl implements TransactionService {
         newTransaction.setToFrom(toFrom);
         newTransaction.setAccount(account);
         transactionRepo.save(newTransaction);
-        account.subtractBalanceInCents(newTransaction.getAmountInCents());
-        accountServiceImpl.saveAccount(account);
+        account.addBalanceInCents(newTransaction.getAmountInCents());
+        accountService.saveAccount(account);
         return newTransaction;
     }
 
-    /**
-     * Get a transaction from the given id (and make sure it belongs to the current
-     * user)
-     */
     public Transaction getUserTransaction(SiteUser loggedInUser, int id) {
         List<Transaction> transactions = transactionRepo.findById(id);
         if (transactions.isEmpty()) {
@@ -71,8 +67,8 @@ public class TransactionServiceImpl implements TransactionService {
      */
     public void deleteTransaction(SiteUser loggedInUser, Transaction transaction) {
         if (loggedInUser.owns(transaction)) {
-            transaction.getAccount().addBalanceInCents(transaction.getAmountInCents());
-            accountServiceImpl.saveAccount(transaction.getAccount());
+            transaction.getAccount().subtractBalanceInCents(transaction.getAmountInCents());
+            accountService.saveAccount(transaction.getAccount());
 
             transactionRepo.delete(transaction);
             log.info("Deleted transaction: {}", transaction.getName());

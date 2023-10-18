@@ -2,7 +2,6 @@ package edu.carroll.bankapp.jpa.model;
 
 import jakarta.persistence.*;
 
-import java.util.Objects;
 import java.util.Set;
 
 import edu.carroll.bankapp.Ownable;
@@ -137,24 +136,12 @@ public class Account implements Ownable {
 
     public void addBalanceInCents(Integer additionalAmount) {
         this.balanceInCents += additionalAmount;
-
+        
     }
 
     public void subtractBalanceInCents(Integer subtractionAmount) {
         this.balanceInCents -= subtractionAmount;
-
+        
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Account account = (Account) o;
-        return Objects.equals(owner, account.owner) && Objects.equals(transactions, account.transactions) && Objects.equals(balanceInCents, account.balanceInCents) && Objects.equals(name, account.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(owner, transactions, balanceInCents, name);
-    }
 }

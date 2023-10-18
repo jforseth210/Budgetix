@@ -3,7 +3,6 @@ package edu.carroll.bankapp.jpa.model;
 import edu.carroll.bankapp.Ownable;
 import jakarta.persistence.*;
 
-import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,22 +76,5 @@ public class SiteUser {
             return false;
         }
         return item.getOwner().equals(this);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        SiteUser siteUser = (SiteUser) o;
-        return Objects.equals(fullName, siteUser.fullName) && Objects.equals(email, siteUser.email)
-                && Objects.equals(username, siteUser.username)
-                && Objects.equals(hashedPassword, siteUser.hashedPassword);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(fullName, email, username, hashedPassword);
     }
 }

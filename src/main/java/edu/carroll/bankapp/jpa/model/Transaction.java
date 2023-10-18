@@ -1,5 +1,7 @@
 package edu.carroll.bankapp.jpa.model;
 
+import java.util.Date;
+
 import edu.carroll.bankapp.Ownable;
 import jakarta.persistence.*;
 
@@ -8,7 +10,7 @@ import jakarta.persistence.*;
  */
 @Entity
 @Table(name = "transaction")
-public class Transaction implements Ownable {
+public class Transaction implements Ownable, Comparable<Transaction> {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
@@ -24,6 +26,10 @@ public class Transaction implements Ownable {
 
     @ManyToOne
     private Account account;
+
+    @Column(name = "date")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date date;
 
     /**
      * Default Constructor
@@ -103,7 +109,7 @@ public class Transaction implements Ownable {
 
     /**
      * Sets the transaction amount in US dollars
-     * 
+     *
      * @param amountInDollars - Double - transaction abount in US dollars (anything
      *                        less than a penny will be lost)
      */
@@ -147,4 +153,16 @@ public class Transaction implements Ownable {
         this.account = account;
     }
 
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    @Override
+    public int compareTo(Transaction t) {
+        return getDate().compareTo(t.getDate());
+    }
 }

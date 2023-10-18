@@ -1,5 +1,6 @@
 package edu.carroll.bankapp.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -36,6 +37,7 @@ public class TransactionServiceImpl implements TransactionService {
         newTransaction.setAmountInDollars(amountInDollars);
         newTransaction.setToFrom(toFrom);
         newTransaction.setAccount(account);
+        newTransaction.setDate(new Date());
         transactionRepo.save(newTransaction);
         account.addBalanceInCents(newTransaction.getAmountInCents());
         accountService.saveAccount(account);

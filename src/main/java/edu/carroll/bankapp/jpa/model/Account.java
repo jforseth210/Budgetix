@@ -2,6 +2,9 @@ package edu.carroll.bankapp.jpa.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import edu.carroll.bankapp.Ownable;
@@ -94,8 +97,10 @@ public class Account implements Ownable {
      *
      * @return transactions - Set<> - list of transactions
      */
-    public Set<Transaction> getTransactions() {
-        return this.transactions;
+    public List<Transaction> getTransactions() {
+        List<Transaction> sortedTransactions = new ArrayList<>(this.transactions);
+        Collections.sort(sortedTransactions);
+        return sortedTransactions;
     }
 
     /**
@@ -136,12 +141,12 @@ public class Account implements Ownable {
 
     public void addBalanceInCents(Integer additionalAmount) {
         this.balanceInCents += additionalAmount;
-        
+
     }
 
     public void subtractBalanceInCents(Integer subtractionAmount) {
         this.balanceInCents -= subtractionAmount;
-        
+
     }
 
 }

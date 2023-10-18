@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -36,7 +37,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/accounts").permitAll()
                         .anyRequest().authenticated())
                 .userDetailsService(myUserDetailsService)
-                .formLogin((formLogin) -> formLogin.loginPage("/login").permitAll())
+                .formLogin((formLogin) -> formLogin.loginPage("/login").permitAll().failureHandler(new CustomAuthenticationFailureHandler()))
                 .build();
     }
 
@@ -44,5 +45,4 @@ public class SecurityConfig {
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }

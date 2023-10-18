@@ -37,7 +37,7 @@ public class DashboardController {
     private final AuthHelper authHelper;
 
     public DashboardController(AccountService accountService, UserService userService,
-                               TransactionService transactionService, AuthHelper authHelper) {
+            TransactionService transactionService, AuthHelper authHelper) {
         this.accountService = accountService;
         this.transactionService = transactionService;
         this.authHelper = authHelper;
@@ -160,10 +160,11 @@ public class DashboardController {
      */
     @PostMapping("/add-transfer")
     public RedirectView addTransfer(@Valid @ModelAttribute NewTransferForm newTransferForm) {
+        Account toAccount = accountService.getUserAccount(authHelper.getLoggedInUser(),
+                newTransferForm.getToAccountId());
         Account fromAccount = accountService.getUserAccount(authHelper.getLoggedInUser(),
                 newTransferForm.getFromAccountId());
-        Account toAccount = accountService.getUserAccount(authHelper.getLoggedInUser(),
-                newTransferForm.getFromAccountId());
+
         transactionService.createTransaction(String.format("Transfer to %s", toAccount.getName()),
                 -1 * newTransferForm.getTransferAmountInDollars(), toAccount.getName(), fromAccount);
 

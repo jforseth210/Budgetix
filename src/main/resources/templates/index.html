@@ -23,7 +23,7 @@
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li th:if="${accounts != null}" th:each="account: ${accounts}" class="nav-item">
                         <a class="nav-link"
@@ -45,7 +45,6 @@
                     </li>
                 </ul>
             </div>
-        </div>
         </div>
     </nav>
     <div class="container mt-3">
@@ -168,11 +167,13 @@
                     <form id="newTransferForm" action="#" th:action="@{/add-transfer}" th:object="${newTransferForm}"
                         method="POST">
                         <label for="toAccount">Account to Transfer To</label>
-                        <select class="mb-2 form-control">
+                        <select class="mb-2 form-control" name="toAccountId">
                             <option th:if="${accounts != null}" th:each="account: ${accounts}" class="nav-item"
                                 th:value="${account.getId()}" th:text="${account.getName()}">
                             </option>
                         </select>
+                        <input type="number" class="mb-2 form-control" id="accountOrigin" hidden aria-hidden
+                            name="fromAccountId" th:value="${currentAccount.getId()}" />
                         <label for="newAccountBalance">Transfer Amount</label>
                         <input type="number" value="0" class="mb-2 form-control" id="newAccountBalance"
                             th:field="*{transferAmountInDollars}" />
@@ -180,7 +181,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success" form="newAccountForm">Add</button>
+                    <button type="submit" class="btn btn-success" form="newTransferForm">Add</button>
                 </div>
             </div>
         </div>

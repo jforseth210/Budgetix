@@ -74,11 +74,12 @@
         <div class="d-flex d-flex-row justify-content-between">
             <div>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                    data-bs-target="#exampleModalCenter">
+                    data-bs-target="#newTransactionModal">
                     New Transaction
                 </button>
 
-                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#transferModal">
+                <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                    data-bs-target="#newTransferModal">
                     New Transfer
                 </button>
                 <button class="btn btn-danger" th:data-account-id="${currentAccount.getId()}"
@@ -91,44 +92,14 @@
                 th:classappend="${currentAccount.getBalanceInDollars()<0} ? text-danger : text-success"></p>
         </div>
     </div>
+
     <!-- Modal -->
-    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+    <div class="modal fade" id="newTransactionModal" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add Account</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="newTransaction" action="#" th:action="@{/add-transaction}"
-                        th:object="${newTransactionForm}" method="POST">
-                        <label for="newTransaction">Transaction Name</label>
-                        <input type="text" value="0" class="mb-2 form-control" id="newName" th:field="*{name}" />
-                        <label for="newTransaction">Transaction Amount</label>
-                        <input type="number" step=".01" class="mb-2 form-control" id="newAmount"
-                            th:field="*{amountInDollars}" />
-                        <label for="newTransaction">From Where?</label>
-                        <input type="text" value="0" class="mb-2 form-control" id="newToFrom" th:field="*{toFrom}" />
-                        <input type="number" class="mb-2 form-control" id="accountOrigin" hidden aria-hidden
-                            name="accountId" th:value="${currentAccount.getId()}" />
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success" form="newTransaction">Add</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    </div>
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
-        aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add Account</h1>
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">New Transaction</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -156,11 +127,12 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="transferModal" tabindex="-1" aria-labelledby="transferModalButton" aria-hidden="true">
+    <div class="modal fade" id="newTransferModal" tabindex="-1" aria-labelledby="transferModalButton"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">New Transfer</h1>
+                    <h1 class="modal-title fs-5" id="newTransferModal">New Transfer</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">

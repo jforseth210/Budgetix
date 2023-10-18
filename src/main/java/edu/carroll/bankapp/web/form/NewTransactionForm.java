@@ -16,6 +16,8 @@ public class NewTransactionForm {
     @NotNull
     private String name;
 
+    private String type;
+
     private Integer accountId;
 
     /**
@@ -43,7 +45,6 @@ public class NewTransactionForm {
         this.toFrom = toFrom;
     }
 
-    
     /**
      * Get the amount in dollars for the transaction (via math conversion)
      *
@@ -52,8 +53,7 @@ public class NewTransactionForm {
     public double getAmountInDollars() {
         return amountInDollars;
     }
-    
-    
+
     /**
      * Get the amount in cents for the transaction
      *
@@ -66,6 +66,7 @@ public class NewTransactionForm {
     public void setAmountInDollars(double amountInDollars) {
         this.amountInDollars = amountInDollars;
     }
+
     /**
      * Get the name of the transaction
      *
@@ -101,4 +102,13 @@ public class NewTransactionForm {
     public void setAccountId(Integer id) {
         this.accountId = id;
     }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
 }

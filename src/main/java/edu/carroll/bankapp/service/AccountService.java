@@ -2,135 +2,68 @@ package edu.carroll.bankapp.service;
 
 import edu.carroll.bankapp.jpa.model.Account;
 import edu.carroll.bankapp.jpa.model.SiteUser;
-import edu.carroll.bankapp.jpa.repo.AccountRepository;
-import edu.carroll.bankapp.web.controller.DashboardController;
-import edu.carroll.bankapp.web.form.NewAccountForm;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
 /**
- * Service for managing accounts.
+ * Interface for managing accounts.
  */
-@Service
-public class AccountService {
-    private static final Logger log = LoggerFactory.getLogger(DashboardController.class);
-
-    private final AccountRepository accountRepo;
-    private final UserService userService;
-
+public interface AccountService {
     /**
-     * Default constructor
+     * Save changes made to an account using setters
      *
-     * @param userService - user
-     * @param accountRepo - account
+     * @param account the account to be saved
+     * @return the saved account
      */
-    public AccountService(UserService userService, AccountRepository accountRepo) {
-        this.userService = userService;
-        this.accountRepo = accountRepo;
-    }
-
-    /**
-     * Returns a list of Accounts owned by the currently logged-in user
-     *
-     * @return list of accounts
-     */
-    public List<Account> getUserAccounts() {
-        SiteUser loggedInSiteUser = userService.getLoggedInUser();
-        if (loggedInSiteUser == null) {
-            return new ArrayList<Account>();
-        }
-        return getUserAccounts(loggedInSiteUser);
-    }
+    Account saveAccount(Account account);
 
     /**
      * Returns a list of Accounts owned by the given user
-     * 
+     *
      * @param user the user to get accounts for
      * @return list of accounts
      */
-    public List<Account> getUserAccounts(SiteUser user) {
-        return accountRepo.findByOwner(user);
-    }
+    List<Account> getUserAccounts(SiteUser user);
 
     /**
      * Returns the Account matching the given id, if the account is owned by the
      * currently logged-in user.
      * Returns null if the requested account is owned by someone else.
      *
-     * @param id the id of the requested account
+     * @param loggedInUser the currently logged-in user
+     * @param id           the id of the requested account
      * @return account/null
      */
-    public Account getUserAccount(int id) {
-        List<Account> accounts = accountRepo.findById(id);
-        if (accounts.isEmpty()) {
-            log.warn("Account with id {} doesn't exist", id);
-            return null;
-        } else if (accounts.size() > 1) {
-            log.error("Got multiple accounts with id {}. Bailing out", id);
-            throw new IllegalStateException();
-        }
-        Account account = accounts.get(0);
-        if (userService.getLoggedInUser().owns(account)) {
-            return account;
-        }
-        String currentUsername = userService.getLoggedInUser().getUsername();
-        String accountOwnerUsername = account.getOwner().getUsername();
-        log.warn("{} attempted to access one of {}'s accounts", currentUsername, accountOwnerUsername);
-        return null;
-    }
+    Account getUserAccount(SiteUser loggedInUser, int id);
 
     /**
      * Create an account and save it in the database
+     *
+     * @param accountName      the name of the account
+     * @param balanceInDollars the initial balance in dollars
+     * @param owner            the owner of the account
+     * @return true if the account was created successfully, false otherwise
      */
-    public boolean createAccount(String accountName, double balanceInDollars, SiteUser owner) {
-        // Create and save a new account
-        Account newAccount = new Account();
-        newAccount.setName(accountName);
-        newAccount.setBalanceInCents((int) (balanceInDollars * 100));
-        newAccount.setOwner(owner);
-        accountRepo.save(newAccount);
-        return true;
-    }
-
-    /**
-     * Account creation that unpacks a newAccountForm
-     */
-    public boolean createAccount(NewAccountForm newAccountForm) {
-        return createAccount(newAccountForm.getAccountName(), newAccountForm.getAccountBalance(),
-                userService.getLoggedInUser());
-    }
+    boolean createAccount(String accountName, double balanceInDollars, SiteUser owner);
 
     /**
      * Delete the given account
-     * 
-     * @param account
+     *
+     * @param loggedInUser the currently logged-in user
+     * @param account      the account to be deleted
      */
-    public void deleteAccount(Account account) {
-        if (userService.getLoggedInUser().owns(account)) {
-            accountRepo.delete(account);
-        }
-    }
+    void deleteAccount(SiteUser loggedInUser, Account account);
 
     /**
      * Delete the account with the given id
-     * 
-     * @param accountID
+     *
+     * @param loggedInUser the currently logged-in user
+     * @param accountID    the id of the account to be deleted
      */
-    public void deleteAccount(int accountID) {
-        Account account = getUserAccount(accountID);
-        deleteAccount(account);
-    }
+    void deleteAccount(SiteUser loggedInUser, int accountID);
 
     /**
      * Delete every account
      */
-    public void deleteAllAccounts() {
-        log.warn("Deleting all accounts");
-        accountRepo.deleteAll();
-    }
+    void deleteAllAccounts();
 }

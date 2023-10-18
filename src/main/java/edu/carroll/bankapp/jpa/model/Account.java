@@ -25,8 +25,15 @@ public class Account implements Ownable {
     // software for years and years and years would make fun of us
     @Column(name = "balance_in_cents", nullable = false)
     private Integer balanceInCents;
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false)
     private String name;
+
+    /**
+     * Hibernate wants a default constructor
+     */
+    public Account() {
+
+    }
 
     /**
      * Returns the name of the account
@@ -127,10 +134,14 @@ public class Account implements Ownable {
         this.balanceInCents = balanceInCents;
     }
 
-    /**
-     * Hibernate wants a default constructor
-     */
-    public Account() {
-
+    public void addBalanceInCents(Integer additionalAmount) {
+        this.balanceInCents += additionalAmount;
+        
     }
+
+    public void subtractBalanceInCents(Integer subtractionAmount) {
+        this.balanceInCents -= subtractionAmount;
+        
+    }
+
 }

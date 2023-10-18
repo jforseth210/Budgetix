@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithUserDetails;
 
 import java.util.List;
 
@@ -40,9 +39,9 @@ public class AccountServiceTest {
     }
 
     @Test
-    @WithUserDetails("johndoe")
     public void testGetUserAccounts() {
-        List<Account> johnsAccounts = accountService.getUserAccounts();
+        SiteUser john = userService.getUser("johndoe");
+        List<Account> johnsAccounts = accountService.getUserAccounts(john);
         assertNotNull(johnsAccounts);
         assertEquals(johnsAccounts.size(), 2);
         // Not necessarily ordered this way
@@ -58,23 +57,23 @@ public class AccountServiceTest {
     }
 
     @Test
-    @WithUserDetails("☕☕☕☕")
     public void testGetUserAccountsWithCrazyUnicode() {
-        Account unicodeMansAccount = accountService.getUserAccounts().get(0);
+        SiteUser unicodeMan = userService.getUser("☕☕☕☕");
+        Account unicodeMansAccount = accountService.getUserAccounts(unicodeMan).get(0);
         assertEquals(unicodeMansAccount.getBalanceInDollars(), -1000);
         assertEquals(unicodeMansAccount.getName(), "💰💰💰");
     }
 
     @Test
     public void testGetUserAccountsNotLoggedIn() {
-        List<Account> accountList = accountService.getUserAccounts();
+        List<Account> accountList = accountService.getUserAccounts(null);
         assertTrue(accountList.isEmpty());
     }
 
     @Test
-    @WithUserDetails("alicejohnson")
     public void testGetUserAccountsNoAccounts() {
-        List<Account> accountList = accountService.getUserAccounts();
+        SiteUser alice = userService.getUser("alicejohnson");
+        List<Account> accountList = accountService.getUserAccounts(alice);
         assertTrue(accountList.isEmpty());
     }
 }

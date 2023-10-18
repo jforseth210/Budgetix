@@ -1,10 +1,12 @@
 package edu.carroll.bankapp.web.controller;
 
 import edu.carroll.bankapp.jpa.model.Account;
+import edu.carroll.bankapp.jpa.model.SiteUser;
 import edu.carroll.bankapp.jpa.model.Transaction;
 import edu.carroll.bankapp.service.AccountService;
 import edu.carroll.bankapp.service.TransactionService;
 import edu.carroll.bankapp.service.UserService;
+import edu.carroll.bankapp.web.AuthHelper;
 import edu.carroll.bankapp.web.form.DeleteAccountForm;
 import edu.carroll.bankapp.web.form.DeleteTransactionForm;
 import edu.carroll.bankapp.web.form.NewAccountForm;
@@ -28,25 +30,16 @@ import java.util.List;
  */
 @Controller
 public class DashboardController {
-    private final AccountService accountService;
-    private final UserService userService;
-    private final TransactionService transactionService;
-
     private static final Logger log = LoggerFactory.getLogger(DashboardController.class);
+    private final AccountService accountService;
+    private final TransactionService transactionService;
+    private final AuthHelper authHelper;
 
-    /**
-     * Default Constructor - helps to set up our database
-     *
-     * @param accountService
-     * @param accountRepo
-     * @param userService
-     * @param transRepo
-     */
     public DashboardController(AccountService accountService, UserService userService,
-            TransactionService transactionService) {
+                               TransactionService transactionService, AuthHelper authHelper) {
         this.accountService = accountService;
-        this.userService = userService;
         this.transactionService = transactionService;
+        this.authHelper = authHelper;
     }
 
     /**
@@ -57,7 +50,7 @@ public class DashboardController {
     @GetMapping("/")
     public RedirectView index() {
         // Get all of the user's accounts
-        List<Account> accounts = accountService.getUserAccounts();
+        List<Account> accounts = accountService.getUserAccounts(authHelper.getLoggedInUser());
         // Deal with the user not having any accounts
         if (accounts == null || accounts.size() == 0) {
             return new RedirectView("/add-account");
@@ -76,16 +69,17 @@ public class DashboardController {
      */
     @GetMapping("/account/{accountId}")
     public String index(@PathVariable Integer accountId, Model model) {
-        model.addAttribute("currentUser", userService.getLoggedInUser());
+        SiteUser loggedInUser = authHelper.getLoggedInUser();
+        model.addAttribute("currentUser", loggedInUser);
         model.addAttribute("newAccountForm", new NewAccountForm());
-        if (accountId == 0 && accountService.getUserAccounts().isEmpty()) {
+        if (accountId == 0 && accountService.getUserAccounts(loggedInUser).isEmpty()) {
             return "redirect:/add-account";
         }
-        final Account account = accountService.getUserAccount(accountId);
+        final Account account = accountService.getUserAccount(loggedInUser, accountId);
         if (account == null) {
             return "redirect:/";
         }
-        List<Account> accounts = accountService.getUserAccounts();
+        List<Account> accounts = accountService.getUserAccounts(loggedInUser);
         log.debug("Request for account: {}", account.getName());
         model.addAttribute("newTransactionForm", new NewTransactionForm());
         model.addAttribute("accounts", accounts);
@@ -104,7 +98,15 @@ public class DashboardController {
      */
     @GetMapping("/add-account")
     public String addAccountPage(Model model) {
-        model.addAttribute("currentUser", userService.getLoggedInUser());
+        // If the user already has accounts, they shouldn't be on the initial account
+        // creation page
+        SiteUser loggedInUser = authHelper.getLoggedInUser();
+        if (!accountService.getUserAccounts(loggedInUser).isEmpty()) {
+            log.info("User {} already has accounts, redirecting to \"/\"", loggedInUser.getUsername());
+            return "redirect:/";
+        }
+
+        model.addAttribute("currentUser", authHelper.getLoggedInUser());
         model.addAttribute("newAccountForm", new NewAccountForm());
         return "addAccountPage";
     }
@@ -117,7 +119,8 @@ public class DashboardController {
      */
     @PostMapping("/add-account")
     public RedirectView addAccount(@Valid @ModelAttribute NewAccountForm newAccountForm) {
-        accountService.createAccount(newAccountForm);
+        accountService.createAccount(newAccountForm.getAccountName(), newAccountForm.getAccountBalance(),
+                authHelper.getLoggedInUser());
         // Redirect back to the root path
         return new RedirectView("/");
     }
@@ -130,20 +133,34 @@ public class DashboardController {
      */
     @PostMapping("/add-transaction")
     public RedirectView addTransaction(@Valid @ModelAttribute NewTransactionForm newTransactionForm) {
-        transactionService.createTransaction(newTransactionForm);
+        Account account = accountService.getUserAccount(authHelper.getLoggedInUser(),
+                newTransactionForm.getAccountId());
+
+        if (!newTransactionForm.getType().equals("expense") && !newTransactionForm.getType().equals("income")) {
+            log.info("Invalid transaction type {}", newTransactionForm.getType());
+            return new RedirectView("/");
+        }
+
+        if (newTransactionForm.getType().equals("expense")) {
+            newTransactionForm.setAmountInDollars(-1 * newTransactionForm.getAmountInDollars());
+        }
+
+        transactionService.createTransaction(newTransactionForm.getName(), newTransactionForm.getAmountInDollars(),
+                newTransactionForm.getToFrom(), account);
         return new RedirectView("/");
     }
 
     @PostMapping("/delete-transaction")
     public String deleteTransaction(@ModelAttribute("deleteTransactionForm") DeleteTransactionForm form) {
-        Transaction transaction = transactionService.getUserTransaction(form.getTransactionId());
-        transactionService.deleteTransaction(transaction);
+        SiteUser loggedInUser = authHelper.getLoggedInUser();
+        Transaction transaction = transactionService.getUserTransaction(loggedInUser, form.getTransactionId());
+        transactionService.deleteTransaction(loggedInUser, transaction);
         return "redirect:/account/" + transaction.getAccount().getId().toString();
     }
 
     @PostMapping("/delete-account")
     public String deleteAccount(@ModelAttribute("deleteAccountForm") DeleteAccountForm form) {
-        accountService.deleteAccount(form.getAccountId());
+        accountService.deleteAccount(authHelper.getLoggedInUser(), form.getAccountId());
         // Redirect or return the appropriate view
         return "redirect:/";
     }

@@ -12,10 +12,6 @@
         #button-column {
             width: 1em;
         }
-
-
-
-
     </style>
 </head>
 
@@ -65,7 +61,8 @@
         <tr th:each="transaction: ${currentAccount.getTransactions()}">
             <td th:text="${transaction.getName()}"></td>
             <td th:text="${transaction.getToFrom()}"></td>
-            <td style="text-align: right" class="text-danger" th:text="${transaction.getAmountInDollars()}">
+            <td style="text-align: right" th:text="${transaction.getAmountInDollars()}"
+                th:classappend="${transaction.getAmountInDollars()<0} ? text-danger : text-success">
             </td>
             <td>
                 <button class="btn btn-danger" th:data-transaction-id="${transaction.getId()}"
@@ -77,13 +74,20 @@
         </tbody>
     </table>
     <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">
-        Log a Transaction
-    </button>
-    <button class="btn btn-danger" th:data-account-id="${currentAccount.getId()}"
-            onclick="confirmDeleteAccount(this.getAttribute('data-account-id'))"
-            th:text="'Delete '+${currentAccount.getName()}">
-    </button>
+    <div class="d-flex d-flex-row justify-content-between">
+        <div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#exampleModalCenter">
+                Log a Transaction
+            </button>
+            <button class="btn btn-danger" th:data-account-id="${currentAccount.getId()}"
+                    onclick="confirmDeleteAccount(this.getAttribute('data-account-id'))"
+                    th:text="'Delete '+${currentAccount.getName()}">
+            </button>
+        </div>
+        <p th:text='${currentAccount.getBalanceInDollars()}'
+           th:classappend="${currentAccount.getBalanceInDollars()<0} ? text-danger : text-success"></p>
+    </div>
     <!-- Modal -->
     <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
          aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -109,8 +113,12 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success" form="newTransaction">Add</button>
+                    <button type="submit" name="type" value="income" class="btn btn-success"
+                            form="newTransaction">Income
+                    </button>
+                    <button type="submit" name="type" value="expense" class="btn btn-danger"
+                            form="newTransaction">Expense
+                    </button>
                 </div>
             </div>
         </div>
@@ -173,7 +181,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                Are you sure you want to delete this account <i>and all of it's transactions</i>?
+                Are you sure you want to delete this account <i>and all of it' s transactions</i>?
             </div>
             <div class="modal-footer">
                 <form id="deleteAccountForm" th:object="${deleteAccountForm}" th:action="@{/delete-account}"
@@ -200,6 +208,10 @@
             document.getElementById("accountDeletionModalAccountId").value = accountId;
             new bootstrap.Modal(document.getElementById('accountDeletionConfirmationModal')).show();
         }
+
+
+
+
 
 
 

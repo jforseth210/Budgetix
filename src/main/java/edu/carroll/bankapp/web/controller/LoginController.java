@@ -4,9 +4,10 @@ import edu.carroll.bankapp.jpa.model.SiteUser;
 import edu.carroll.bankapp.service.UserService;
 import edu.carroll.bankapp.web.form.LoginForm;
 import edu.carroll.bankapp.web.form.NewLoginForm;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
-import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,23 +56,31 @@ public class LoginController {
      *
      * @param newLoginForm The data collected from the form
      * @param result       Form errors (if any)
-     * @return String redirect view - redirect leads user to new page based on submission
+     * @return String redirect view - redirect leads user to new page based on
+     * submission
      */
     @PostMapping("/loginNew")
-    public String loginNewPost(@Valid @ModelAttribute NewLoginForm newLoginForm, BindingResult result) {
+    public String loginNewPost(HttpServletRequest request, @Valid @ModelAttribute NewLoginForm newLoginForm,
+                               BindingResult result) {
         if (result.hasErrors()) {
             return "loginNew";
         }
-
         if (!newLoginForm.getPassword().equals(newLoginForm.getConfirm())) {
-            log.info("A user, {}, attempted to make an account with non-matching passwords", newLoginForm.getUsername());
+            log.info("A user, {}, attempted to make an account with non-matching passwords",
+                    newLoginForm.getUsername());
             result.addError(new ObjectError("confirm", "Passwords must match"));
             return "loginNew";
         }
-
-        SiteUser createdUser = userService.createUser(newLoginForm);
-
+        SiteUser createdUser = userService.createUser(newLoginForm.getFullName(), newLoginForm.getEmail(), newLoginForm.getUsername(), newLoginForm.getPassword());
         log.info("Created a new user: {}", createdUser.getUsername());
+
+        try {
+            request.login(newLoginForm.getUsername(), newLoginForm.getPassword());
+        } catch (ServletException e) {
+            log.error("Error logging {} in after signup:", newLoginForm.getUsername(), e);
+        }
+
+        log.info("New user {} logged in, redirecting to \"/\"", newLoginForm.getUsername());
         return "redirect:/";
     }
 }

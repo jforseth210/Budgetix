@@ -32,7 +32,7 @@
                     </li>
                     <button class="btn btn-outline-success" type="submit" id="addAccountButton" data-bs-toggle="modal"
                         data-bs-target="#addAccountModal"><i class="bi bi-wallet"></i>
-                        <<<<<<< HEAD Add </button>
+                        Add </button>
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item dropdown">
@@ -81,60 +81,12 @@
 
                 <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#transferModal">
                     New Transfer
-                    =======
-                    Add
-                    >>>>>>> main
-                </button>
-                </ul>
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false" th:text="'Hi, '+${currentUser.username}">
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
-                            <li><a class="dropdown-item" href="/logout">Logout</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    </nav>
-    <div class="container mt-3">
-        <table class="table">
-            <thead>
-                <th>Transaction Name</th>
-                <th>To/From</th>
-                <th>Price</th>
-                <th id="button-column"></th>
-            </thead>
-            <tbody>
-                <tr th:each="transaction: ${currentAccount.getTransactions()}">
-                    <td th:text="${transaction.getName()}"></td>
-                    <td th:text="${transaction.getToFrom()}"></td>
-                    <td style="text-align: right" th:text="${transaction.getAmountInDollars()}"
-                        th:classappend="${transaction.getAmountInDollars()<0} ? text-danger : text-success">
-                    </td>
-                    <td>
-                        <button class="btn btn-danger" th:data-transaction-id="${transaction.getId()}"
-                            onclick="confirmDeleteTransaction(this.getAttribute('data-transaction-id'))">
-                            <i class="bi bi-trash-fill"></i>
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <!-- Button trigger modal -->
-        <div class="d-flex d-flex-row justify-content-between">
-            <div>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                    data-bs-target="#exampleModalCenter">
-                    Log a Transaction
                 </button>
                 <button class="btn btn-danger" th:data-account-id="${currentAccount.getId()}"
                     onclick="confirmDeleteAccount(this.getAttribute('data-account-id'))"
                     th:text="'Delete '+${currentAccount.getName()}">
                 </button>
+
             </div>
             <p th:text='${currentAccount.getBalanceInDollars()}'
                 th:classappend="${currentAccount.getBalanceInDollars()<0} ? text-danger : text-success"></p>

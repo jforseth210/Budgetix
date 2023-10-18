@@ -77,7 +77,11 @@
             <div>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter">
-                    Log a Transaction
+                    New Transaction
+                </button>
+
+                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#transferModal">
+                    New Transfer
                 </button>
                 <button class="btn btn-danger" th:data-account-id="${currentAccount.getId()}"
                     onclick="confirmDeleteAccount(this.getAttribute('data-account-id'))"
@@ -117,7 +121,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 
     <div class="modal fade" id="addAccountModal" tabindex="-1" aria-labelledby="addAccountModalButton"
@@ -136,6 +139,34 @@
                         <label for="newAccountBalance">Starting Balance</label>
                         <input type="number" value="0" class="mb-2 form-control" id="newAccountBalance"
                             th:field="*{accountBalance}" />
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success" form="newAccountForm">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="transferModal" tabindex="-1" aria-labelledby="transferModalButton" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">New Transfer</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newTransferForm" action="#" th:action="@{/add-transfer}" th:object="${newTransferForm}"
+                        method="POST">
+                        <label for="toAccount">Account to Transfer To</label>
+                        <select class="mb-2 form-control">
+                            <option th:if="${accounts != null}" th:each="account: ${accounts}" class="nav-item"
+                                th:value="${account.getId()}" th:text="${account.getName()}">
+                            </option>
+                        </select>
+                        <label for="newAccountBalance">Transfer Amount</label>
+                        <input type="number" value="0" class="mb-2 form-control" id="newAccountBalance"
+                            th:field="*{transferAmountInDollars}" />
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -202,6 +233,7 @@
             document.getElementById("accountDeletionModalAccountId").value = accountId;
             new bootstrap.Modal(document.getElementById('accountDeletionConfirmationModal')).show();
         }
+
 
 
 

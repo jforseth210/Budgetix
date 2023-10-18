@@ -78,7 +78,7 @@
         <div>
             <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                     data-bs-target="#exampleModalCenter">
-                Log a Transaction
+                New Transaction
             </button>
             <button class="btn btn-danger" th:data-account-id="${currentAccount.getId()}"
                     onclick="confirmDeleteAccount(this.getAttribute('data-account-id'))"
@@ -208,14 +208,6 @@
             document.getElementById("accountDeletionModalAccountId").value = accountId;
             new bootstrap.Modal(document.getElementById('accountDeletionConfirmationModal')).show();
         }
-
-
-
-
-
-
-
-
 </script>
 </body>
 

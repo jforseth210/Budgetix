@@ -15,9 +15,13 @@
     </div>
     <form action="#" class="error" th:action="@{/login}" th:object="${loginForm}" method="post">
 <!--    This div is actually very important for showing the errors    -->
-        <div th:if="${param.error != null}"
+        {% if <div th:if="${param.error != null}"
              th:text="${session[SPRING_SECURITY_LAST_EXCEPTION].message}" class="alert alert-danger">
-        </div>
+        </div> == "Bad Credentials"%}
+        <span class="error">Invalid Username or Password</span>
+        {% else if %}
+        <span>""</span>
+        {% endif %}
         <span class="error" th:if="${#fields.hasGlobalErrors()}" th:errors="*{global}">Global Errors</span>
         <label for="username">Username:</label>
         <input class="login-bar" type="text" th:field="*{username}" id="username" name="username" required>

@@ -59,7 +59,9 @@
                 <tr th:each="transaction: ${currentAccount.getTransactions()}">
                     <td th:text="${transaction.getName()}"></td>
                     <td th:text="${transaction.getToFrom()}"></td>
-                    <td style="text-align: right" class="text-danger" th:text="${transaction.getAmountInDollars()}">
+                    <td style="text-align: right" th:text="${transaction.getAmountInDollars()}"
+                        th:classappend="${transaction.getAmountInDollars()<0} ? text-danger : text-success">
+                    </td>
                     </td>
                     <td>
                         <button class="btn btn-danger" th:data-transaction-id="${transaction.getId()}"

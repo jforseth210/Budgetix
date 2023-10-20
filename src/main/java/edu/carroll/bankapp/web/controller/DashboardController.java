@@ -11,6 +11,7 @@ import edu.carroll.bankapp.web.form.DeleteAccountForm;
 import edu.carroll.bankapp.web.form.DeleteTransactionForm;
 import edu.carroll.bankapp.web.form.NewAccountForm;
 import edu.carroll.bankapp.web.form.NewTransactionForm;
+import edu.carroll.bankapp.web.form.NewTransferForm;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,7 +37,7 @@ public class DashboardController {
     private final AuthHelper authHelper;
 
     public DashboardController(AccountService accountService, UserService userService,
-                               TransactionService transactionService, AuthHelper authHelper) {
+            TransactionService transactionService, AuthHelper authHelper) {
         this.accountService = accountService;
         this.transactionService = transactionService;
         this.authHelper = authHelper;
@@ -87,6 +88,7 @@ public class DashboardController {
         model.addAttribute("newAccountForm", new NewAccountForm());
         model.addAttribute("deleteTransactionForm", new DeleteTransactionForm());
         model.addAttribute("deleteAccountForm", new DeleteAccountForm());
+        model.addAttribute("newTransferForm", new NewTransferForm());
         return "index";
     }
 
@@ -147,6 +149,27 @@ public class DashboardController {
 
         transactionService.createTransaction(newTransactionForm.getName(), newTransactionForm.getAmountInDollars(),
                 newTransactionForm.getToFrom(), account);
+        return new RedirectView("/");
+    }
+
+    /**
+     * Accept form submission for transfer addition
+     *
+     * @param newTransactionForm
+     * @return redirect view to page showing new transaction
+     */
+    @PostMapping("/add-transfer")
+    public RedirectView addTransfer(@Valid @ModelAttribute NewTransferForm newTransferForm) {
+        Account toAccount = accountService.getUserAccount(authHelper.getLoggedInUser(),
+                newTransferForm.getToAccountId());
+        Account fromAccount = accountService.getUserAccount(authHelper.getLoggedInUser(),
+                newTransferForm.getFromAccountId());
+
+        transactionService.createTransaction(String.format("Transfer to %s", toAccount.getName()),
+                -1 * newTransferForm.getTransferAmountInDollars(), toAccount.getName(), fromAccount);
+
+        transactionService.createTransaction(String.format("Transfer from %s", fromAccount.getName()),
+                newTransferForm.getTransferAmountInDollars(), fromAccount.getName(), toAccount);
         return new RedirectView("/");
     }
 

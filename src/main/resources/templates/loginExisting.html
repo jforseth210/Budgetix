@@ -14,10 +14,10 @@
         <h1>Welcome Back!</h1>
     </div>
     <form action="#" class="error" th:action="@{/login}" th:object="${loginForm}" method="post">
-        <!-- Tells the user if they have a failed login attempt ('Bad Credentials') -->
-        <div th:if="${param.error != null}"
-             th:text="${session[SPRING_SECURITY_LAST_EXCEPTION].message}" class="alert alert-danger">
-        </div>
+        <!-- Tells the user if their login attempt failed -->
+        <!--    https://docs.spring.io/spring-security/reference/servlet/authentication/passwords/form.html    -->
+        <div th:if="${param.error}">
+            Invalid username or password</div>
         <label for="username">Username:</label>
         <input class="login-bar" type="text" th:field="*{username}" id="username" name="username" required>
         <label for="password">Password:</label>

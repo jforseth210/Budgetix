@@ -76,3 +76,7 @@ p {
     margin-top: 5px;
     font-size: 0.9em;
 }
+
+#button-column {
+    width: 1em;
+}

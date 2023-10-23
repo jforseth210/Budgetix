@@ -57,30 +57,36 @@ public class LoginController {
      * @param newLoginForm The data collected from the form
      * @param result       Form errors (if any)
      * @return String redirect view - redirect leads user to new page based on
-     * submission
+     *         submission
      */
     @PostMapping("/loginNew")
     public String loginNewPost(HttpServletRequest request, @Valid @ModelAttribute NewLoginForm newLoginForm,
-                               BindingResult result) {
+            BindingResult result) {
         if (result.hasErrors()) {
             return "loginNew";
         }
+
+        // Make sure password and confirm password match
         if (!newLoginForm.getPassword().equals(newLoginForm.getConfirm())) {
             log.info("A user, {}, attempted to make an account with non-matching passwords",
                     newLoginForm.getUsername());
             result.addError(new ObjectError("confirm", "Passwords must match"));
             return "loginNew";
         }
-        SiteUser createdUser = userService.createUser(newLoginForm.getFullName(), newLoginForm.getEmail(), newLoginForm.getUsername(), newLoginForm.getPassword());
+
+        // Create the user
+        SiteUser createdUser = userService.createUser(newLoginForm.getFullName(), newLoginForm.getEmail(),
+                newLoginForm.getUsername(), newLoginForm.getPassword());
         log.info("Created a new user: {}", createdUser.getUsername());
 
+        // Attempt to log the user into the application
         try {
             request.login(newLoginForm.getUsername(), newLoginForm.getPassword());
         } catch (ServletException e) {
             log.error("Error logging {} in after signup:", newLoginForm.getUsername(), e);
         }
 
-        log.info("New user {} logged in, redirecting to \"/\"", newLoginForm.getUsername());
+        log.info("New user {} created, redirecting to \"/\"", newLoginForm.getUsername());
         return "redirect:/";
     }
 }

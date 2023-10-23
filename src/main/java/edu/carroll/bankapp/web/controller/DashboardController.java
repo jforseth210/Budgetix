@@ -52,12 +52,14 @@ public class DashboardController {
     public RedirectView index() {
         // Get all of the user's accounts
         List<Account> accounts = accountService.getUserAccounts(authHelper.getLoggedInUser());
+
         // Deal with the user not having any accounts
         if (accounts == null || accounts.size() == 0) {
             return new RedirectView("/add-account");
         }
-        log.debug("Request for \"/\", redirecting to \"/{}\"", accounts.get(0).getId());
+
         // Redirect to the first account found
+        log.debug("Request for \"/\", redirecting to \"/{}\"", accounts.get(0).getId());
         return new RedirectView("/account/" + accounts.get(0).getId());
     }
 
@@ -71,29 +73,35 @@ public class DashboardController {
     @GetMapping("/account/{accountId}")
     public String index(@PathVariable Integer accountId, Model model) {
         SiteUser loggedInUser = authHelper.getLoggedInUser();
-        model.addAttribute("currentUser", loggedInUser);
-        model.addAttribute("newAccountForm", new NewAccountForm());
-        if (accountId == 0 && accountService.getUserAccounts(loggedInUser).isEmpty()) {
+        List<Account> accounts = accountService.getUserAccounts(loggedInUser);
+
+        // The user doesn't have any accounts, go create one
+        if (accounts.isEmpty()) {
             return "redirect:/add-account";
         }
+        // The user tried to go to an account that doesn't exist, go away
         final Account account = accountService.getUserAccount(loggedInUser, accountId);
         if (account == null) {
             return "redirect:/";
         }
-        List<Account> accounts = accountService.getUserAccounts(loggedInUser);
         log.debug("Request for account: {}", account.getName());
-        model.addAttribute("newTransactionForm", new NewTransactionForm());
+
+        // Pass data to Thymleaf
+        model.addAttribute("currentUser", loggedInUser);
         model.addAttribute("accounts", accounts);
         model.addAttribute("currentAccount", account);
+
+        // Pass form objects to Thymeleaf
         model.addAttribute("newAccountForm", new NewAccountForm());
+        model.addAttribute("newTransactionForm", new NewTransactionForm());
+        model.addAttribute("newTransferForm", new NewTransferForm());
         model.addAttribute("deleteTransactionForm", new DeleteTransactionForm());
         model.addAttribute("deleteAccountForm", new DeleteAccountForm());
-        model.addAttribute("newTransferForm", new NewTransferForm());
         return "index";
     }
 
     /**
-     * Page for adding an account
+     * Page for initially adding an account
      *
      * @param model data to pass to Thymeleaf
      * @return redirect view
@@ -108,6 +116,7 @@ public class DashboardController {
             return "redirect:/";
         }
 
+        // Pass data to Thymeleaf
         model.addAttribute("currentUser", authHelper.getLoggedInUser());
         model.addAttribute("newAccountForm", new NewAccountForm());
         return "addAccountPage";
@@ -121,8 +130,12 @@ public class DashboardController {
      */
     @PostMapping("/add-account")
     public RedirectView addAccount(@Valid @ModelAttribute NewAccountForm newAccountForm) {
-        accountService.createAccount(newAccountForm.getAccountName(), newAccountForm.getAccountBalance(),
+        // Create an account
+        accountService.createAccount(
+                newAccountForm.getAccountName(),
+                newAccountForm.getAccountBalance(),
                 authHelper.getLoggedInUser());
+
         // Redirect back to the root path
         return new RedirectView("/");
     }
@@ -138,17 +151,31 @@ public class DashboardController {
         Account account = accountService.getUserAccount(authHelper.getLoggedInUser(),
                 newTransactionForm.getAccountId());
 
+        // Is account type "income" or "expense"
         if (!newTransactionForm.getType().equals("expense") && !newTransactionForm.getType().equals("income")) {
             log.info("Invalid transaction type {}", newTransactionForm.getType());
             return new RedirectView("/");
         }
 
+        // Only allow user to submit positives amounts in income/expenses
+        if (newTransactionForm.getAmountInDollars() < 0) {
+            log.info("{} attempted to create a transaction with a negative amount. Making positive.",
+                    authHelper.getLoggedInUser());
+            newTransactionForm.setAmountInDollars(Math.abs(newTransactionForm.getAmountInDollars()));
+        }
+
+        // Express expenses as a negative amount
         if (newTransactionForm.getType().equals("expense")) {
             newTransactionForm.setAmountInDollars(-1 * newTransactionForm.getAmountInDollars());
         }
 
-        transactionService.createTransaction(newTransactionForm.getName(), newTransactionForm.getAmountInDollars(),
-                newTransactionForm.getToFrom(), account);
+        // Create the transaction
+        transactionService.createTransaction(
+                newTransactionForm.getName(),
+                newTransactionForm.getAmountInDollars(),
+                newTransactionForm.getToFrom(),
+                account);
+
         return new RedirectView("/");
     }
 
@@ -160,16 +187,28 @@ public class DashboardController {
      */
     @PostMapping("/add-transfer")
     public RedirectView addTransfer(@Valid @ModelAttribute NewTransferForm newTransferForm) {
+        // The account to send money to
         Account toAccount = accountService.getUserAccount(authHelper.getLoggedInUser(),
                 newTransferForm.getToAccountId());
+
+        // The account to take money from
         Account fromAccount = accountService.getUserAccount(authHelper.getLoggedInUser(),
                 newTransferForm.getFromAccountId());
 
-        transactionService.createTransaction(String.format("Transfer to %s", toAccount.getName()),
-                -1 * newTransferForm.getTransferAmountInDollars(), toAccount.getName(), fromAccount);
+        // Withdrawl from the fromAccount
+        transactionService.createTransaction(
+                String.format("Transfer to %s", toAccount.getName()),
+                -1 * newTransferForm.getTransferAmountInDollars(),
+                toAccount.getName(),
+                fromAccount);
 
-        transactionService.createTransaction(String.format("Transfer from %s", fromAccount.getName()),
-                newTransferForm.getTransferAmountInDollars(), fromAccount.getName(), toAccount);
+        // Income into the toAccount
+        transactionService.createTransaction(
+                String.format("Transfer from %s", fromAccount.getName()),
+                newTransferForm.getTransferAmountInDollars(),
+                fromAccount.getName(),
+                toAccount);
+                
         return new RedirectView("/");
     }
 

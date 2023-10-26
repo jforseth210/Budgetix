@@ -40,6 +40,7 @@ public class TransactionServiceImpl implements TransactionService {
         newTransaction.setDate(new Date());
         transactionRepo.save(newTransaction);
         account.addBalanceInCents(newTransaction.getAmountInCents());
+        account.addTransaction(newTransaction);
         accountService.saveAccount(account);
         return newTransaction;
     }

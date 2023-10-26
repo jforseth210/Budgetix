@@ -2,10 +2,7 @@ package edu.carroll.bankapp.jpa.model;
 
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import edu.carroll.bankapp.Ownable;
 
@@ -30,13 +27,6 @@ public class Account implements Ownable {
     private Integer balanceInCents;
     @Column(name = "name", nullable = false)
     private String name;
-
-    /**
-     * Hibernate wants a default constructor
-     */
-    public Account() {
-
-    }
 
     /**
      * Returns the name of the account
@@ -95,12 +85,15 @@ public class Account implements Ownable {
     /**
      * Gets a list of all the transactions
      *
-     * @return transactions - Set<> - list of transactions
+     * @return transactions- list of transactions
      */
     public List<Transaction> getTransactions() {
-        List<Transaction> sortedTransactions = new ArrayList<>(this.transactions);
-        Collections.sort(sortedTransactions);
-        return sortedTransactions;
+        if (this.transactions == null) {
+            return new ArrayList<>();
+        }
+        List<Transaction> fetchedTransactions = new ArrayList<>(this.transactions);
+        Collections.sort(fetchedTransactions);
+        return fetchedTransactions;
     }
 
     /**
@@ -110,6 +103,13 @@ public class Account implements Ownable {
      */
     public void setTransactions(Set<Transaction> transactions) {
         this.transactions = transactions;
+    }
+
+    public void addTransaction(Transaction transaction) {
+        if (this.transactions == null) {
+            this.transactions = new HashSet<>();
+        }
+        this.transactions.add(transaction);
     }
 
     /**

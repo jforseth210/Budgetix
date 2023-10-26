@@ -20,16 +20,13 @@ public class AccountServiceImpl implements AccountService {
     private static final Logger log = LoggerFactory.getLogger(DashboardController.class);
 
     private final AccountRepository accountRepo;
-    private final UserServiceImpl userServiceImpl;
 
     /**
      * Default constructor
      *
-     * @param userServiceImpl - user
-     * @param accountRepo     - account
+     * @param accountRepo - account database repo
      */
-    public AccountServiceImpl(UserServiceImpl userServiceImpl, AccountRepository accountRepo) {
-        this.userServiceImpl = userServiceImpl;
+    public AccountServiceImpl(AccountRepository accountRepo) {
         this.accountRepo = accountRepo;
     }
 
@@ -48,7 +45,7 @@ public class AccountServiceImpl implements AccountService {
      */
     public List<Account> getUserAccounts(SiteUser user) {
         if (user == null) {
-            return new ArrayList<Account>();
+            return new ArrayList<>();
         }
         return accountRepo.findByOwner(user);
     }
@@ -83,21 +80,22 @@ public class AccountServiceImpl implements AccountService {
     /**
      * Create an account and save it in the database
      */
-    public boolean createAccount(String accountName, double balanceInDollars, SiteUser owner) {
+    public Account createAccount(String accountName, double balanceInDollars, SiteUser owner) {
         List<Account> ownerAccounts = getUserAccounts(owner);
         for (Account account : ownerAccounts) {
             if (account.getName().equals(accountName)) {
                 log.info("{} tried to create two accounts named {}", accountName);
-                return false;
+                return null;
             }
         }
+        log.info("Creating account named {} for user {}", accountName, owner.getUsername());
         // Create and save a new account
         Account newAccount = new Account();
         newAccount.setName(accountName);
         newAccount.setBalanceInCents((int) (balanceInDollars * 100));
         newAccount.setOwner(owner);
         accountRepo.save(newAccount);
-        return true;
+        return newAccount;
     }
 
     /**

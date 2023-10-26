@@ -40,6 +40,8 @@
                             data-bs-toggle="dropdown" aria-expanded="false" th:text="'Hi, '+${currentUser.username}">
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
+                            <li><a class="dropdown-item" href="#" data-toggle="modal" data-target="#updateUsernameModal">Update Username</a></li>
+                            <li><a class="dropdown-item" href="#">Update Password</a></li>
                             <li><a class="dropdown-item" href="/logout">Logout</a></li>
                         </ul>
                     </li>
@@ -47,6 +49,34 @@
             </div>
         </div>
     </nav>
+
+<!--&lt;!&ndash;  Update Username Modal  &ndash;&gt;-->
+<!--    <div id="updateUsernameModal" class="modal fade" tabindex="-1" role="dialog">-->
+<!--        <div class="modal-dialog" role="document">-->
+<!--            <div class="modal-content">-->
+<!--                <div class="modal-header">-->
+<!--                    <h5 class="modal-title">Update Username</h5>-->
+<!--                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--                </div>-->
+<!--                <div class="modal-body">-->
+<!--                    <label for="newTransaction">Old Username</label>-->
+<!--                    <input type="text" value="0" class="mb-2 form-control" id="oldUsername" th:field="*{oldUsername}" />-->
+<!--                    <label for="newTransaction">NewUsername</label>-->
+<!--                    <input type="text" value="0" class="mb-2 form-control" id="newUsername" th:field="*{newUsername}" />-->
+<!--                </div>-->
+<!--                <div class="modal-footer">-->
+<!--                    <form id="updateUsernameForm" th:object="${updateUsernameForm}"-->
+<!--                          th:action="@{/update-username}" method="post">-->
+<!--                        <input type="number" class="mb-2 form-control" id="usernameOrigin" hidden aria-hidden-->
+<!--                               name="accountId" th:value="${currentAccount.getId()}" />-->
+<!--                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>-->
+<!--                        <button type="submit" class="btn btn-danger">Update</button>-->
+<!--                    </form>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
     <div class="container mt-3">
         <table class="table">
             <thead>
@@ -95,7 +125,7 @@
         </div>
     </div>
 
-    <!-- Modal -->
+    <!-- New Transaction Modal -->
     <div class="modal fade" id="newTransactionModal" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -129,6 +159,7 @@
             </div>
         </div>
     </div>
+
     <div class="modal fade" id="newTransferModal" tabindex="-1" aria-labelledby="transferModalButton"
         aria-hidden="true">
         <div class="modal-dialog">

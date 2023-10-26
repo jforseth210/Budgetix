@@ -77,4 +77,8 @@ public class SiteUser {
         }
         return item.getOwner().equals(this);
     }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 }

@@ -31,12 +31,14 @@ public class DashboardController {
     private final AccountService accountService;
     private final TransactionService transactionService;
     private final AuthHelper authHelper;
+    private final UserService userService;
 
     public DashboardController(AccountService accountService, UserService userService,
             TransactionService transactionService, AuthHelper authHelper) {
         this.accountService = accountService;
         this.transactionService = transactionService;
         this.authHelper = authHelper;
+        this.userService = userService;
     }
 
     /**
@@ -85,6 +87,8 @@ public class DashboardController {
         model.addAttribute("deleteTransactionForm", new DeleteTransactionForm());
         model.addAttribute("deleteAccountForm", new DeleteAccountForm());
         model.addAttribute("newTransferForm", new NewTransferForm());
+        model.addAttribute("updateUsernameForm", new UpdateUsernameForm());
+        model.addAttribute("updatePasswordForm", new UpdatePasswordForm());
         return "index";
     }
 
@@ -186,12 +190,34 @@ public class DashboardController {
 
     @PostMapping("/update-password")
     public String updatePassword(@ModelAttribute("updatePassword") UpdatePasswordForm form) {
-       return "redirect:/";
+        SiteUser user = authHelper.getLoggedInUser();
+
+        if (user == null) {
+            // Handle the case where the user doesn't exist
+            return "redirect:/";
+        }
+
+        // Verify the old password
+//        if (!form.isPasswordValid(user, form.getOldPassword())) {
+//            // Handle the case where the old password is incorrect
+//            return "redirect:/";
+//        }
+//
+//        // Validate the new password
+//        if (!form.isPasswordValid(user, form.getNewPassword())) {
+//            // Handle invalid new password
+//            return "redirect:/";
+//        }
+
+        // Update the user's password
+        form.setNewPassword(form.getNewPassword());
+        return "redirect:/";
     }
 
     @PostMapping("/update-username")
     public String updateUsername(@ModelAttribute("updateUsername") UpdateUsernameForm form) {
+        SiteUser user = authHelper.getLoggedInUser();
+        userService.updateUsername(user, form.getOldUsername(), form.getNewUsername());
         return "redirect:/";
     }
-
 }

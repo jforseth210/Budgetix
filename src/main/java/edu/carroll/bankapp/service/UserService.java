@@ -37,4 +37,9 @@ public interface UserService {
      * Delete all site users. (Should ONLY be used for testing)
      */
     void deleteAllSiteUsers();
+
+    void updatePassword(SiteUser user, String oldPassword, String newPassword, String newConfirm);
+
+    void updateUsername(SiteUser user, String oldUsername, String newUsername);
+
 }

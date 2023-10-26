@@ -87,4 +87,13 @@ public class UserServiceImpl implements UserService {
         log.warn("Deleting all users");
         userRepo.deleteAll();
     }
+
+    public void updatePassword(SiteUser user, String oldPassword, String newPassword, String newConfirm) {
+
+    }
+
+    public void updateUsername(SiteUser user, String oldUsername, String newUsername) {
+        user.setUsername(newUsername);
+        userRepo.save(user);
+    }
 }

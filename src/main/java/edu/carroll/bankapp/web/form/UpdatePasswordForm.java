@@ -1,5 +1,6 @@
 package edu.carroll.bankapp.web.form;
 
+import edu.carroll.bankapp.jpa.model.SiteUser;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -48,7 +49,7 @@ public class UpdatePasswordForm {
      *
      * @param newPassword - String - user's new password
      */
-    public void setONewPassword(String newPassword) {
+    public void setNewPassword(String newPassword) {
         this.newPassword = newPassword;
     }
 
@@ -69,4 +70,8 @@ public class UpdatePasswordForm {
     public void setConfirm(String newConfirm) {
         this.newConfirm = newConfirm;
     }
+
+//    public boolean isPasswordValid(SiteUser user, String password) {
+//        return passwordEncoder.matches(password, user.getPassword());
+//    }
 }

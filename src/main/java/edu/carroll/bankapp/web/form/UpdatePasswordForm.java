@@ -67,11 +67,7 @@ public class UpdatePasswordForm {
      *
      * @param newConfirm - String - confirmation password
      */
-    public void setConfirm(String newConfirm) {
+    public void setNewConfirm(String newConfirm) {
         this.newConfirm = newConfirm;
     }
-
-//    public boolean isPasswordValid(SiteUser user, String password) {
-//        return passwordEncoder.matches(password, user.getPassword());
-//    }
 }

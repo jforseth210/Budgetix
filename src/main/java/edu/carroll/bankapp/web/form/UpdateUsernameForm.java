@@ -8,8 +8,7 @@ import jakarta.validation.constraints.Size;
  */
 public class UpdateUsernameForm {
     @NotNull
-    @Size(min = 4, message = "Username must be at least 4 characters long")
-    private String oldUsername;
+    private String confirmPassword;
 
     @NotNull
     @Size(min = 4, message = "Username must be at least 4 characters long")
@@ -20,17 +19,17 @@ public class UpdateUsernameForm {
      *
      * @return oldUsername - String - old account username
      */
-    public String getOldUsername() {
-        return oldUsername;
+    public String getConfirmPassword() {
+        return confirmPassword;
     }
 
     /**
      * Sets the oldUsername associated with a user's account
      *
-     * @param oldUsername - String - account username
+     * @param confirmPassword - String - account username
      */
-    public void setOldUsername(String oldUsername) {
-        this.oldUsername = oldUsername;
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
     }
 
     /**

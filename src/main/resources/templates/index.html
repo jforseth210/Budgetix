@@ -61,10 +61,10 @@
                 <div class="modal-body">
                     <form id="updateUsernameForm" th:object="${updateUsernameForm}"
                           th:action="@{/update-username}" method="post">
-                        <label for="newTransaction">Old Username</label>
-                        <input type="text" value="0" class="mb-2 form-control" id="oldUsername" th:field="*{oldUsername}" />
                         <label for="newTransaction">New Username</label>
                         <input type="text" value="0" class="mb-2 form-control" id="newUsername" th:field="*{newUsername}" />
+                        <label for="newTransaction">Confirm Password</label>
+                        <input type="password" value="0" class="mb-2 form-control" id="confirmPassword" th:field="*{confirmPassword}" />
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -76,7 +76,7 @@
     </div>
 
 
-<!--  Update Username Modal  -->
+<!--  Update Password Modal  -->
     <div id="updatePasswordModal" class="modal fade" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -92,7 +92,7 @@
                         <label for="newTransaction">New Password</label>
                         <input type="password" value="0" class="mb-2 form-control" id="newPassword" th:field="*{newPassword}" />
                         <label for="newTransaction">Confirm Password</label>
-                        <input type="password" value="0" class="mb-2 form-control" id="newConfirm" th:field="*{newPassword}" />
+                        <input type="password" value="0" class="mb-2 form-control" id="newConfirm" th:field="*{newConfirm}" />
                     </form>
                 </div>
                 <div class="modal-footer">

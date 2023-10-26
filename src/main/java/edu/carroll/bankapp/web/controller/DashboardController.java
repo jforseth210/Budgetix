@@ -8,6 +8,8 @@ import edu.carroll.bankapp.service.TransactionService;
 import edu.carroll.bankapp.service.UserService;
 import edu.carroll.bankapp.web.AuthHelper;
 import edu.carroll.bankapp.web.form.*;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -197,27 +199,22 @@ public class DashboardController {
             return "redirect:/";
         }
 
-        // Verify the old password
-//        if (!form.isPasswordValid(user, form.getOldPassword())) {
-//            // Handle the case where the old password is incorrect
-//            return "redirect:/";
-//        }
-//
-//        // Validate the new password
-//        if (!form.isPasswordValid(user, form.getNewPassword())) {
-//            // Handle invalid new password
-//            return "redirect:/";
-//        }
-
         // Update the user's password
-        form.setNewPassword(form.getNewPassword());
+        userService.updatePassword(user, form.getOldPassword(), form.getNewPassword(), form.getNewConfirm());
         return "redirect:/";
     }
 
     @PostMapping("/update-username")
-    public String updateUsername(@ModelAttribute("updateUsername") UpdateUsernameForm form) {
+    public String updateUsername(@ModelAttribute("updateUsername") UpdateUsernameForm form, HttpServletRequest request) {
         SiteUser user = authHelper.getLoggedInUser();
-        userService.updateUsername(user, form.getOldUsername(), form.getNewUsername());
+        userService.updateUsername(user, form.getConfirmPassword(), form.getNewUsername());
+
+        try {
+            request.logout();
+            request.login(form.getNewUsername(), form.getConfirmPassword());
+        } catch (ServletException e) {
+            log.error("Error logging {} in after signup:", form.getNewUsername(), e);
+        }
         return "redirect:/";
     }
 }

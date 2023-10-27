@@ -47,7 +47,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     public Transaction getUserTransaction(SiteUser loggedInUser, int id) {
         List<Transaction> transactions = transactionRepo.findById(id);
-        if (transactions.isEmpty()) {
+        if (transactions == null || transactions.isEmpty()) {
             log.warn("Account with id {} doesn't exist", id);
             return null;
         } else if (transactions.size() > 1) {
@@ -74,6 +74,7 @@ public class TransactionServiceImpl implements TransactionService {
             accountService.saveAccount(transaction.getAccount());
 
             transactionRepo.delete(transaction);
+            transaction.getAccount().removeTransaction(transaction);
             log.info("Deleted transaction: {}", transaction.getName());
         } else {
             log.warn("{} tried to delete transaction \"{}\" belonging to {}",

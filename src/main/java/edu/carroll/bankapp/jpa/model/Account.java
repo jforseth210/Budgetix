@@ -149,4 +149,7 @@ public class Account implements Ownable {
 
     }
 
+    public void removeTransaction(Transaction transaction) {
+        this.transactions.remove(transaction);
+    }
 }

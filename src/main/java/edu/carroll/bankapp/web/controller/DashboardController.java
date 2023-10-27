@@ -7,11 +7,9 @@ import edu.carroll.bankapp.service.AccountService;
 import edu.carroll.bankapp.service.TransactionService;
 import edu.carroll.bankapp.service.UserService;
 import edu.carroll.bankapp.web.AuthHelper;
-import edu.carroll.bankapp.web.form.DeleteAccountForm;
-import edu.carroll.bankapp.web.form.DeleteTransactionForm;
-import edu.carroll.bankapp.web.form.NewAccountForm;
-import edu.carroll.bankapp.web.form.NewTransactionForm;
-import edu.carroll.bankapp.web.form.NewTransferForm;
+import edu.carroll.bankapp.web.form.*;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,12 +33,14 @@ public class DashboardController {
     private final AccountService accountService;
     private final TransactionService transactionService;
     private final AuthHelper authHelper;
+    private final UserService userService;
 
     public DashboardController(AccountService accountService, UserService userService,
             TransactionService transactionService, AuthHelper authHelper) {
         this.accountService = accountService;
         this.transactionService = transactionService;
         this.authHelper = authHelper;
+        this.userService = userService;
     }
 
     /**
@@ -97,6 +97,8 @@ public class DashboardController {
         model.addAttribute("newTransferForm", new NewTransferForm());
         model.addAttribute("deleteTransactionForm", new DeleteTransactionForm());
         model.addAttribute("deleteAccountForm", new DeleteAccountForm());
+        model.addAttribute("updateUsernameForm", new UpdateUsernameForm());
+        model.addAttribute("updatePasswordForm", new UpdatePasswordForm());
         return "index";
     }
 
@@ -182,7 +184,7 @@ public class DashboardController {
     /**
      * Accept form submission for transfer addition
      *
-     * @param newTransactionForm
+     * @param newTransferForm
      * @return redirect view to page showing new transaction
      */
     @PostMapping("/add-transfer")
@@ -227,4 +229,31 @@ public class DashboardController {
         return "redirect:/";
     }
 
+    @PostMapping("/update-password")
+    public String updatePassword(@ModelAttribute("updatePassword") UpdatePasswordForm form) {
+        SiteUser user = authHelper.getLoggedInUser();
+
+        if (user == null) {
+            // Handle the case where the user doesn't exist
+            return "redirect:/";
+        }
+
+        // Update the user's password
+        userService.updatePassword(user, form.getOldPassword(), form.getNewPassword(), form.getNewConfirm());
+        return "redirect:/";
+    }
+
+    @PostMapping("/update-username")
+    public String updateUsername(@ModelAttribute("updateUsername") UpdateUsernameForm form, HttpServletRequest request) {
+        SiteUser user = authHelper.getLoggedInUser();
+        userService.updateUsername(user, form.getConfirmPassword(), form.getNewUsername());
+
+        try {
+            request.logout();
+            request.login(form.getNewUsername(), form.getConfirmPassword());
+        } catch (ServletException e) {
+            log.error("Error logging {} in after signup:", form.getNewUsername(), e);
+        }
+        return "redirect:/";
+    }
 }

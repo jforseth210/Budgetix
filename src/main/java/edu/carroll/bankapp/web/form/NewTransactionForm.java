@@ -103,10 +103,20 @@ public class NewTransactionForm {
         this.accountId = id;
     }
 
+    /**
+     * Gets the type of the account
+     *
+     * @return type - String - type of the account
+     */
     public String getType() {
         return type;
     }
 
+    /**
+     * Sets the type of the account
+     *
+     * @param type - String - type of the account
+     */
     public void setType(String type) {
         this.type = type;
     }

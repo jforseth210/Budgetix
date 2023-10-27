@@ -5,10 +5,14 @@ import edu.carroll.bankapp.jpa.repo.UserRepository;
 
 import java.util.List;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 
 /**
  * A service to handle business logic related to managing users
@@ -86,5 +90,33 @@ public class UserServiceImpl implements UserService {
     public void deleteAllSiteUsers() {
         log.warn("Deleting all users");
         userRepo.deleteAll();
+    }
+
+    public void updatePassword(SiteUser user, String oldPassword, String newPassword, String newConfirm) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        System.out.println(oldPassword);
+        System.out.println(BCrypt.hashpw(oldPassword, BCrypt.gensalt()));
+        System.out.println(user.getHashedPassword());
+        if (passwordEncoder.matches(oldPassword, user.getHashedPassword())) {
+            if (newPassword.equals(newConfirm)) {
+                // Update the password to the new one
+                user.setHashedPassword(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
+                userRepo.save(user);
+                log.info("Successfully saved new password");
+            } else {
+                log.info("The new passwords do not match");
+                System.out.println(newPassword);
+                System.out.println(newConfirm);
+                throw new IllegalArgumentException("New password and confirmation do not match.");
+            }
+        } else {
+            log.info("Incorrect current password");
+            throw new IllegalArgumentException("Old password doesn't match the current password.");
+        }
+    }
+
+    public void updateUsername(SiteUser user, String confirmPassword, String newUsername) {
+        user.setUsername(newUsername);
+        userRepo.save(user);
     }
 }

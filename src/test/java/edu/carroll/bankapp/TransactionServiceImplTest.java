@@ -61,7 +61,7 @@ public class TransactionServiceImplTest {
 
         Transaction fetchedTransaction = transactionService.getUserTransaction(john, transaction.getId());
         assert (fetchedTransaction != null);
-        assert (fetchedTransaction.getName().equals("A transaction! "));
+        assert (fetchedTransaction.getName().equals("A transaction!"));
         assert (fetchedTransaction.getAmountInDollars() == 100);
         assert (fetchedTransaction.getToFrom().equals("???"));
         assert (fetchedTransaction.getAccount().equals(checking));
@@ -80,6 +80,9 @@ public class TransactionServiceImplTest {
         transactionService.deleteTransaction(john, transaction);
 
         assert transactionService.getUserTransaction(john, transactionId) == null;
+
+        john = userService.getUser("johndoe");
+        checking = accountService.getUserAccounts(john).get(0);
         assert checking.getTransactions().size() == numAccounts - 1;
     }
 }

@@ -8,6 +8,10 @@ import edu.carroll.bankapp.service.TransactionService;
 import edu.carroll.bankapp.service.UserService;
 import jakarta.transaction.Transactional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,20 +41,21 @@ public class TransactionServiceImplTest {
         Account checking = accountService.getUserAccounts(john).get(0);
         Transaction createdTransaction = transactionService.createTransaction("Test Transaction", 100.0, "Receiver",
                 checking);
-        assert (createdTransaction != null);
-        assert (createdTransaction.getName().equals("Test Transaction"));
-        assert (createdTransaction.getAmountInDollars() == 100.0);
-        assert (createdTransaction.getToFrom().equals("Receiver"));
-        assert (createdTransaction.getAccount().equals(checking));
+        assertNotNull(createdTransaction);
+        assertEquals(createdTransaction.getName(), "Test Transaction");
+        assertEquals(createdTransaction.getAmountInDollars(), 100.0);
+        assertEquals(createdTransaction.getToFrom(), "Receiver");
+        assertEquals(createdTransaction.getAccount(), checking);
+
         int transactionId = createdTransaction.getId();
 
         Transaction fetchedTransaction = transactionService.getUserTransaction(john, transactionId);
-        assert (fetchedTransaction != null);
-        assert (fetchedTransaction.getName().equals("Test Transaction"));
-        assert (fetchedTransaction.getAmountInDollars() == 100.0);
-        assert (fetchedTransaction.getToFrom().equals("Receiver"));
-        assert (fetchedTransaction.getAccount().equals(checking));
-        assert (fetchedTransaction.getOwner().equals(john));
+        assertNotNull(createdTransaction);
+        assertEquals(createdTransaction.getName(), "Test Transaction");
+        assertEquals(createdTransaction.getAmountInDollars(), 100.0);
+        assertEquals(createdTransaction.getToFrom(), "Receiver");
+        assertEquals(createdTransaction.getAccount(), checking);
+        assertEquals(fetchedTransaction.getOwner(), john);
     }
 
     @Test
@@ -60,12 +65,12 @@ public class TransactionServiceImplTest {
         Transaction transaction = checking.getTransactions().get(0);
 
         Transaction fetchedTransaction = transactionService.getUserTransaction(john, transaction.getId());
-        assert (fetchedTransaction != null);
-        assert (fetchedTransaction.getName().equals("A transaction!"));
-        assert (fetchedTransaction.getAmountInDollars() == 100);
-        assert (fetchedTransaction.getToFrom().equals("???"));
-        assert (fetchedTransaction.getAccount().equals(checking));
-        assert (fetchedTransaction.getOwner().equals(john));
+        assertNotNull(fetchedTransaction);
+        assertEquals(fetchedTransaction.getName(), "A transaction!");
+        assertEquals(fetchedTransaction.getAmountInDollars(), 100);
+        assertEquals(fetchedTransaction.getToFrom(), "???");
+        assertEquals(fetchedTransaction.getAccount(), checking);
+        assertEquals(fetchedTransaction.getOwner(), john);
     }
 
     @Test
@@ -79,10 +84,10 @@ public class TransactionServiceImplTest {
 
         transactionService.deleteTransaction(john, transaction);
 
-        assert transactionService.getUserTransaction(john, transactionId) == null;
+        assertNull(transactionService.getUserTransaction(john, transactionId));
 
         john = userService.getUser("johndoe");
         checking = accountService.getUserAccounts(john).get(0);
-        assert checking.getTransactions().size() == numAccounts - 1;
+        assertEquals(checking.getTransactions().size(), numAccounts - 1);
     }
 }

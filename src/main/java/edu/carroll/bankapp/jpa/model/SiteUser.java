@@ -22,6 +22,8 @@ public class SiteUser {
     private String fullName;
     @Column(name = "email", nullable = false, unique = true)
     private String email;
+
+
     @Column(name = "username", nullable = false, unique = true)
     private String username;
     @Column(name = "hashed_password", nullable = false, unique = true)
@@ -85,4 +87,21 @@ public class SiteUser {
     public void setHashedPassword(String password) {
         this.hashedPassword = password;
     }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
 }

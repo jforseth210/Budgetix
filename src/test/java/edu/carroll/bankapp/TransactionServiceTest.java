@@ -16,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.client.ExpectedCount.times;
 
 @Transactional
 @SpringBootTest

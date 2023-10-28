@@ -7,12 +7,13 @@ import java.util.List;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.Email;
+
 import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 
 /**
  * A service to handle business logic related to managing users
@@ -72,6 +73,10 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     public SiteUser createUser(String fullName, String email, String username, String rawPassword) {
+        if (getUser(username) != null) {
+            log.info("Attempt was made to create existing user {}", username);
+            return null;
+        }
         log.info("Creating a user with username: {}", username);
         // Create new user object
         SiteUser newUser = new SiteUser(
@@ -111,6 +116,10 @@ public class UserServiceImpl implements UserService {
     }
 
     public void updateUsername(SiteUser user, String confirmPassword, String newUsername) {
+        if (getUser(newUsername) != null) {
+            log.info("Attempt was made to update username from {} to existing user {}", user.getUsername(), newUsername);
+            return; 
+        }
         user.setUsername(newUsername);
         userRepo.save(user);
     }

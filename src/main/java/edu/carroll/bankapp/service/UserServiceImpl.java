@@ -94,9 +94,6 @@ public class UserServiceImpl implements UserService {
 
     public void updatePassword(SiteUser user, String oldPassword, String newPassword, String newConfirm) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        System.out.println(oldPassword);
-        System.out.println(BCrypt.hashpw(oldPassword, BCrypt.gensalt()));
-        System.out.println(user.getHashedPassword());
         if (passwordEncoder.matches(oldPassword, user.getHashedPassword())) {
             if (newPassword.equals(newConfirm)) {
                 // Update the password to the new one
@@ -105,8 +102,6 @@ public class UserServiceImpl implements UserService {
                 log.info("Successfully saved new password");
             } else {
                 log.info("The new passwords do not match");
-                System.out.println(newPassword);
-                System.out.println(newConfirm);
                 throw new IllegalArgumentException("New password and confirmation do not match.");
             }
         } else {

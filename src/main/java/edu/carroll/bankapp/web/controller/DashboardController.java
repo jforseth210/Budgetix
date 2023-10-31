@@ -13,10 +13,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +34,7 @@ public class DashboardController {
     private final UserService userService;
 
     public DashboardController(AccountService accountService, UserService userService,
-            TransactionService transactionService, AuthHelper authHelper) {
+                               TransactionService transactionService, AuthHelper authHelper) {
         this.accountService = accountService;
         this.transactionService = transactionService;
         this.authHelper = authHelper;
@@ -49,9 +47,13 @@ public class DashboardController {
      * @return
      */
     @GetMapping("/")
-    public RedirectView index() {
+    public RedirectView index(RedirectAttributes redirectAttributes) {
         // Get all of the user's accounts
         List<Account> accounts = accountService.getUserAccounts(authHelper.getLoggedInUser());
+
+        // Pass redirect attributes (for example, a message to the user about
+        // the result of an operation) on to next page.
+        redirectAttributes.addFlashAttribute(redirectAttributes.getFlashAttributes().get(0));
 
         // Deal with the user not having any accounts
         if (accounts == null || accounts.size() == 0) {
@@ -71,7 +73,7 @@ public class DashboardController {
      * @return
      */
     @GetMapping("/account/{accountId}")
-    public String index(@PathVariable Integer accountId, Model model) {
+    public String index(@PathVariable Integer accountId, Model model, RedirectAttributes redirectAttributes) {
         SiteUser loggedInUser = authHelper.getLoggedInUser();
         List<Account> accounts = accountService.getUserAccounts(loggedInUser);
 
@@ -82,6 +84,7 @@ public class DashboardController {
         // The user tried to go to an account that doesn't exist, go away
         final Account account = accountService.getUserAccount(loggedInUser, accountId);
         if (account == null) {
+            redirectAttributes.addFlashAttribute("message", "Account not found");
             return "redirect:/";
         }
         log.debug("Request for account: {}", account.getName());
@@ -149,13 +152,15 @@ public class DashboardController {
      * @return redirect view to page showing new transaction
      */
     @PostMapping("/add-transaction")
-    public RedirectView addTransaction(@Valid @ModelAttribute NewTransactionForm newTransactionForm) {
+    public RedirectView addTransaction(@Valid @ModelAttribute NewTransactionForm newTransactionForm,
+                                       RedirectAttributes redirectAttributes) {
         Account account = accountService.getUserAccount(authHelper.getLoggedInUser(),
                 newTransactionForm.getAccountId());
 
         // Is account type "income" or "expense"
         if (!newTransactionForm.getType().equals("expense") && !newTransactionForm.getType().equals("income")) {
             log.info("Invalid transaction type {}", newTransactionForm.getType());
+            redirectAttributes.addAttribute("message", "Invalid transaction type {}");
             return new RedirectView("/");
         }
 
@@ -210,7 +215,7 @@ public class DashboardController {
                 newTransferForm.getTransferAmountInDollars(),
                 fromAccount.getName(),
                 toAccount);
-                
+
         return new RedirectView("/");
     }
 
@@ -244,7 +249,8 @@ public class DashboardController {
     }
 
     @PostMapping("/update-username")
-    public String updateUsername(@ModelAttribute("updateUsername") UpdateUsernameForm form, HttpServletRequest request) {
+    public String updateUsername(@ModelAttribute("updateUsername") UpdateUsernameForm form,
+                                 HttpServletRequest request) {
         SiteUser user = authHelper.getLoggedInUser();
         userService.updateUsername(user, form.getConfirmPassword(), form.getNewUsername());
 

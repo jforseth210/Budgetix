@@ -60,7 +60,7 @@ public class AccountServiceImpl implements AccountService {
      */
     public Account getUserAccount(SiteUser loggedInUser, int id) {
         List<Account> accounts = accountRepo.findById(id);
-        if (accounts.isEmpty()) {
+        if (accounts == null || accounts.isEmpty()) {
             log.warn("Account with id {} doesn't exist", id);
             return null;
         } else if (accounts.size() > 1) {

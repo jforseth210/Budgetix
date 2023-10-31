@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
         }
         if (siteUsers.size() > 1) {
             log.error("Got more than one siteUser with id: {}", userId);
-            throw new IllegalStateException("Multiple siteUsers with id: " + userId, null);
+            return null;
         }
         return siteUsers.get(0);
     }
@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
         }
         if (siteUsers.size() > 1) {
             log.error("Got more than one siteUser with username: {}", username);
-            throw new IllegalStateException("Multiple siteUsers with username: " + username, null);
+            return null;
         }
         return siteUsers.get(0);
     }
@@ -117,8 +117,9 @@ public class UserServiceImpl implements UserService {
 
     public void updateUsername(SiteUser user, String confirmPassword, String newUsername) {
         if (getUser(newUsername) != null) {
-            log.info("Attempt was made to update username from {} to existing user {}", user.getUsername(), newUsername);
-            return; 
+            log.info("Attempt was made to update username from {} to existing user {}", user.getUsername(),
+                    newUsername);
+            return;
         }
         user.setUsername(newUsername);
         userRepo.save(user);

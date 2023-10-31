@@ -52,7 +52,7 @@ public class TransactionServiceImpl implements TransactionService {
             return null;
         } else if (transactions.size() > 1) {
             log.error("Got multiple accounts with id {}. Bailing out", id);
-            throw new IllegalStateException();
+            return null;
         }
         Transaction transaction = transactions.get(0);
         if (loggedInUser.owns(transaction)) {

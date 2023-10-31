@@ -65,7 +65,7 @@ public class AccountServiceImpl implements AccountService {
             return null;
         } else if (accounts.size() > 1) {
             log.error("Got multiple accounts with id {}. Bailing out", id);
-            throw new IllegalStateException();
+            return null;
         }
         Account account = accounts.get(0);
         if (loggedInUser.owns(account)) {

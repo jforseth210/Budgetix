@@ -3,15 +3,15 @@ package edu.carroll.bankapp;
 import edu.carroll.bankapp.jpa.model.Account;
 import edu.carroll.bankapp.jpa.model.SiteUser;
 import edu.carroll.bankapp.service.AccountService;
-import edu.carroll.bankapp.service.UserService;
-
+import edu.carroll.bankapp.testdata.TestAccounts;
+import edu.carroll.bankapp.testdata.TestUsers;
 import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,48 +20,61 @@ import static org.junit.jupiter.api.Assertions.*;
 public class AccountServiceImplTest {
     @Autowired
     private AccountService accountService;
+
     @Autowired
-    private UserService userService;
-
-    @BeforeEach
-    public void setUp() {
-        SiteUser john = userService.createUser("John Doe", "john@example.com", "johndoe", "password123");
-        SiteUser jane = userService.createUser("Jane Smith", "jane@example.com", "janesmith", "letmein456");
-        userService.createUser("Alice Johnson", "alice@example.com", "alicejohnson", "mysecret123");
-        SiteUser unicodeMan = userService.createUser("𝔘𝔫𝔦𝔠𝔬𝔡𝔢 𝔐𝔞𝔫!",
-                "𝕚𝕝𝕚𝕜𝕖𝕥𝕠𝕓𝕣𝕖𝕒𝕜𝕥𝕙𝕚𝕟𝕘𝕤@𝕖𝕞𝕒𝕚𝕝.𝕔𝕠𝕞",
-                "☕☕☕☕", "⿈⍺✋⇏⮊⎏⇪⤸Ⲥ↴⍁➄⼉⦕ⶓ∧⻟⍀⇝⧽");
-
-        accountService.createAccount("John's Savings Account", 0, john);
-        accountService.createAccount("John's Checking Account", 0, john);
-        accountService.createAccount("Jane's Investment Account", 0, jane);
-        accountService.createAccount("💰💰💰", -1000, unicodeMan);
-    }
+    private TestUsers testUsers;
+    @Autowired
+    private TestAccounts testAccounts;
 
     @Test
     public void testGetUserAccounts() {
-        SiteUser john = userService.getUser("johndoe");
-        List<Account> johnsAccounts = accountService.getUserAccounts(john);
-        assertNotNull(johnsAccounts);
-        assertEquals(johnsAccounts.size(), 2);
-        // Not necessarily ordered this way
-        assertEquals(johnsAccounts.get(0).getName(), "John's Savings Account");
-        assertEquals(johnsAccounts.get(1).getName(), "John's Checking Account");
+        // Create some users
+        SiteUser john = testUsers.createJohnDoe();
+        SiteUser jane = testUsers.createJaneSmith();
 
-        SiteUser jane = userService.getUser("janesmith");
+        // Make some accounts for john
+        List<Account> createdAccounts = new ArrayList<>();
+        createdAccounts.add(testAccounts.createChecking(john));
+        createdAccounts.add(testAccounts.createSavings(john));
+
+        // Make an account for jane
+        testAccounts.createInvestment(jane);
+
+        // Get john's accounts
+        List<Account> retrievedAccounts = accountService.getUserAccounts(john);
+
+        // See if result makes sense
+        assertNotNull(retrievedAccounts);
+        assertEquals(retrievedAccounts.size(), 2);
+
+        // Make sure the accounts we made and the accounts we got back match
+        assertTrue(retrievedAccounts.containsAll(createdAccounts)
+                && createdAccounts.containsAll(retrievedAccounts));
+
+        // Double-check we didn't get any accounts that belong to jane
         List<Account> janesAccounts = accountService.getUserAccounts(jane);
-
         for (Account janesAccount : janesAccounts) {
-            assertEquals(johnsAccounts.indexOf(janesAccount), -1);
+            assertFalse(retrievedAccounts.contains(janesAccount));
         }
     }
 
     @Test
     public void testGetUserAccountsWithCrazyUnicode() {
-        SiteUser unicodeMan = userService.getUser("☕☕☕☕");
-        Account unicodeMansAccount = accountService.getUserAccounts(unicodeMan).get(0);
-        assertEquals(unicodeMansAccount.getBalanceInDollars(), -1000);
-        assertEquals(unicodeMansAccount.getName(), "💰💰💰");
+        // Create test data
+        SiteUser unicodeMan = testUsers.createUnicodeMan();
+        Account moneybag = testAccounts.createMoneyBag(unicodeMan);
+
+        // Get unicode mans accounts, make sure they make sense
+        List<Account> retrievedAccounts = accountService.getUserAccounts(unicodeMan);
+        assertNotNull(retrievedAccounts); 
+        assertEquals(retrievedAccounts.size(), 1);
+
+        // Look at the first (and only) account
+        Account retrievedAccount = retrievedAccounts.get(0);
+        
+        // Make sure it matches up with the account we created
+        assertEquals(retrievedAccount.getBalanceInDollars(), moneybag.getBalanceInDollars());
+        assertEquals(retrievedAccount.getName(), moneybag.getName());
     }
 
     @Test
@@ -72,8 +85,20 @@ public class AccountServiceImplTest {
 
     @Test
     public void testGetUserAccountsNoAccounts() {
-        SiteUser alice = userService.getUser("alicejohnson");
+        // Create alice, but don't give her any accounts
+        SiteUser alice = testUsers.createAliceJohnson();
+        
+        // Create some other accounts to make sure they 
+        // AREN'T returned
+        SiteUser john = testUsers.createJohnDoe();
+        testAccounts.createChecking(john);
+        testAccounts.createSavings(john);
+        
+        // Get alice's accounts
         List<Account> accountList = accountService.getUserAccounts(alice);
+        
+        // Make sure alice has no accounts
+        assertNotNull(accountList);
         assertTrue(accountList.isEmpty());
     }
 }

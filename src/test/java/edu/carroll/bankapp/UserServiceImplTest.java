@@ -93,22 +93,22 @@ public class UserServiceImplTest {
     @Test
     public void testDeleteAllSiteUsers() {
         // Create users
-        testUsers.createJohnDoe();
+        testUsers.createAliceJohnson();
         testUsers.createJaneSmith();
 
         // Make sure they're in the database
-        SiteUser john = userService.getUser("alicejohnson");
+        SiteUser alice = userService.getUser("alicejohnson");
         SiteUser jane = userService.getUser("janesmith");
-        assertNotNull(john);
+        assertNotNull(alice);
         assertNotNull(jane);
 
         // Delete all site users
         userService.deleteAllSiteUsers();
 
         // Make sure they're no longer in the database
-        john = userService.getUser("alicejohnson");
+        alice = userService.getUser("alicejohnson");
         jane = userService.getUser("janesmith");
-        assertNull(john);
+        assertNull(alice);
         assertNull(jane);
     }
 

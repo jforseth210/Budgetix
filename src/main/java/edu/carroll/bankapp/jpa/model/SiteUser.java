@@ -3,7 +3,6 @@ package edu.carroll.bankapp.jpa.model;
 import edu.carroll.bankapp.Ownable;
 import jakarta.persistence.*;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +21,6 @@ public class SiteUser {
     private String fullName;
     @Column(name = "email", nullable = false, unique = true)
     private String email;
-
 
     @Column(name = "username", nullable = false, unique = true)
     private String username;
@@ -102,6 +100,10 @@ public class SiteUser {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public int getId() {
+        return this.id;
     }
 
 }

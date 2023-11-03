@@ -183,6 +183,39 @@ public class UserServiceImplTest {
     }
 
     @Test
+    public void testCreateUserNullInputs() {
+        // we expect this to fail as the full name is null
+        assertNull(userService.createUser(null, "mail@mail.com", "no_name", "password"));
+
+        // we expect this to fail as the email is null
+        assertNull(userService.createUser("Null User", null, "no_email", "password"));
+
+        // we expect this to fail as the full name and email is null
+        assertNull(userService.createUser(null, null, "no_name_email", "password"));
+
+        // we expect this to fail as the username is null
+        assertNull(userService.createUser("Null user", "null@mail.com", null, "password"));
+
+        // we expect this to fail as the username and email is null
+        assertNull(userService.createUser("Null user", null, null, "password"));
+
+        // we expect this to fail as the username, email, and full name is null
+        assertNull(userService.createUser(null, null, null, "password"));
+
+        // we expect this to fail as the password is null
+        assertNull(userService.createUser("Null user", "null@mail.com", "null_password", null));
+
+        // we expect this to fail as the username and password is null
+        assertNull(userService.createUser("Null user", "null@mail.com", null, null));
+
+        // we expect this to fail as the username, full name, and password is null
+        assertNull(userService.createUser("Null user", null, null, null));
+
+        // we expect this to fail as everything is null
+        assertNull(userService.createUser(null, null, null, null));
+    }
+
+    @Test
     public void testCreateUserWithBadCredentials() {
         // Attempt to create a user with bad credentials
         // This user has a short password, short username, and invalid email address

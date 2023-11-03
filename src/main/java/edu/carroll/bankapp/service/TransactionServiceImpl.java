@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import edu.carroll.bankapp.jpa.model.Account;
 import edu.carroll.bankapp.jpa.model.SiteUser;
 import edu.carroll.bankapp.jpa.model.Transaction;
+import edu.carroll.bankapp.jpa.repo.AccountRepository;
 import edu.carroll.bankapp.jpa.repo.TransactionRepository;
 
 /**
@@ -20,11 +21,11 @@ public class TransactionServiceImpl implements TransactionService {
     private static final Logger log = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
     private final TransactionRepository transactionRepo;
-    private final AccountService accountService;
+    private final AccountRepository accountRepo;
 
-    public TransactionServiceImpl(TransactionRepository transactionRepository, AccountService accountService) {
+    public TransactionServiceImpl(TransactionRepository transactionRepository, AccountRepository accountRepo) {
         this.transactionRepo = transactionRepository;
-        this.accountService = accountService;
+        this.accountRepo = accountRepo;
     }
 
     /**
@@ -41,7 +42,7 @@ public class TransactionServiceImpl implements TransactionService {
         transactionRepo.save(newTransaction);
         account.addBalanceInCents(newTransaction.getAmountInCents());
         account.addTransaction(newTransaction);
-        accountService.saveAccount(account);
+        accountRepo.save(account);
         return newTransaction;
     }
 
@@ -71,7 +72,7 @@ public class TransactionServiceImpl implements TransactionService {
     public void deleteTransaction(SiteUser loggedInUser, Transaction transaction) {
         if (loggedInUser.owns(transaction)) {
             transaction.getAccount().subtractBalanceInCents(transaction.getAmountInCents());
-            accountService.saveAccount(transaction.getAccount());
+            accountRepo.save(transaction.getAccount());
 
             transactionRepo.delete(transaction);
             transaction.getAccount().removeTransaction(transaction);

@@ -20,22 +20,18 @@ public class AccountServiceImpl implements AccountService {
     private static final Logger log = LoggerFactory.getLogger(DashboardController.class);
 
     private final AccountRepository accountRepo;
+    private final TransactionService transactionService;
 
     /**
      * Default constructor
      *
      * @param accountRepo - account database repo
      */
-    public AccountServiceImpl(AccountRepository accountRepo) {
+    public AccountServiceImpl(AccountRepository accountRepo, TransactionService transactionService) {
         this.accountRepo = accountRepo;
+        this.transactionService = transactionService;
     }
 
-    /**
-     * Save changes made to an account using setters
-     */
-    public Account saveAccount(Account account) {
-        return accountRepo.save(account);
-    }
 
     /**
      * Returns a list of Accounts owned by the given user
@@ -92,9 +88,12 @@ public class AccountServiceImpl implements AccountService {
         // Create and save a new account
         Account newAccount = new Account();
         newAccount.setName(accountName);
-        newAccount.setBalanceInCents((int) (balanceInDollars * 100));
         newAccount.setOwner(owner);
+        // Set the balance in a transaction instead of just starting with money
+        newAccount.setBalanceInCents(0);
         accountRepo.save(newAccount);
+
+        transactionService.createTransaction("Starting Balance", balanceInDollars, "", newAccount);
         return newAccount;
     }
 

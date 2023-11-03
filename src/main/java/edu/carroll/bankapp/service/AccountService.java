@@ -9,13 +9,6 @@ import java.util.List;
  * Interface for managing accounts.
  */
 public interface AccountService {
-    /**
-     * Save changes made to an account using setters
-     *
-     * @param account the account to be saved
-     * @return the saved account
-     */
-    Account saveAccount(Account account);
 
     /**
      * Returns a list of Accounts owned by the given user

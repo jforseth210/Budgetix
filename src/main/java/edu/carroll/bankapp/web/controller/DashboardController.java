@@ -214,6 +214,12 @@ public class DashboardController {
         return new RedirectView("/");
     }
 
+    /**
+     * Delete a transaction from the transaction database
+     *
+     * @param form - a delete transaction form
+     * @return a redirect to the home page
+     */
     @PostMapping("/delete-transaction")
     public String deleteTransaction(@ModelAttribute("deleteTransactionForm") DeleteTransactionForm form) {
         SiteUser loggedInUser = authHelper.getLoggedInUser();
@@ -222,6 +228,12 @@ public class DashboardController {
         return "redirect:/account/" + transaction.getAccount().getId().toString();
     }
 
+    /**
+     * Delete an account (i.e., savings or checking) from a user's list of accounts
+     *
+     * @param form - delete account form
+     * @return redirect to the home page
+     */
     @PostMapping("/delete-account")
     public String deleteAccount(@ModelAttribute("deleteAccountForm") DeleteAccountForm form) {
         accountService.deleteAccount(authHelper.getLoggedInUser(), form.getAccountId());
@@ -229,6 +241,12 @@ public class DashboardController {
         return "redirect:/";
     }
 
+    /**
+     * Updates the password for a user
+     *
+     * @param form - update password form
+     * @return - redirect to the homepage
+     */
     @PostMapping("/update-password")
     public String updatePassword(@ModelAttribute("updatePassword") UpdatePasswordForm form) {
         SiteUser user = authHelper.getLoggedInUser();
@@ -243,6 +261,12 @@ public class DashboardController {
         return "redirect:/";
     }
 
+    /**
+     * Changes the username for the user
+     *
+     * @param form - update username form
+     * @return redirect to the home page
+     */
     @PostMapping("/update-username")
     public String updateUsername(@ModelAttribute("updateUsername") UpdateUsernameForm form, HttpServletRequest request) {
         SiteUser user = authHelper.getLoggedInUser();

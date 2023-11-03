@@ -216,6 +216,39 @@ public class UserServiceImplTest {
     }
 
     @Test
+    public void testCreateUserEmptyStringInputs() {
+        // we expect this to fail as the full name is ""
+        assertNull(userService.createUser("", "mail@mail.com", "no_name", "password"));
+
+        // we expect this to fail as the email is ""
+        assertNull(userService.createUser("Null User", "", "no_email", "password"));
+
+        // we expect this to fail as the full name and email is ""
+        assertNull(userService.createUser("", "", "no_name_email", "password"));
+
+        // we expect this to fail as the username is ""
+        assertNull(userService.createUser("Null user", "null@mail.com", "", "password"));
+
+        // we expect this to fail as the username and email is ""
+        assertNull(userService.createUser("Null user", "", "", "password"));
+
+        // we expect this to fail as the username, email, and full name is ""
+        assertNull(userService.createUser("", "", "", "password"));
+
+        // we expect this to fail as the password is ""
+        assertNull(userService.createUser("Null user", "null@mail.com", "null_password", ""));
+
+        // we expect this to fail as the username and password is ""
+        assertNull(userService.createUser("Null user", "null@mail.com", "", ""));
+
+        // we expect this to fail as the username, full name, and password is ""
+        assertNull(userService.createUser("Null user", "", "", ""));
+
+        // we expect this to fail as everything is ""
+        assertNull(userService.createUser("", "", "", ""));
+    }
+
+    @Test
     public void testCreateUserWithBadCredentials() {
         // Attempt to create a user with bad credentials
         // This user has a short password, short username, and invalid email address
@@ -273,7 +306,6 @@ public class UserServiceImplTest {
         // Get a user for password update
         SiteUser user = testUsers.createUnicodeMan();
 
-        // TODO: This probably shouldn't throw an error like this...
         // Attempt to update the user's password with an incorrect current password
         assertFalse(userService.updatePassword(user, "incorrectpassword", "newpassword456", "newpassword456"));
     }

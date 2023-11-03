@@ -31,4 +31,8 @@ public class TestUsers {
                 "𝕚𝕝𝕚𝕜𝕖𝕥𝕠𝕓𝕣𝕖𝕒𝕜𝕥𝕙𝕚𝕟𝕘𝕤@𝕖𝕞𝕒𝕚𝕝.𝕔𝕠𝕞",
                 "☕☕☕☕", "⿈⍺✋⇏⮊⎏⇪⤸Ⲥ↴⍁➄⼉⦕ⶓ∧⻟⍀⇝⧽");
     }
+
+    public SiteUser createBadUser() {
+        return userService.createUser("Bob Marley", "bobby", "B", "p");
+    }
 }

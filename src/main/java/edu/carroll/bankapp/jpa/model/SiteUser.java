@@ -78,30 +78,65 @@ public class SiteUser {
         return item.getOwner().equals(this);
     }
 
+    /**
+     * Set the username for a user
+     *
+     * @param username - String - the username for a user
+     */
     public void setUsername(String username) {
         this.username = username;
     }
 
+    /**
+     * Set the hashed password for a user
+     *
+     * @param password - String - hashed password
+     */
     public void setHashedPassword(String password) {
         this.hashedPassword = password;
     }
 
+    /**
+     * Get the full name for a user
+     *
+     * @return fullName - String - full name of the site user
+     */
     public String getFullName() {
         return fullName;
     }
 
+    /**
+     * Set the full name for a user
+     *
+     * @param fullName - String - full name of the site user
+     */
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }
 
+    /**
+     * Get the email for a user
+     *
+     * @return email - String - email for our user
+     */
     public String getEmail() {
         return email;
     }
 
+    /**
+     * Set the email for a user
+     *
+     * @param email - String - email for our user
+     */
     public void setEmail(String email) {
         this.email = email;
     }
 
+    /**
+     * Get the id associated with the user (they CANNOT EVER set their own ID)
+     *
+     * @return - int - user's id
+     */
     public int getId() {
         return this.id;
     }

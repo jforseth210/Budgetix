@@ -5,16 +5,13 @@ import edu.carroll.bankapp.service.UserService;
 import edu.carroll.bankapp.testdata.TestUsers;
 import jakarta.transaction.Transactional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import jakarta.validation.constraints.Null;
 import org.junit.jupiter.api.Test;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @SpringBootTest
@@ -38,7 +35,7 @@ public class UserServiceImplTest {
         // Verify that the username is set correctly
         assertEquals("newuser", newUser.getUsername());
 
-        // Make sure user is actually in the
+        // Make sure user is actually in the database
         SiteUser fetchedUser = userService.getUser("newuser");
         // Ensure the created user is not null
         assertNotNull(fetchedUser);
@@ -150,6 +147,32 @@ public class UserServiceImplTest {
     }
 
     @Test
+    public void testUpdateShortUsername() {
+        SiteUser jane = testUsers.createJaneSmith();
+
+        // Should not update username because username is too short
+        assertFalse(userService.updateUsername(jane, "letmein456", "j"));
+        assertEquals("janesmith", jane.getUsername());
+
+        // Should not update username because password is wrong
+        assertFalse(userService.updateUsername(jane, "password_time", "janie"));
+        assertEquals("janesmith", jane.getUsername());
+    }
+
+    @Test
+    public void testUpdateNullUsername() {
+        SiteUser jane = testUsers.createJaneSmith();
+
+        // Should not update (thus return false) for an empty username
+        assertFalse(userService.updateUsername(jane, "letmein456", ""));
+        assertEquals("janesmith", jane.getUsername());
+
+        // Should not update (thus return false) for a null username
+        assertFalse(userService.updateUsername(jane, "letmein456", null));
+        assertEquals("janesmith", jane.getUsername());
+    }
+
+    @Test
     public void testCreateUserWithExistingUsername() {
         // Create user
         testUsers.createJohnDoe();
@@ -219,9 +242,7 @@ public class UserServiceImplTest {
 
         // TODO: This probably shouldn't throw an error like this...
         // Attempt to update the user's password with an incorrect current password
-        assertThrows(RuntimeException.class, () -> {
-            userService.updatePassword(user, "incorrectpassword", "newpassword456", "newpassword456");
-        });
+        assertFalse(userService.updatePassword(user, "incorrectpassword", "newpassword456", "newpassword456"));
     }
 
     @Test
@@ -231,9 +252,7 @@ public class UserServiceImplTest {
 
         // TODO: Remove this test and password confirmation in service
         // Attempt to update the user's password with mismatched new passwords
-        assertThrows(RuntimeException.class, () -> {
-            userService.updatePassword(user, "⿈⍺✋⇏⮊⎏⇪⤸Ⲥ↴⍁➄⼉⦕ⶓ∧⻟⍀⇝⧽", "newpassword456", "mismatchedpassword789");
-        });
+        assertFalse(userService.updatePassword(user, "⿈⍺✋⇏⮊⎏⇪⤸Ⲥ↴⍁➄⼉⦕ⶓ∧⻟⍀⇝⧽", "newpassword456", "mismatchedpassword789"));
     }
 
     // TODO: Update this when we know what existing username behavior should be

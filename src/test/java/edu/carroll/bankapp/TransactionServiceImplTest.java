@@ -36,6 +36,8 @@ public class TransactionServiceImplTest {
         SiteUser john = testUsers.createJohnDoe();
         Account checking = testAccounts.createChecking(john);
 
+        double initialCheckingBalance = checking.getBalanceInDollars();
+
         // Create the transaction
         Transaction createdTransaction = transactionService.createTransaction("Test Transaction", 100.0, "Receiver",
                 checking);
@@ -58,6 +60,8 @@ public class TransactionServiceImplTest {
         assertEquals(fetchedTransaction.getToFrom(), "Receiver");
         assertEquals(fetchedTransaction.getAccount(), checking);
         assertEquals(fetchedTransaction.getOwner(), john);
+
+        assertEquals(initialCheckingBalance + 100, checking.getBalanceInDollars());
     }
 
     @Test
@@ -77,6 +81,7 @@ public class TransactionServiceImplTest {
         assertEquals(fetchedTransaction.getToFrom(), createdTransaction.getToFrom());
         assertEquals(fetchedTransaction.getAccount(), checking);
         assertEquals(fetchedTransaction.getOwner(), john);
+
     }
 
     @Test
@@ -89,7 +94,8 @@ public class TransactionServiceImplTest {
         // Save information about state before deletion
         int numAccounts = checking.getTransactions().size();
         int transactionId = transaction.getId();
-
+        int transactionAmountInCents = transaction.getAmountInCents();
+        int balanceBeforeDeletionInCents = checking.getBalanceInCents();
         // Delete transaction
         transactionService.deleteTransaction(john, transaction);
 
@@ -98,5 +104,7 @@ public class TransactionServiceImplTest {
 
         // Make sure checking has one less transaction
         assertEquals(checking.getTransactions().size(), numAccounts - 1);
+        // Make sure balance reflects deletion
+        assertEquals(balanceBeforeDeletionInCents - transactionAmountInCents, checking.getBalanceInCents());
     }
 }

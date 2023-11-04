@@ -1,2 +1,47 @@
 /* This stylesheet will override bootstrap default styling */
 
+/* Style override for the 'danger' buttons (cancel/deletes) */
+.btn-danger {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #aa5e5a;
+    --bs-btn-border-color: #aa5e5a;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #94504c;
+    --bs-btn-hover-border-color: #94504c;
+    --bs-btn-focus-shadow-rgb: 225,83,97;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #aa5e5a;
+    --bs-btn-active-border-color: #aa5e5a;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+
+/* Style overrides for the secondary buttons */
+.btn-secondary {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #cea4a1;
+    --bs-btn-border-color: #cea4a1;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #C08B87;
+    --bs-btn-hover-border-color: #C08B87;
+    --bs-btn-focus-shadow-rgb: 130, 138, 145;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #cea4a1;
+    --bs-btn-active-border-color: #cea4a1;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+
+/* Style overrides for the main buttons */
+.btn-primary {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #9C6F69;
+    --bs-btn-border-color: #9C6F69;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #875E5A;
+    --bs-btn-hover-border-color: #875E5A;
+    --bs-btn-focus-shadow-rgb: 49,132,253;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #9C6F69;
+    --bs-btn-active-border-color: #9C6F69;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+

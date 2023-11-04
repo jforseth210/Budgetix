@@ -1,10 +1,8 @@
 package edu.carroll.bankapp.config;
 
 import edu.carroll.bankapp.service.CustomUserDetailsService;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -31,14 +29,14 @@ public class SecurityConfig {
         return http
                 // TODO: This is bad, but I don't know how
                 // csrf protection is supposed to be implemented
-                .csrf((csrf) -> csrf.disable())
+                .csrf(csrf -> csrf.disable())
 
-                .authorizeHttpRequests((requests) -> requests
+                .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/css/**", "/loginNew").permitAll()
                         .requestMatchers("/", "/accounts").permitAll()
                         .anyRequest().authenticated())
                 .userDetailsService(myUserDetailsService)
-                .formLogin((formLogin) -> formLogin.loginPage("/login").permitAll())
+                .formLogin(formLogin -> formLogin.loginPage("/login").permitAll())
                 .build();
     }
 

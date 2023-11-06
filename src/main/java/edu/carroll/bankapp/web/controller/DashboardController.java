@@ -11,6 +11,8 @@ import edu.carroll.bankapp.web.form.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +30,7 @@ import java.util.List;
  * Account and transaction creation, reading, modification, deletion.
  */
 @Controller
+@EnableWebSecurity
 public class DashboardController {
     private static final Logger log = LoggerFactory.getLogger(DashboardController.class);
     private final AccountService accountService;
@@ -303,7 +306,8 @@ public class DashboardController {
         try {
             request.logout();
             request.login(form.getNewUsername(), form.getConfirmPassword());
-            FlashHelper.flash(redirectAttributes, String.format("Your username has been updated to %s", form.getNewUsername()));
+            FlashHelper.flash(redirectAttributes,
+                    String.format("Your username has been updated to %s", form.getNewUsername()));
         } catch (ServletException e) {
             log.error("Error logging {} in after signup:", form.getNewUsername(), e);
             FlashHelper.flash(redirectAttributes, "Something went wrong. Your username has not been changed");

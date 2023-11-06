@@ -31,7 +31,8 @@
                     </li>
                     <button class="btn btn-outline-success" type="submit" id="addAccountButton" data-bs-toggle="modal"
                         data-bs-target="#addAccountModal"><i class="bi bi-wallet"></i>
-                        Add </button>
+                        Add
+                    </button>
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item dropdown">
@@ -51,69 +52,10 @@
         </div>
     </nav>
 
-    <!--  Update Username Modal  -->
-    <div id="updateUsernameModal" class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Update Username</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="updateUsernameForm" th:object="${updateUsernameForm}" th:action="@{/update-username}"
-                        method="post">
-                        <label for="newTransaction">New Username</label>
-                        <input type="text" value="0" class="mb-2 form-control" id="newUsername"
-                            th:field="*{newUsername}" />
-                        <label for="newTransaction">Confirm Password</label>
-                        <input type="password" value="0" class="mb-2 form-control" id="confirmPassword"
-                            th:field="*{confirmPassword}" />
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" form="updateUsernameForm" class="btn btn-primary">Update</button>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!--  Update Password Modal  -->
-    <div id="updatePasswordModal" class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Update Password</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="updatePasswordForm" th:object="${updatePasswordForm}" th:action="@{/update-password}"
-                        method="post">
-                        <label for="newTransaction">Old Password</label>
-                        <input type="password" value="0" class="mb-2 form-control" id="oldPassword"
-                            th:field="*{oldPassword}" />
-                        <label for="newTransaction">New Password</label>
-                        <input type="password" value="0" class="mb-2 form-control" id="newPassword"
-                            th:field="*{newPassword}" />
-                        <label for="newTransaction">Confirm Password</label>
-                        <input type="password" value="0" class="mb-2 form-control" id="newConfirm"
-                            th:field="*{newConfirm}" />
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" form="updatePasswordForm" class="btn btn-primary">Update</button>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="container mt-3">
-        <div th:if="${messages}" class="alert alert-primary">
-            <ul>
-                <li th:each="message : ${messages}" th:text="${message}"></li>
-            </ul>
+        <div th:if="${messages}">
+            <div th:each="message : ${messages}" class="alert alert-primary" th:text="${message}">
+            </div>
         </div>
         <!--Transaction table-->
         <table class="table">
@@ -128,7 +70,8 @@
                 <tr th:each="transaction: ${currentAccount.getTransactions()}">
                     <td th:text="${transaction.getName()}"></td>
                     <td th:text="${transaction.getToFrom()}"></td>
-                    <td style="text-align: right" th:text="${transaction.getAmountInDollars()}"
+                    <td style="text-align: right"
+                        th:text="${#numbers.formatDecimal(transaction.getAmountInDollars(), 0, 'COMMA', 2, 'POINT')}"
                         th:classappend="${transaction.getAmountInDollars()<0} ? text-danger : text-success">
                     </td>
                     </td>
@@ -163,8 +106,8 @@
 
             </div>
             <!--Current account balance-->
-            <p th:text='${currentAccount.getBalanceInDollars()}'
-                th:classappend="${currentAccount.getBalanceInDollars()<0} ? text-danger : text-success"></p>
+            <p th:text="${#numbers.formatDecimal(currentAccount.getBalanceInDollars(), 0, 'COMMA', 2, 'POINT' )}"
+                th:classappend=" ${currentAccount.getBalanceInDollars()<0} ? text-danger : text-success"></p>
         </div>
     </div>
 
@@ -302,6 +245,64 @@
                         <button type="submit" class="btn btn-danger">Delete</button>
                     </form>
 
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--  Update Username Modal  -->
+    <div id="updateUsernameModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Username</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="updateUsernameForm" th:object="${updateUsernameForm}" th:action="@{/update-username}"
+                        method="post">
+                        <label for="newTransaction">New Username</label>
+                        <input type="text" value="0" class="mb-2 form-control" id="newUsername"
+                            th:field="*{newUsername}" />
+                        <label for="newTransaction">Confirm Password</label>
+                        <input type="password" value="0" class="mb-2 form-control" id="confirmPassword"
+                            th:field="*{confirmPassword}" />
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" form="updateUsernameForm" class="btn btn-primary">Update</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--  Update Password Modal  -->
+    <div id="updatePasswordModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="updatePasswordForm" th:object="${updatePasswordForm}" th:action="@{/update-password}"
+                        method="post">
+                        <label for="newTransaction">Old Password</label>
+                        <input type="password" value="0" class="mb-2 form-control" id="oldPassword"
+                            th:field="*{oldPassword}" />
+                        <label for="newTransaction">New Password</label>
+                        <input type="password" value="0" class="mb-2 form-control" id="newPassword"
+                            th:field="*{newPassword}" />
+                        <label for="newTransaction">Confirm Password</label>
+                        <input type="password" value="0" class="mb-2 form-control" id="newConfirm"
+                            th:field="*{newConfirm}" />
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" form="updatePasswordForm" class="btn btn-primary">Update</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>

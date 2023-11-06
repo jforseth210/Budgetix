@@ -18,7 +18,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import edu.carroll.bankapp.FlashHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,7 +36,7 @@ public class DashboardController {
     private final UserService userService;
 
     public DashboardController(AccountService accountService, UserService userService,
-                               TransactionService transactionService, AuthHelper authHelper) {
+            TransactionService transactionService, AuthHelper authHelper) {
         this.accountService = accountService;
         this.transactionService = transactionService;
         this.authHelper = authHelper;
@@ -47,17 +49,19 @@ public class DashboardController {
      * @return
      */
     @GetMapping("/")
-    public RedirectView index(RedirectAttributes redirectAttributes) {
+    public RedirectView index(Model model, RedirectAttributes redirectAttributes) {
         // Get all of the user's accounts
         List<Account> accounts = accountService.getUserAccounts(authHelper.getLoggedInUser());
-
-        // Pass redirect attributes (for example, a message to the user about
-        // the result of an operation) on to next page.
-        redirectAttributes.addFlashAttribute(redirectAttributes.getFlashAttributes().get(0));
 
         // Deal with the user not having any accounts
         if (accounts == null || accounts.size() == 0) {
             return new RedirectView("/add-account");
+        }
+
+        // Check if the 'messages' attribute exists in the model and pass it to the
+        // redirect
+        if (model.containsAttribute("messages")) {
+            redirectAttributes.addFlashAttribute("messages", model.getAttribute("messages"));
         }
 
         // Redirect to the first account found
@@ -79,12 +83,13 @@ public class DashboardController {
 
         // The user doesn't have any accounts, go create one
         if (accounts.isEmpty()) {
+            FlashHelper.flash(redirectAttributes, "Please create an account");
             return "redirect:/add-account";
         }
         // The user tried to go to an account that doesn't exist, go away
         final Account account = accountService.getUserAccount(loggedInUser, accountId);
         if (account == null) {
-            redirectAttributes.addFlashAttribute("message", "Account not found");
+            FlashHelper.flash(redirectAttributes, "Account does not exist");
             return "redirect:/";
         }
         log.debug("Request for account: {}", account.getName());
@@ -134,13 +139,14 @@ public class DashboardController {
      * @return
      */
     @PostMapping("/add-account")
-    public RedirectView addAccount(@Valid @ModelAttribute NewAccountForm newAccountForm) {
+    public RedirectView addAccount(@Valid @ModelAttribute NewAccountForm newAccountForm,
+            RedirectAttributes redirectAttributes) {
         // Create an account
         accountService.createAccount(
                 newAccountForm.getAccountName(),
                 newAccountForm.getAccountBalance(),
                 authHelper.getLoggedInUser());
-
+        FlashHelper.flash(redirectAttributes, String.format("Account %s created", newAccountForm.getAccountName()));
         // Redirect back to the root path
         return new RedirectView("/");
     }
@@ -153,14 +159,15 @@ public class DashboardController {
      */
     @PostMapping("/add-transaction")
     public RedirectView addTransaction(@Valid @ModelAttribute NewTransactionForm newTransactionForm,
-                                       RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes) {
         Account account = accountService.getUserAccount(authHelper.getLoggedInUser(),
                 newTransactionForm.getAccountId());
 
         // Is account type "income" or "expense"
         if (!newTransactionForm.getType().equals("expense") && !newTransactionForm.getType().equals("income")) {
             log.info("Invalid transaction type {}", newTransactionForm.getType());
-            redirectAttributes.addAttribute("message", "Invalid transaction type {}");
+            FlashHelper.flash(redirectAttributes,
+                    String.format("Invalid transation type: %s", newTransactionForm.getType()));
             return new RedirectView("/");
         }
 
@@ -182,7 +189,7 @@ public class DashboardController {
                 newTransactionForm.getAmountInDollars(),
                 newTransactionForm.getToFrom(),
                 account);
-
+        FlashHelper.flash(redirectAttributes, String.format("Transaction %s created", newTransactionForm.getName()));
         return new RedirectView("/");
     }
 
@@ -193,7 +200,8 @@ public class DashboardController {
      * @return redirect view to page showing new transaction
      */
     @PostMapping("/add-transfer")
-    public RedirectView addTransfer(@Valid @ModelAttribute NewTransferForm newTransferForm) {
+    public RedirectView addTransfer(@Valid @ModelAttribute NewTransferForm newTransferForm,
+            RedirectAttributes redirectAttributes) {
         // The account to send money to
         Account toAccount = accountService.getUserAccount(authHelper.getLoggedInUser(),
                 newTransferForm.getToAccountId());
@@ -216,6 +224,9 @@ public class DashboardController {
                 fromAccount.getName(),
                 toAccount);
 
+        FlashHelper.flash(redirectAttributes,
+                String.format("Created transfer from %s to %s", fromAccount.getName(), toAccount.getName()));
+
         return new RedirectView("/");
     }
 
@@ -226,10 +237,14 @@ public class DashboardController {
      * @return a redirect to the home page
      */
     @PostMapping("/delete-transaction")
-    public String deleteTransaction(@ModelAttribute("deleteTransactionForm") DeleteTransactionForm form) {
+    public String deleteTransaction(@ModelAttribute("deleteTransactionForm") DeleteTransactionForm form,
+            RedirectAttributes redirectAttributes) {
         SiteUser loggedInUser = authHelper.getLoggedInUser();
         Transaction transaction = transactionService.getUserTransaction(loggedInUser, form.getTransactionId());
+
         transactionService.deleteTransaction(loggedInUser, transaction);
+
+        FlashHelper.flash(redirectAttributes, String.format("Deleted transaction: %s", transaction.getName()));
         return "redirect:/account/" + transaction.getAccount().getId().toString();
     }
 
@@ -240,8 +255,12 @@ public class DashboardController {
      * @return redirect to the home page
      */
     @PostMapping("/delete-account")
-    public String deleteAccount(@ModelAttribute("deleteAccountForm") DeleteAccountForm form) {
-        accountService.deleteAccount(authHelper.getLoggedInUser(), form.getAccountId());
+    public String deleteAccount(@ModelAttribute("deleteAccountForm") DeleteAccountForm form,
+            RedirectAttributes redirectAttributes) {
+        Account account = accountService.getUserAccount(authHelper.getLoggedInUser(), form.getAccountId());
+        accountService.deleteAccount(authHelper.getLoggedInUser(), account);
+
+        FlashHelper.flash(redirectAttributes, String.format("Deleted account: %s", account.getName()));
         // Redirect or return the appropriate view
         return "redirect:/";
     }
@@ -253,16 +272,19 @@ public class DashboardController {
      * @return - redirect to the homepage
      */
     @PostMapping("/update-password")
-    public String updatePassword(@ModelAttribute("updatePassword") UpdatePasswordForm form) {
+    public String updatePassword(@ModelAttribute("updatePassword") UpdatePasswordForm form,
+            RedirectAttributes redirectAttributes) {
         SiteUser user = authHelper.getLoggedInUser();
 
         if (user == null) {
             // Handle the case where the user doesn't exist
+            FlashHelper.flash(redirectAttributes, "Something went wrong. Your password has not been changed");
             return "redirect:/";
         }
 
         // Update the user's password
         userService.updatePassword(user, form.getOldPassword(), form.getNewPassword(), form.getNewConfirm());
+        FlashHelper.flash(redirectAttributes, "Your password has been updated successfully");
         return "redirect:/";
     }
 
@@ -274,15 +296,17 @@ public class DashboardController {
      */
     @PostMapping("/update-username")
     public String updateUsername(@ModelAttribute("updateUsername") UpdateUsernameForm form,
-                                 HttpServletRequest request) {
+            HttpServletRequest request, RedirectAttributes redirectAttributes) {
         SiteUser user = authHelper.getLoggedInUser();
         userService.updateUsername(user, form.getConfirmPassword(), form.getNewUsername());
 
         try {
             request.logout();
             request.login(form.getNewUsername(), form.getConfirmPassword());
+            FlashHelper.flash(redirectAttributes, String.format("Your username has been updated to %s", form.getNewUsername()));
         } catch (ServletException e) {
             log.error("Error logging {} in after signup:", form.getNewUsername(), e);
+            FlashHelper.flash(redirectAttributes, "Something went wrong. Your username has not been changed");
         }
         return "redirect:/";
     }

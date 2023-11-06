@@ -160,6 +160,45 @@ public class UserServiceImplTest {
     }
 
     @Test
+    public void testCreateUserWithBadCredentials() {
+        // Attempt to create a user with bad credentials
+        // This user has a short password, short username, and invalid email address
+        assertNull(testUsers.createBadUser());
+    }
+
+    @Test
+    public void testCreateUserWithShortUsername() {
+        assertNull(userService.createUser("Silly User", "mail@mail.com", "B", "password"));
+    }
+
+    @Test
+    public void testCreateUserWithShortEmail() {
+        // we expect the mail to work since this has proper 'mail formatting'
+        assertNotNull(userService.createUser("Silly User", "m@m.com", "short_email", "password"));
+
+        // we expect this mail to not work because there is no '@'
+        assertNull(userService.createUser("Silly User", "mm.com", "short_email_no_at", "password"));
+
+        // we expect this mail to not work because there is no '.com'
+        assertNull(userService.createUser("Silly User", "m@m", "short_email_no_com", "password"));
+
+        // we expect this mail to not work because there is no '@' and '.com'
+        assertNull(userService.createUser("Silly User", "mm", "email_just_letters", "password"));
+    }
+
+    @Test
+    public void testCreateUserWithInvalidPasswords() {
+        // we expect this password to work since it has proper 'password formatting (i.e., 8 character minimum)
+        assertNotNull(userService.createUser("Silly Password Man", "password@mail.com", "good_password", "password"));
+
+        // we expect this password to work since it has proper 'password formatting (i.e., 8 character minimum)
+        assertNotNull(userService.createUser("Silly Password Man", "password@mail.com", "good_password_num", "12345678"));
+
+        // we expect this password to NOT work since it is too short (i.e., less than 8 character minimum)
+        assertNull(userService.createUser("Silly Password Man", "password@mail.com", "good_password", "pass"));
+    }
+
+    @Test
     public void testGetNonExistentUserById() {
         // Attempt to get a user that does not exist by their ID
         SiteUser user = userService.getUser("nonexistentuser");

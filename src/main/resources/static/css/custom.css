@@ -53,7 +53,7 @@
     --bs-btn-font-size: 1rem;
     --bs-btn-font-weight: 400;
     --bs-btn-line-height: 1.5;
-    --bs-btn-color: var(--bs-body-color);
+    --bs-btn-color: #C08B87;
     --bs-btn-bg: transparent;
     --bs-btn-border-width: var(--bs-border-width);
     --bs-btn-border-color: transparent;
@@ -83,3 +83,54 @@
     float: right;
 }
 
+/* Override the total price display */
+.text-success_custom {
+    --bs-text-opacity: 1;
+    color: rgba(var(--bs-success-rgb),var(--bs-text-opacity)) !important;
+    font-size: 1.6em !important;
+    margin-top: -0.29em;
+}
+
+/* Override the 'Add Wallet' Button */
+.btn-outline-success {
+    --bs-btn-color: #875E5A;
+    --bs-btn-border-color: 00FFFFFF;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #875E5A;
+    --bs-btn-hover-border-color: #875E5A;
+    --bs-btn-focus-shadow-rgb: 25,135,84;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #875E5A;
+    --bs-btn-active-border-color: #875E5A;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+
+/* Override the table styling to force vertical align */
+tbody, td, tfoot, th, thead, tr {
+    vertical-align: middle;
+    border-color: #F1E5E4 !important;
+}
+
+/* Override the table background color for the price */
+#table-custom {
+    --bs-table-accent-bg: #F1E5E4;
+    --bs-table-border-color: transparent;
+    border-color: #F1E5E4 !important;
+}
+
+/* Modify the background color */
+/* https://www.geeksforgeeks.org/how-to-change-navigation-bar-color-in-bootstrap/
+https://stackoverflow.com/questions/60680652/how-to-add-a-shadow-under-a-navbar-using-css */
+.navbar-custom {
+    background-color: #fff !important;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,.1);
+}
+
+/* Override the buttons */
+.btn-custom {
+    margin-left: 2em;
+}
+
+.justify-content-between {
+    justify-content: center !important;
+}

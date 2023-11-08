@@ -278,16 +278,24 @@ public class DashboardController {
     public String updatePassword(@ModelAttribute("updatePassword") UpdatePasswordForm form,
             RedirectAttributes redirectAttributes) {
         SiteUser user = authHelper.getLoggedInUser();
-
         if (user == null) {
             // Handle the case where the user doesn't exist
             FlashHelper.flash(redirectAttributes, "Something went wrong. Your password has not been changed");
             return "redirect:/";
         }
+        if (!form.getNewPassword().equals(form.getNewConfirm())) {
+            FlashHelper.flash(redirectAttributes, "Passwords do not match. Please try again.");
+            log.info("The new passwords do not match for {}", user.getUsername());
+            return "redirect:/";
+        }
 
         // Update the user's password
-        userService.updatePassword(user, form.getOldPassword(), form.getNewPassword(), form.getNewConfirm());
-        FlashHelper.flash(redirectAttributes, "Your password has been updated successfully");
+        boolean success = userService.updatePassword(user, form.getOldPassword(), form.getNewPassword());
+        if (success) {
+            FlashHelper.flash(redirectAttributes, "Your password has been updated successfully");
+        } else {
+            FlashHelper.flash(redirectAttributes, "Password change unsuccessful. Please try again.");
+        }
         return "redirect:/";
     }
 
@@ -301,7 +309,12 @@ public class DashboardController {
     public String updateUsername(@ModelAttribute("updateUsername") UpdateUsernameForm form,
             HttpServletRequest request, RedirectAttributes redirectAttributes) {
         SiteUser user = authHelper.getLoggedInUser();
-        userService.updateUsername(user, form.getConfirmPassword(), form.getNewUsername());
+        boolean success = userService.updateUsername(user, form.getConfirmPassword(), form.getNewUsername());
+
+        if (!success) {
+            FlashHelper.flash(redirectAttributes, "That username is already taken. Please choose a different name");
+            return "redirect:/";
+        }
 
         try {
             request.logout();

@@ -39,22 +39,23 @@ public interface UserService {
     void deleteAllSiteUsers();
 
     /**
-     * Allows the user to update their password and compares that the passwords that they enter will match.
+     * Allows the user to update their password and compares that the passwords that
+     * they enter will match.
      *
-     * @param user - user using our site
+     * @param user        - user using our site
      * @param oldPassword - the old password for the user's account
      * @param newPassword - the new password for the user's account
-     * @param newConfirm - the confirmation password for the user's account
      * @return true / false if the password is updated
      */
-    boolean updatePassword(SiteUser user, String oldPassword, String newPassword, String newConfirm);
+    boolean updatePassword(SiteUser user, String oldPassword, String newPassword);
 
     /**
-     * Allows the user to update their username and password, then logs them out and back in immediately.
+     * Allows the user to update their username and password, then logs them out and
+     * back in immediately.
      *
-     * @param user - user using our site
+     * @param user            - user using our site
      * @param confirmPassword - the old username for the user's account
-     * @param newUsername - the new username for the user's account
+     * @param newUsername     - the new username for the user's account
      * @return true / false if the username is updated
      */
     boolean updateUsername(SiteUser user, String confirmPassword, String newUsername);

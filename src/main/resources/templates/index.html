@@ -46,7 +46,10 @@
                                     data-bs-target="#updateUsernameModal">Update Username</a></li>
                             <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
                                     data-bs-target="#updatePasswordModal">Update Password</a></li>
-                            <li><a class="dropdown-item" href="/logout">Logout</a></li>
+
+                            <form th:action="@{/logout}" method="POST">
+                                <li><button type="submit" class="dropdown-item">Logout</button></li>
+                            </form>
                         </ul>
                     </li>
                 </ul>

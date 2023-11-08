@@ -26,12 +26,7 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-                // TODO: This is bad, but I don't know how
-                // csrf protection is supposed to be implemented
-                .csrf(csrf -> csrf.disable())
-
-                .authorizeHttpRequests(requests -> requests
+        return http.authorizeHttpRequests(requests -> requests
                         .requestMatchers("/css/**", "/loginNew").permitAll()
                         .requestMatchers("/", "/accounts").permitAll()
                         .anyRequest().authenticated())

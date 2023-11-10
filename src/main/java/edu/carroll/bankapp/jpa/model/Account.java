@@ -91,7 +91,9 @@ public class Account implements Ownable {
         if (this.transactions == null) {
             return new ArrayList<>();
         }
+        // Convert set to list
         List<Transaction> fetchedTransactions = new ArrayList<>(this.transactions);
+        // Sort by date
         Collections.sort(fetchedTransactions);
         return fetchedTransactions;
     }
@@ -106,6 +108,7 @@ public class Account implements Ownable {
     }
 
     public void addTransaction(Transaction transaction) {
+        // If we don't have any transactions, create a set
         if (this.transactions == null) {
             this.transactions = new HashSet<>();
         }

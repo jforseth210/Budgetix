@@ -31,6 +31,6 @@ public class AuthHelper {
             return null;
         }
         String currentUserName = authentication.getName();
-        return userService.getUser(currentUserName);
+        return userService.getUserByUsername(currentUserName);
     }
 }

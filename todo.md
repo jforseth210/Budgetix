@@ -7,4 +7,3 @@
 [] More comments
 [] Presentation
 [] Get tests passing
-[] Delete deleteAllSiteUsers

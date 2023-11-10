@@ -45,7 +45,7 @@ public interface AccountService {
      * @param loggedInUser the currently logged-in user
      * @param account      the account to be deleted
      */
-    void deleteAccount(SiteUser loggedInUser, Account account);
+    boolean deleteAccount(SiteUser loggedInUser, Account account);
 
     /**
      * Delete the account with the given id
@@ -53,10 +53,5 @@ public interface AccountService {
      * @param loggedInUser the currently logged-in user
      * @param accountID    the id of the account to be deleted
      */
-    void deleteAccount(SiteUser loggedInUser, int accountID);
-
-    /**
-     * Delete every account
-     */
-    void deleteAllAccounts();
+    boolean deleteAccount(SiteUser loggedInUser, int accountID);
 }

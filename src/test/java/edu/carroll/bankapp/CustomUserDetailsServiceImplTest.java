@@ -14,14 +14,13 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 @SpringBootTest
 public class CustomUserDetailsServiceImplTest {
-    
+    private static final String NONEXISTANT_USERNAME = "nonexistantuser";
+
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
-    
+
     @Autowired
     private TestUsers testUsers;
-    
-
 
     @Test
     public void testLoadUserByUsernameValidUser() {
@@ -32,11 +31,11 @@ public class CustomUserDetailsServiceImplTest {
         testUsers.createJaneSmith();
 
         // Fetch user
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername("johndoe");
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(TestUsers.JOHN_USERNAME);
 
         // Validate user
         assertNotNull(userDetails);
-        assertEquals("johndoe", userDetails.getUsername());
+        assertEquals(TestUsers.JOHN_USERNAME, userDetails.getUsername());
     }
 
     @Test
@@ -49,7 +48,7 @@ public class CustomUserDetailsServiceImplTest {
         // Make sure not existent user throws error
         assertThrows(UsernameNotFoundException.class, () -> {
             // Lookup nonexistent user
-            customUserDetailsService.loadUserByUsername("nonexistentuser");
+            customUserDetailsService.loadUserByUsername(NONEXISTANT_USERNAME);
         });
     }
 
@@ -63,10 +62,10 @@ public class CustomUserDetailsServiceImplTest {
         testUsers.createJaneSmith();
 
         // Fetch user
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername("☕☕☕☕☕");
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(TestUsers.UNICODE_USERNAME);
 
         // Make sure unicode strings match
         assertNotNull(userDetails);
-        assertEquals("☕☕☕☕☕", userDetails.getUsername());
+        assertEquals(TestUsers.UNICODE_USERNAME, userDetails.getUsername());
     }
 }

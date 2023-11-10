@@ -18,6 +18,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Service
 public class UserServiceImpl implements UserService {
     private static int MIN_USERNAME_LENGTH = 4;
+    private static int MIN_PASSWORD_LENGTH = 8;
+    private static int MIN_EMAIL_LENGTH = 5;
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private final UserRepository userRepo;
@@ -34,34 +36,42 @@ public class UserServiceImpl implements UserService {
     /**
      * Get a user from the given user id
      */
-    public SiteUser getUser(int userId) {
+    public SiteUser getUserById(int userId) {
         log.debug("Getting user with id: {}", userId);
+        // Fetch users with matching id from database
         List<SiteUser> siteUsers = userRepo.findById(userId);
+        // Check if a user exists with that id
         if (siteUsers.isEmpty()) {
             log.warn("Didn't find siteUser with id: {}", userId);
             return null;
         }
+        // Check if multiple users exist with the same id
         if (siteUsers.size() > 1) {
             log.error("Got more than one siteUser with id: {}", userId);
             return null;
         }
+        // Return the user
         return siteUsers.get(0);
     }
 
     /**
      * Get a user from the given username
      */
-    public SiteUser getUser(String username) {
+    public SiteUser getUserByUsername(String username) {
         log.debug("Getting user with username: {}", username);
+        // Get user by username
         List<SiteUser> siteUsers = userRepo.findByUsernameIgnoreCase(username);
+        // Check if we found a user
         if (siteUsers.size() == 0) {
-            log.warn("Didn't find siteUser with username: {}", username);
+            log.info("Didn't find siteUser with username: {}", username);
             return null;
         }
+        // Check if we got multiple uses with the same id
         if (siteUsers.size() > 1) {
             log.error("Got more than one siteUser with username: {}", username);
             return null;
         }
+        // Return the user
         return siteUsers.get(0);
     }
 
@@ -71,6 +81,7 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     public SiteUser createUser(String fullName, String email, String username, String rawPassword) {
+        // Validate that fields aren't blank
         if (fullName == null || fullName == "") {
             log.debug("Invalid username: {}", fullName);
             return null;
@@ -87,17 +98,21 @@ public class UserServiceImpl implements UserService {
             log.debug("Invalid raw password");
             return null;
         }
+        // Make sure email is actually an email
         if (!isEmail(email)) {
             log.debug("{} doesn't look like an email address", email);
             return null;
         }
-        // Arbitrary length requirements
-        if (username.length() <= MIN_USERNAME_LENGTH || rawPassword.length() < 8 || email.length() <= 5) {
+
+        // Check arbitrary length requirements
+        if (username.length() <= MIN_USERNAME_LENGTH || rawPassword.length() < MIN_PASSWORD_LENGTH
+                || email.length() <= MIN_EMAIL_LENGTH) {
             log.debug("username {}, password, or email {} doesn't meet length requirements", username, email);
             return null;
         }
 
-        if (getUser(username) != null) {
+        // Make sure the username isn't taken
+        if (getUserByUsername(username) != null) {
             log.info("Attempt was made to create existing user {}", username);
             return null;
         }
@@ -114,14 +129,6 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Should ONLY be used for testing
-     */
-    public void deleteAllSiteUsers() {
-        log.warn("Deleting all users");
-        userRepo.deleteAll();
-    }
-
-    /**
      * Allows the user to update their password and compares that the passwords that
      * they enter will match.
      *
@@ -132,6 +139,7 @@ public class UserServiceImpl implements UserService {
      */
     public boolean updatePassword(SiteUser user, String oldPassword, String newPassword) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        // Make sure the user entered their old password correctly
         if (!passwordEncoder.matches(oldPassword, user.getHashedPassword())) {
             log.info("{} inputted an incorrect current password", user.getUsername());
             return false;
@@ -154,27 +162,31 @@ public class UserServiceImpl implements UserService {
      * @return true / false if the username is updated
      */
     public boolean updateUsername(SiteUser user, String confirmPassword, String newUsername) {
-        if (!BCrypt.checkpw(newUsername, user.getHashedPassword())) {
+        // Make sure the password is correct
+        if (!BCrypt.checkpw(confirmPassword, user.getHashedPassword())) {
             log.info("Password confirmation incorrect");
             return false;
         }
+        // Make sure the username isn't empty
         if (newUsername == null || newUsername.equals("")) {
             log.info("Attempt was made to update username from {} to empty string", user.getUsername(),
                     newUsername);
             return false;
         }
+        // Make sure the username meets length requirements
         if (newUsername.length() <= MIN_USERNAME_LENGTH) {
             log.info("Username {} doesn't meet the minimum length requirements", user.getUsername(),
                     newUsername);
             return false;
         }
         // Make sure the username we're changing to isn't already taken
-        if (getUser(newUsername) != null) {
+        if (getUserByUsername(newUsername) != null) {
             log.info("Attempt was made to update username from {} to existing user {}", user.getUsername(),
                     newUsername);
             return false;
         }
 
+        // Update the usernameS
         user.setUsername(newUsername);
         userRepo.save(user);
         return true;

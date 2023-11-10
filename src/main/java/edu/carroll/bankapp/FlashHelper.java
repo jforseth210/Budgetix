@@ -5,8 +5,15 @@ import java.util.List;
 
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+/**
+ * This class is used to display one-time (flash) messages to the user, such as the result of an operation. 
+ */
 public class FlashHelper {
-    // Helper function to append messages to the flash attribute
+    /**
+     * Adds a message to be displayed after redirect
+     * @param redirectAttributes - a RedirectAttributes object to store flash attributes to
+     * @param message - the message to display to the user
+     */
     public static void flash(RedirectAttributes redirectAttributes, String message) {
         List<String> messages = new ArrayList<String>();
 

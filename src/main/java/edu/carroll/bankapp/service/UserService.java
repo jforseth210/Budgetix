@@ -12,7 +12,7 @@ public interface UserService {
      * @param userId the ID of the user
      * @return the user if found, or null if not found
      */
-    SiteUser getUser(int userId);
+    SiteUser getUserById(int userId);
 
     /**
      * Get a user from the given username.
@@ -20,7 +20,7 @@ public interface UserService {
      * @param username the username of the user
      * @return the user if found, or null if not found
      */
-    SiteUser getUser(String username);
+    SiteUser getUserByUsername(String username);
 
     /**
      * Create a new user and save it in the database (without confirm password).
@@ -32,11 +32,6 @@ public interface UserService {
      * @return the created user
      */
     SiteUser createUser(String fullName, String email, String username, String rawPassword);
-
-    /**
-     * Delete all site users. (Should ONLY be used for testing)
-     */
-    void deleteAllSiteUsers();
 
     /**
      * Allows the user to update their password and compares that the passwords that

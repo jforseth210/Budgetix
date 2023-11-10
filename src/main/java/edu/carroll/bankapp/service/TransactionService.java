@@ -20,7 +20,8 @@ public interface TransactionService {
     Transaction createTransaction(String name, double amountInDollars, String toFrom, Account account);
 
     /**
-     * Get a transaction from the given id (and make sure it belongs to the current user).
+     * Get a transaction from the given id (and make sure it belongs to the current
+     * user).
      *
      * @param loggedInUser the currently logged-in user
      * @param id           the id of the transaction
@@ -35,4 +36,14 @@ public interface TransactionService {
      * @param transaction  the transaction to be deleted
      */
     void deleteTransaction(SiteUser loggedInUser, Transaction transaction);
+
+    /**
+     * Create a transfer between two accounts
+     * 
+     * @param toAccount   - the account to deposit money to
+     * @param fromAccount - the account to withdraw money from
+     * @param amount      - the amount of money to transfer
+     * @return true if successful, false if not
+     */
+    boolean createTransfer(Account toAccount, Account fromAccount, double amount);
 }

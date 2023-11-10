@@ -23,6 +23,12 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionRepository transactionRepo;
     private final AccountRepository accountRepo;
 
+    /**
+     * Inject dependencies
+     * 
+     * @param transactionRepository
+     * @param accountRepo
+     */
     public TransactionServiceImpl(TransactionRepository transactionRepository, AccountRepository accountRepo) {
         this.transactionRepo = transactionRepository;
         this.accountRepo = accountRepo;
@@ -33,54 +39,95 @@ public class TransactionServiceImpl implements TransactionService {
      */
     public Transaction createTransaction(String name, double amountInDollars, String toFrom, Account account) {
         log.info("Creating transaction with name: {} and account: {}", name, account.getName());
+        // Create the transaction
         Transaction newTransaction = new Transaction();
+        // Populate its fields
         newTransaction.setName(name);
         newTransaction.setAmountInDollars(amountInDollars);
         newTransaction.setToFrom(toFrom);
         newTransaction.setAccount(account);
         newTransaction.setDate(new Date());
+        // Save the transaction
         transactionRepo.save(newTransaction);
+        // Update the account balance
         account.addBalanceInCents(newTransaction.getAmountInCents());
+        // Add the transaction to the account
         account.addTransaction(newTransaction);
+        // Save the account
         accountRepo.save(account);
         return newTransaction;
     }
 
     public Transaction getUserTransaction(SiteUser loggedInUser, int id) {
         List<Transaction> transactions = transactionRepo.findById(id);
+        // Make sure the transaction exists
         if (transactions == null || transactions.isEmpty()) {
-            log.warn("Account with id {} doesn't exist", id);
+            log.info("Transaction with id {} doesn't exist", id);
             return null;
+            // Make sure there's only one account with the given id
         } else if (transactions.size() > 1) {
             log.error("Got multiple accounts with id {}. Bailing out", id);
             return null;
         }
+
         Transaction transaction = transactions.get(0);
-        if (loggedInUser.owns(transaction)) {
-            return transaction;
-        } else {
+        // Make sure the transaction belongs to the current user
+        if (!loggedInUser.owns(transaction)) {
             log.warn("{} tried to access transaction \"{}\" belonging to {}",
                     loggedInUser.getUsername(),
                     transaction.getName(), transaction.getOwner());
+            return null;
         }
-        return null;
+        return transaction;
     }
 
     /**
      * Delete the given transaction if owned by the currently logged-in user
      */
     public void deleteTransaction(SiteUser loggedInUser, Transaction transaction) {
-        if (loggedInUser.owns(transaction)) {
-            transaction.getAccount().subtractBalanceInCents(transaction.getAmountInCents());
-            accountRepo.save(transaction.getAccount());
-
-            transactionRepo.delete(transaction);
-            transaction.getAccount().removeTransaction(transaction);
-            log.info("Deleted transaction: {}", transaction.getName());
-        } else {
+        // Make sure the account is the current user's to delete
+        if (!loggedInUser.owns(transaction)) {
             log.warn("{} tried to delete transaction \"{}\" belonging to {}",
                     loggedInUser.getUsername(),
                     transaction.getName(), transaction.getOwner());
+            return;
         }
+
+        // Update the account balance
+        transaction.getAccount().subtractBalanceInCents(transaction.getAmountInCents());
+        // Remove transaction from account
+        transaction.getAccount().removeTransaction(transaction);
+        // Save changes to account
+        accountRepo.save(transaction.getAccount());
+
+        // Delete transaction from database
+        transactionRepo.delete(transaction);
+
+        log.info("Deleted transaction: {}", transaction.getName());
+    }
+
+    public boolean createTransfer(Account toAccount, Account fromAccount, double amountInDollars) {
+
+        // Withdrawl from the fromAccount
+        Transaction toTransaction = createTransaction(
+                String.format("Transfer to %s", toAccount.getName()),
+                -1 * amountInDollars,
+                toAccount.getName(),
+                fromAccount);
+
+        // Income into the toAccount
+        Transaction fromTransaction = createTransaction(
+                String.format("Transfer from %s", fromAccount.getName()),
+                amountInDollars,
+                fromAccount.getName(),
+                toAccount);
+
+        // If either transaction creation fails, delete it all and bail out
+        if (toTransaction == null || fromTransaction == null) {
+            transactionRepo.delete(toTransaction);
+            transactionRepo.delete(fromTransaction);
+            return false;
+        }
+        return true;
     }
 }

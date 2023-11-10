@@ -31,13 +31,15 @@ public class CustomUserDetailsServiceImpl implements CustomUserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // Lookup the siteUser
-        SiteUser siteUser = userServiceImpl.getUser(username);
+        SiteUser siteUser = userServiceImpl.getUserByUsername(username);
 
         // UserDetailsService contract requires us to throw an exception instead of
         // returning null
         if (siteUser == null) {
             throw new UsernameNotFoundException("Didn't find user with username: " + username);
         }
+
+        // Create a Spring Security UserDetails object from siteUser 
         return new SecurityUser(siteUser);
     }
 }

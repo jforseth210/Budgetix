@@ -5,7 +5,6 @@ import edu.carroll.bankapp.service.UserService;
 import edu.carroll.bankapp.testdata.TestUsers;
 import jakarta.transaction.Transactional;
 
-import jakarta.validation.constraints.Null;
 import org.junit.jupiter.api.Test;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +35,7 @@ public class UserServiceImplTest {
         assertEquals("newuser", newUser.getUsername());
 
         // Make sure user is actually in the database
-        SiteUser fetchedUser = userService.getUser("newuser");
+        SiteUser fetchedUser = userService.getUserByUsername("newuser");
         // Ensure the created user is not null
         assertNotNull(fetchedUser);
         // Verify that the user's full name is set correctly
@@ -56,7 +55,7 @@ public class UserServiceImplTest {
         testUsers.createJaneSmith();
 
         // Get an existing user by their ID
-        SiteUser fetchedJohn = userService.getUser(createdJohn.getId());
+        SiteUser fetchedJohn = userService.getUserById(createdJohn.getId());
 
         // Ensure the returned user is not null
         assertNotNull(fetchedJohn);
@@ -76,7 +75,7 @@ public class UserServiceImplTest {
         SiteUser createdJane = testUsers.createJaneSmith();
 
         // Get an existing user by their username
-        SiteUser fetchedJane = userService.getUser(createdJane.getUsername());
+        SiteUser fetchedJane = userService.getUserByUsername(createdJane.getUsername());
 
         // Ensure the returned user is not null
         assertNotNull(fetchedJane);
@@ -89,61 +88,41 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void testDeleteAllSiteUsers() {
-        // Create users
-        testUsers.createAliceJohnson();
-        testUsers.createJaneSmith();
-
-        // Make sure they're in the database
-        SiteUser alice = userService.getUser("alicejohnson");
-        SiteUser jane = userService.getUser("janesmith");
-        assertNotNull(alice);
-        assertNotNull(jane);
-
-        // Delete all site users
-        userService.deleteAllSiteUsers();
-
-        // Make sure they're no longer in the database
-        alice = userService.getUser("alicejohnson");
-        jane = userService.getUser("janesmith");
-        assertNull(alice);
-        assertNull(jane);
-    }
-
-    @Test
     public void testUpdatePassword() {
+        final String newPassword = "newpassword456";
         // Get a user for password update
         SiteUser unicodeMan = testUsers.createUnicodeMan();
 
         // Update the user's password
-        userService.updatePassword(unicodeMan, "⿈⍺✋⇏⮊⎏⇪⤸Ⲥ↴⍁➄⼉⦕ⶓ∧⻟⍀⇝⧽", "newpassword456");
+        userService.updatePassword(unicodeMan, TestUsers.UNICODE_PASSWORD, newPassword);
 
         // Verify that the password has been updated
-        SiteUser updatedUser = userService.getUser(unicodeMan.getId());
+        SiteUser updatedUser = userService.getUserById(unicodeMan.getId());
         assertNotNull(updatedUser);
-        assertTrue(BCrypt.checkpw("newpassword456", unicodeMan.getHashedPassword()));
+        assertTrue(BCrypt.checkpw(newPassword, unicodeMan.getHashedPassword()));
     }
 
     @Test
     public void testUpdateUsername() {
+        final String newUsername = "newusername123";
         // Get a user for username update
         SiteUser unicodeMan = testUsers.createUnicodeMan();
 
         // Update the user's username
-        assertTrue(userService.updateUsername(unicodeMan, "⿈⍺✋⇏⮊⎏⇪⤸Ⲥ↴⍁➄⼉⦕ⶓ∧⻟⍀⇝⧽", "newusername123"));
+        assertTrue(userService.updateUsername(unicodeMan, TestUsers.UNICODE_PASSWORD, newUsername));
 
         // Verify that the username has been updated
-        SiteUser updatedUser = userService.getUser(unicodeMan.getId());
+        SiteUser updatedUser = userService.getUserById(unicodeMan.getId());
         assertNotNull(updatedUser);
-        assertEquals("newusername123", updatedUser.getUsername());
+        assertEquals(newUsername, updatedUser.getUsername());
 
         // Make sure fetching by username works too
-        updatedUser = userService.getUser("newusername123");
+        updatedUser = userService.getUserByUsername(newUsername);
         assertNotNull(updatedUser);
-        assertEquals("newusername123", updatedUser.getUsername());
+        assertEquals(newUsername, updatedUser.getUsername());
 
         // Make sure old username doesn't work anymore
-        updatedUser = userService.getUser("☕☕☕☕☕");
+        updatedUser = userService.getUserByUsername(TestUsers.UNICODE_USERNAME);
         assertNull(updatedUser);
     }
 
@@ -152,12 +131,12 @@ public class UserServiceImplTest {
         SiteUser jane = testUsers.createJaneSmith();
 
         // Should not update username because username is too short
-        assertFalse(userService.updateUsername(jane, "letmein456", "j"));
-        assertEquals("janesmith", jane.getUsername());
+        assertFalse(userService.updateUsername(jane, TestUsers.JANE_PASSWORD, "j"));
+        assertEquals(TestUsers.JANE_USERNAME, jane.getUsername());
 
         // Should not update username because password is wrong
         assertFalse(userService.updateUsername(jane, "password_time", "janie"));
-        assertEquals("janesmith", jane.getUsername());
+        assertEquals(TestUsers.JANE_USERNAME, jane.getUsername());
     }
 
     @Test
@@ -165,12 +144,12 @@ public class UserServiceImplTest {
         SiteUser jane = testUsers.createJaneSmith();
 
         // Should not update (thus return false) for an empty username
-        assertFalse(userService.updateUsername(jane, "letmein456", ""));
-        assertEquals("janesmith", jane.getUsername());
+        assertFalse(userService.updateUsername(jane, TestUsers.JANE_PASSWORD, ""));
+        assertEquals(TestUsers.JANE_USERNAME, jane.getUsername());
 
         // Should not update (thus return false) for a null username
-        assertFalse(userService.updateUsername(jane, "letmein456", null));
-        assertEquals("janesmith", jane.getUsername());
+        assertFalse(userService.updateUsername(jane, TestUsers.JANE_PASSWORD, null));
+        assertEquals(TestUsers.JANE_USERNAME, jane.getUsername());
     }
 
     @Test
@@ -180,7 +159,8 @@ public class UserServiceImplTest {
 
         // Attempt to create another user with an existing username
         assertNull(
-                userService.createUser("Duplicate User", "duplicate@example.com", "johndoe", "password123"));
+                userService.createUser("Duplicate User", "duplicate@example.com", TestUsers.JOHN_USERNAME,
+                        TestUsers.JOHN_PASSWORD));
     }
 
     @Test
@@ -335,14 +315,14 @@ public class UserServiceImplTest {
     @Test
     public void testGetNonExistentUserById() {
         // Attempt to get a user that does not exist by their ID
-        SiteUser user = userService.getUser("nonexistentuser");
+        SiteUser user = userService.getUserByUsername("nonexistentuser");
         assertNull(user);
     }
 
     @Test
     public void testGetNonExistentUserByUsername() {
         // Attempt to get a user that does not exist by their username
-        SiteUser user = userService.getUser("nonexistentusername");
+        SiteUser user = userService.getUserByUsername("nonexistentusername");
         assertNull(user);
     }
 
@@ -358,11 +338,11 @@ public class UserServiceImplTest {
     @Test
     public void testUpdateUsernameWithExistingUsername() {
         // Get a user for username update
-        SiteUser user = userService.getUser("☕☕☕☕☕");
+        SiteUser user = userService.getUserByUsername(TestUsers.UNICODE_USERNAME);
 
         // Attempt to update the user's username to an existing username
-        assertFalse(userService.updateUsername(user, "☕☕☕☕☕", "johndoe"));
-        assertNotNull(userService.getUser("☕☕☕☕☕"));
+        assertFalse(userService.updateUsername(user, TestUsers.UNICODE_USERNAME, TestUsers.JOHN_USERNAME));
+        assertNotNull(userService.getUserByUsername(TestUsers.UNICODE_USERNAME));
     }
 
 }

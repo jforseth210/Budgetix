@@ -32,7 +32,6 @@ public class AccountServiceImpl implements AccountService {
         this.transactionService = transactionService;
     }
 
-
     /**
      * Returns a list of Accounts owned by the given user
      *
@@ -56,21 +55,24 @@ public class AccountServiceImpl implements AccountService {
      */
     public Account getUserAccount(SiteUser loggedInUser, int id) {
         List<Account> accounts = accountRepo.findById(id);
+        // Check if account exists
         if (accounts == null || accounts.isEmpty()) {
-            log.warn("Account with id {} doesn't exist", id);
+            log.info("Account with id {} doesn't exist", id);
             return null;
+            // Check if we have two accounts with the same id. This would be very bad
         } else if (accounts.size() > 1) {
             log.error("Got multiple accounts with id {}. Bailing out", id);
             return null;
         }
         Account account = accounts.get(0);
-        if (loggedInUser.owns(account)) {
-            return account;
+        // Make sure the account actually belongs to the current user
+        if (!loggedInUser.owns(account)) {
+            // Log the attempted access
+            String currentUsername = loggedInUser.getUsername();
+            String accountOwnerUsername = account.getOwner().getUsername();
+            log.warn("{} attempted to access one of {}'s accounts", currentUsername, accountOwnerUsername);
         }
-        String currentUsername = loggedInUser.getUsername();
-        String accountOwnerUsername = account.getOwner().getUsername();
-        log.warn("{} attempted to access one of {}'s accounts", currentUsername, accountOwnerUsername);
-        return null;
+        return account;
     }
 
     /**
@@ -78,12 +80,14 @@ public class AccountServiceImpl implements AccountService {
      */
     public Account createAccount(String accountName, double balanceInDollars, SiteUser owner) {
         List<Account> ownerAccounts = getUserAccounts(owner);
+        // Prevent user from creating two accounts with the same name
         for (Account account : ownerAccounts) {
             if (account.getName().equals(accountName)) {
                 log.info("{} tried to create two accounts named {}", accountName);
                 return null;
             }
         }
+
         log.info("Creating account named {} for user {}", accountName, owner.getUsername());
         // Create and save a new account
         Account newAccount = new Account();
@@ -102,10 +106,13 @@ public class AccountServiceImpl implements AccountService {
      *
      * @param account
      */
-    public void deleteAccount(SiteUser loggedInUser, Account account) {
+    public boolean deleteAccount(SiteUser loggedInUser, Account account) {
+        // Make sure the user can delete this account, then delete it
         if (loggedInUser.owns(account)) {
             accountRepo.delete(account);
+            return true; 
         }
+        return false;
     }
 
     /**
@@ -113,20 +120,14 @@ public class AccountServiceImpl implements AccountService {
      *
      * @param accountID
      */
-    public void deleteAccount(SiteUser loggedInUser, int accountID) {
+    public boolean deleteAccount(SiteUser loggedInUser, int accountID) {
+        // Look up the account
         Account account = getUserAccount(loggedInUser, accountID);
         if (account == null) {
             log.warn("{} tried to delete a null account", loggedInUser.getUsername());
-            return;
+            return false;
         }
-        deleteAccount(loggedInUser, account);
-    }
-
-    /**
-     * Delete every account
-     */
-    public void deleteAllAccounts() {
-        log.warn("Deleting all accounts");
-        accountRepo.deleteAll();
+        // Try to delete it 
+       return deleteAccount(loggedInUser, account);
     }
 }

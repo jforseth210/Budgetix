@@ -45,6 +45,7 @@ public class UserServiceImplTest {
         assertEquals("new@example.com", fetchedUser.getEmail());
         // Verify that the username is set correctly
         assertEquals("newuser", fetchedUser.getUsername());
+        assertEquals("newuser", fetchedUser.getUsername());
     }
 
     @Test
@@ -115,7 +116,7 @@ public class UserServiceImplTest {
         SiteUser unicodeMan = testUsers.createUnicodeMan();
 
         // Update the user's password
-        userService.updatePassword(unicodeMan, "⿈⍺✋⇏⮊⎏⇪⤸Ⲥ↴⍁➄⼉⦕ⶓ∧⻟⍀⇝⧽", "newpassword456", "newpassword456");
+        userService.updatePassword(unicodeMan, "⿈⍺✋⇏⮊⎏⇪⤸Ⲥ↴⍁➄⼉⦕ⶓ∧⻟⍀⇝⧽", "newpassword456");
 
         // Verify that the password has been updated
         SiteUser updatedUser = userService.getUser(unicodeMan.getId());
@@ -129,7 +130,7 @@ public class UserServiceImplTest {
         SiteUser unicodeMan = testUsers.createUnicodeMan();
 
         // Update the user's username
-        userService.updateUsername(unicodeMan, "☕☕☕☕", "newusername123");
+        assertTrue(userService.updateUsername(unicodeMan, "⿈⍺✋⇏⮊⎏⇪⤸Ⲥ↴⍁➄⼉⦕ⶓ∧⻟⍀⇝⧽", "newusername123"));
 
         // Verify that the username has been updated
         SiteUser updatedUser = userService.getUser(unicodeMan.getId());
@@ -142,7 +143,7 @@ public class UserServiceImplTest {
         assertEquals("newusername123", updatedUser.getUsername());
 
         // Make sure old username doesn't work anymore
-        updatedUser = userService.getUser("☕☕☕☕");
+        updatedUser = userService.getUser("☕☕☕☕☕");
         assertNull(updatedUser);
     }
 
@@ -183,68 +184,102 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void testCreateUserNullInputs() {
-        // we expect this to fail as the full name is null
+    public void testCreateUserNullFullName() {
         assertNull(userService.createUser(null, "mail@mail.com", "no_name", "password"));
+    }
 
-        // we expect this to fail as the email is null
+    @Test
+    public void testCreateUserNullEmail() {
         assertNull(userService.createUser("Null User", null, "no_email", "password"));
+    }
 
-        // we expect this to fail as the full name and email is null
+    @Test
+    public void testCreateUserNullFullNameAndEmail() {
         assertNull(userService.createUser(null, null, "no_name_email", "password"));
+    }
 
-        // we expect this to fail as the username is null
+    @Test
+    public void testCreateUserNullUsername() {
         assertNull(userService.createUser("Null user", "null@mail.com", null, "password"));
+    }
 
-        // we expect this to fail as the username and email is null
+    @Test
+    public void testCreateUserNullUsernameAndEmail() {
         assertNull(userService.createUser("Null user", null, null, "password"));
+    }
 
-        // we expect this to fail as the username, email, and full name is null
+    @Test
+    public void testCreateUserNullInputsAndFullName() {
         assertNull(userService.createUser(null, null, null, "password"));
+    }
 
-        // we expect this to fail as the password is null
+    @Test
+    public void testCreateUserNullPassword() {
         assertNull(userService.createUser("Null user", "null@mail.com", "null_password", null));
+    }
 
-        // we expect this to fail as the username and password is null
+    @Test
+    public void testCreateUserNullUsernameAndPassword() {
         assertNull(userService.createUser("Null user", "null@mail.com", null, null));
+    }
 
-        // we expect this to fail as the username, full name, and password is null
+    @Test
+    public void testCreateUserNullUsernameFullNameAndPassword() {
         assertNull(userService.createUser("Null user", null, null, null));
+    }
 
-        // we expect this to fail as everything is null
+    @Test
+    public void testCreateUserAllNullInputs() {
         assertNull(userService.createUser(null, null, null, null));
     }
 
     @Test
-    public void testCreateUserEmptyStringInputs() {
-        // we expect this to fail as the full name is ""
+    public void testCreateUserEmptyFullName() {
         assertNull(userService.createUser("", "mail@mail.com", "no_name", "password"));
+    }
 
-        // we expect this to fail as the email is ""
+    @Test
+    public void testCreateUserEmptyEmail() {
         assertNull(userService.createUser("Null User", "", "no_email", "password"));
+    }
 
-        // we expect this to fail as the full name and email is ""
+    @Test
+    public void testCreateUserEmptyFullNameAndEmail() {
         assertNull(userService.createUser("", "", "no_name_email", "password"));
+    }
 
-        // we expect this to fail as the username is ""
+    @Test
+    public void testCreateUserEmptyUsername() {
         assertNull(userService.createUser("Null user", "null@mail.com", "", "password"));
+    }
 
-        // we expect this to fail as the username and email is ""
+    @Test
+    public void testCreateUserEmptyUsernameAndEmail() {
         assertNull(userService.createUser("Null user", "", "", "password"));
+    }
 
-        // we expect this to fail as the username, email, and full name is ""
+    @Test
+    public void testCreateUserEmptyInputsAndFullName() {
         assertNull(userService.createUser("", "", "", "password"));
+    }
 
-        // we expect this to fail as the password is ""
+    @Test
+    public void testCreateUserEmptyPassword() {
         assertNull(userService.createUser("Null user", "null@mail.com", "null_password", ""));
+    }
 
-        // we expect this to fail as the username and password is ""
+    @Test
+    public void testCreateUserEmptyUsernameAndPassword() {
         assertNull(userService.createUser("Null user", "null@mail.com", "", ""));
+    }
 
-        // we expect this to fail as the username, full name, and password is ""
+    @Test
+    public void testCreateUserEmptyUsernameFullNameAndPassword() {
         assertNull(userService.createUser("Null user", "", "", ""));
+    }
 
-        // we expect this to fail as everything is ""
+    @Test
+    public void testCreateUserAllEmptyInputs() {
         assertNull(userService.createUser("", "", "", ""));
     }
 
@@ -276,14 +311,24 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void testCreateUserWithInvalidPasswords() {
-        // we expect this password to work since it has proper 'password formatting (i.e., 8 character minimum)
+    public void testCreateUserWithValidPassword() {
+        // we expect this password to work since it has proper 'password formatting
+        // (i.e., 8 character minimum)
         assertNotNull(userService.createUser("Silly Password Man", "password@mail.com", "good_password", "password"));
+    }
 
-        // we expect this password to work since it has proper 'password formatting (i.e., 8 character minimum)
-        assertNotNull(userService.createUser("Silly Password Man", "password@mail.com", "good_password_num", "12345678"));
+    @Test
+    public void testCreateUserWithValidPasswordContainingNumbers() {
+        // we expect this password to work since it has proper 'password formatting
+        // (i.e., 8 character minimum)
+        assertNotNull(
+                userService.createUser("Silly Password Man", "password@mail.com", "good_password_num", "12345678"));
+    }
 
-        // we expect this password to NOT work since it is too short (i.e., less than 8 character minimum)
+    @Test
+    public void testCreateUserWithInvalidShortPassword() {
+        // we expect this password to NOT work since it is too short (i.e., less than 8
+        // character minimum)
         assertNull(userService.createUser("Silly Password Man", "password@mail.com", "good_password", "pass"));
     }
 
@@ -307,30 +352,17 @@ public class UserServiceImplTest {
         SiteUser user = testUsers.createUnicodeMan();
 
         // Attempt to update the user's password with an incorrect current password
-        assertFalse(userService.updatePassword(user, "incorrectpassword", "newpassword456", "newpassword456"));
+        assertFalse(userService.updatePassword(user, "incorrectpassword", "newpassword456"));
     }
 
     @Test
-    public void testUpdatePasswordWithMismatchedNewPasswords() {
-        // Get a user for password update
-        SiteUser user = testUsers.createUnicodeMan();
+    public void testUpdateUsernameWithExistingUsername() {
+        // Get a user for username update
+        SiteUser user = userService.getUser("☕☕☕☕☕");
 
-        // TODO: Remove this test and password confirmation in service
-        // Attempt to update the user's password with mismatched new passwords
-        assertFalse(userService.updatePassword(user, "⿈⍺✋⇏⮊⎏⇪⤸Ⲥ↴⍁➄⼉⦕ⶓ∧⻟⍀⇝⧽", "newpassword456", "mismatchedpassword789"));
+        // Attempt to update the user's username to an existing username
+        assertFalse(userService.updateUsername(user, "☕☕☕☕☕", "johndoe"));
+        assertNotNull(userService.getUser("☕☕☕☕☕"));
     }
 
-    // TODO: Update this when we know what existing username behavior should be
-    /**
-     * @Test
-     *       public void testUpdateUsernameWithExistingUsername() {
-     *       // Get a user for username update
-     *       SiteUser user = userService.getUser("☕☕☕☕");
-     * 
-     *       // Attempt to update the user's username to an existing username
-     *       assertThrows(RuntimeException.class, () -> {
-     *       userService.updateUsername(user, "☕☕☕☕", "johndoe");
-     *       });
-     *       }
-     */
 }

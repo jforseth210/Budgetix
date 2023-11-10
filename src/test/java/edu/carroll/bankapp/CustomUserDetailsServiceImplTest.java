@@ -63,10 +63,10 @@ public class CustomUserDetailsServiceImplTest {
         testUsers.createJaneSmith();
 
         // Fetch user
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername("☕☕☕☕");
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername("☕☕☕☕☕");
 
         // Make sure unicode strings match
         assertNotNull(userDetails);
-        assertEquals("☕☕☕☕", userDetails.getUsername());
+        assertEquals("☕☕☕☕☕", userDetails.getUsername());
     }
 }

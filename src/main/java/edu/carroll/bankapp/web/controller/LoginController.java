@@ -57,11 +57,11 @@ public class LoginController {
      * @param newLoginForm The data collected from the form
      * @param result       Form errors (if any)
      * @return String redirect view - redirect leads user to new page based on
-     *         submission
+     * submission
      */
     @PostMapping("/loginNew")
     public String loginNewPost(HttpServletRequest request, @Valid @ModelAttribute NewLoginForm newLoginForm,
-            BindingResult result) {
+                               BindingResult result, RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             return "loginNew";
         }
@@ -74,9 +74,18 @@ public class LoginController {
             return "loginNew";
         }
 
+        if (userService.getUser(newLoginForm.getUsername()) != null) {
+            result.addError(new ObjectError("username", "Username already taken"));
+            return "loginNew";
+        }
+
         // Create the user
         SiteUser createdUser = userService.createUser(newLoginForm.getFullName(), newLoginForm.getEmail(),
                 newLoginForm.getUsername(), newLoginForm.getPassword());
+        if (createdUser == null) {
+            //TODO: Add "something went wrong" feedback here
+            return "loginNew";
+        }
         log.info("Created a new user: {}", createdUser.getUsername());
 
         // Attempt to log the user into the application

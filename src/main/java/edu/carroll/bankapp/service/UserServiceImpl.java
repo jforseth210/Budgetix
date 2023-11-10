@@ -2,7 +2,8 @@ package edu.carroll.bankapp.service;
 
 import edu.carroll.bankapp.jpa.model.SiteUser;
 import edu.carroll.bankapp.jpa.repo.UserRepository;
-
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import java.util.List;
 
 import org.mindrot.jbcrypt.BCrypt;
@@ -16,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
  */
 @Service
 public class UserServiceImpl implements UserService {
+    private static int MIN_USERNAME_LENGTH = 4;
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private final UserRepository userRepo;
@@ -69,14 +71,31 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     public SiteUser createUser(String fullName, String email, String username, String rawPassword) {
-        if (fullName == null || fullName == "")
+        if (fullName == null || fullName == "") {
+            log.debug("Invalid username: {}", fullName);
             return null;
-        if (email == null || email == "")
+        }
+        if (email == null || email == "") {
+            log.debug("Invalid email: {}", email);
             return null;
-        if (username == null || username == "")
+        }
+        if (username == null || username == "") {
+            log.debug("Invalid username: {}", username);
             return null;
-        if (rawPassword == null || rawPassword == "")
+        }
+        if (rawPassword == null || rawPassword == "") {
+            log.debug("Invalid raw password");
             return null;
+        }
+        if (!isEmail(email)) {
+            log.debug("{} doesn't look like an email address", email);
+            return null;
+        }
+        // Arbitrary length requirements
+        if (username.length() <= MIN_USERNAME_LENGTH || rawPassword.length() < 8 || email.length() <= 5) {
+            log.debug("username {}, password, or email {} doesn't meet length requirements", username, email);
+            return null;
+        }
 
         if (getUser(username) != null) {
             log.info("Attempt was made to create existing user {}", username);
@@ -135,15 +154,41 @@ public class UserServiceImpl implements UserService {
      * @return true / false if the username is updated
      */
     public boolean updateUsername(SiteUser user, String confirmPassword, String newUsername) {
+        if (!BCrypt.checkpw(newUsername, user.getHashedPassword())) {
+            log.info("Password confirmation incorrect");
+            return false;
+        }
+        if (newUsername == null || newUsername.equals("")) {
+            log.info("Attempt was made to update username from {} to empty string", user.getUsername(),
+                    newUsername);
+            return false;
+        }
+        if (newUsername.length() <= MIN_USERNAME_LENGTH) {
+            log.info("Username {} doesn't meet the minimum length requirements", user.getUsername(),
+                    newUsername);
+            return false;
+        }
         // Make sure the username we're changing to isn't already taken
         if (getUser(newUsername) != null) {
             log.info("Attempt was made to update username from {} to existing user {}", user.getUsername(),
                     newUsername);
             return false;
         }
-        
+
         user.setUsername(newUsername);
         userRepo.save(user);
         return true;
+    }
+
+    /**
+     * Use regex from https://emailregex.com. Jakarta *should* catch this in the
+     * frontend, but we want to double check in the service, just in case.
+     */
+    private boolean isEmail(String email) {
+        String regex = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)])";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+
     }
 }

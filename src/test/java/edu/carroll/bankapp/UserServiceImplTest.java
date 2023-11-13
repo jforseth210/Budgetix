@@ -364,7 +364,7 @@ public class UserServiceImplTest {
     @Test
     public void testUpdatePasswordWithIncorrectCurrentPassword() {
         final String incorrectPassword = "incorrectpassword";
-        final String newPassword = "newpassword456"
+        final String newPassword = "newpassword456";
         // Get a user for password update
         SiteUser user = testUsers.createUnicodeMan();
 

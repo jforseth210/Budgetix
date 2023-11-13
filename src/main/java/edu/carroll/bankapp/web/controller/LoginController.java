@@ -51,7 +51,7 @@ public class LoginController {
     }
 
     /**
-     * The sign up pages
+     * The sign-up pages
      */
     @GetMapping("/loginNew")
     public String loginNewGet(Model model) {
@@ -65,11 +65,11 @@ public class LoginController {
      * @param newLoginForm The data collected from the form
      * @param result       Form errors (if any)
      * @return String redirect view - redirect leads user to new page based on
-     *         submission
+     * submission
      */
     @PostMapping("/loginNew")
     public String loginNewPost(HttpServletRequest request, @Valid @ModelAttribute NewLoginForm newLoginForm,
-            BindingResult result, RedirectAttributes redirectAttributes) {
+                               BindingResult result, RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             return "loginNew";
         }
@@ -115,7 +115,7 @@ public class LoginController {
      */
     @PostMapping("/update-password")
     public String updatePassword(@ModelAttribute("updatePassword") UpdatePasswordForm form,
-            RedirectAttributes redirectAttributes) {
+                                 RedirectAttributes redirectAttributes) {
         SiteUser user = authHelper.getLoggedInUser();
 
         // Handle the case where the user doesn't exist
@@ -149,9 +149,9 @@ public class LoginController {
      */
     @PostMapping("/update-username")
     public String updateUsername(@ModelAttribute("updateUsername") UpdateUsernameForm form,
-            HttpServletRequest request, RedirectAttributes redirectAttributes) {
+                                 HttpServletRequest request, RedirectAttributes redirectAttributes) {
         SiteUser user = authHelper.getLoggedInUser();
-        // Try updating the usernamer
+        // Try updating the username
         boolean success = userService.updateUsername(user, form.getConfirmPassword(), form.getNewUsername());
 
         // Let the user know if update failed

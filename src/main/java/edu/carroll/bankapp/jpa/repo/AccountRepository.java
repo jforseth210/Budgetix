@@ -14,7 +14,7 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
      * Return a list of accounts owned by the given siteUser
      *
      * @param siteUser The account owner
-     * @return
+     * @return list of accounts owned by the given user
      */
     List<Account> findByOwner(SiteUser siteUser);
 
@@ -22,7 +22,7 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
      * Return a single element list containing the account with the provided id.
      *
      * @param id The account id
-     * @return
+     * @return list of accounts with the given id
      */
     List<Account> findById(int id);
 }

@@ -5,11 +5,8 @@ import edu.carroll.bankapp.jpa.model.SiteUser;
 import edu.carroll.bankapp.jpa.model.Transaction;
 import edu.carroll.bankapp.service.AccountService;
 import edu.carroll.bankapp.service.TransactionService;
-import edu.carroll.bankapp.service.UserService;
 import edu.carroll.bankapp.web.AuthHelper;
 import edu.carroll.bankapp.web.form.*;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -18,12 +15,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
-import org.apache.catalina.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import edu.carroll.bankapp.FlashHelper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,14 +38,9 @@ public class DashboardController {
 
     /**
      * Inject needed services
-     * 
-     * @param accountService
-     * @param userService
-     * @param transactionService
-     * @param authHelper
      */
     public DashboardController(AccountService accountService,
-            TransactionService transactionService, AuthHelper authHelper) {
+                               TransactionService transactionService, AuthHelper authHelper) {
         this.accountService = accountService;
         this.transactionService = transactionService;
         this.authHelper = authHelper;
@@ -59,15 +49,15 @@ public class DashboardController {
     /**
      * Redirect from the root path to the first user account found
      *
-     * @return
+     * @return - redirect to the appropriate page
      */
     @GetMapping("/")
     public RedirectView index(Model model, RedirectAttributes redirectAttributes) {
-        // Get all of the user's accounts
+        // Get all the user's accounts
         List<Account> accounts = accountService.getUserAccounts(authHelper.getLoggedInUser());
 
         // Deal with the user not having any accounts
-        if (accounts == null || accounts.size() == 0) {
+        if (accounts == null || accounts.isEmpty()) {
             return new RedirectView("/add-account");
         }
 
@@ -87,7 +77,7 @@ public class DashboardController {
      *
      * @param accountId the id of the account being viewed
      * @param model     data to pass to Thymeleaf
-     * @return
+     * @return - account page or redirect
      */
     @GetMapping("/account/{accountId}")
     public String index(@PathVariable Integer accountId, Model model, RedirectAttributes redirectAttributes) {
@@ -152,12 +142,12 @@ public class DashboardController {
     /**
      * Accept form submissions for (financial) account creation
      *
-     * @param newAccountForm
-     * @return
+     * @param newAccountForm form information needed to create the account
+     * @return redirect to root path
      */
     @PostMapping("/add-account")
     public RedirectView addAccount(@Valid @ModelAttribute NewAccountForm newAccountForm,
-            RedirectAttributes redirectAttributes) {
+                                   RedirectAttributes redirectAttributes) {
         // Create an account
         accountService.createAccount(
                 newAccountForm.getAccountName(),
@@ -172,12 +162,12 @@ public class DashboardController {
     /**
      * Accept form submission for transaction addition
      *
-     * @param newTransactionForm
+     * @param newTransactionForm form information needed to create the transaction
      * @return redirect view to page showing new transaction
      */
     @PostMapping("/add-transaction")
     public RedirectView addTransaction(@Valid @ModelAttribute NewTransactionForm newTransactionForm,
-            RedirectAttributes redirectAttributes) {
+                                       RedirectAttributes redirectAttributes) {
         Account account = accountService.getUserAccount(authHelper.getLoggedInUser(),
                 newTransactionForm.getAccountId());
 
@@ -215,12 +205,12 @@ public class DashboardController {
     /**
      * Accept form submission for transfer addition
      *
-     * @param newTransferForm
+     * @param newTransferForm form information needed to create transfer
      * @return redirect view to page showing new transaction
      */
     @PostMapping("/add-transfer")
     public RedirectView addTransfer(@Valid @ModelAttribute NewTransferForm newTransferForm,
-            RedirectAttributes redirectAttributes) {
+                                    RedirectAttributes redirectAttributes) {
         // The account to send money to
         Account toAccount = accountService.getUserAccount(authHelper.getLoggedInUser(),
                 newTransferForm.getToAccountId());
@@ -252,7 +242,7 @@ public class DashboardController {
      */
     @PostMapping("/delete-transaction")
     public String deleteTransaction(@ModelAttribute("deleteTransactionForm") DeleteTransactionForm form,
-            RedirectAttributes redirectAttributes) {
+                                    RedirectAttributes redirectAttributes) {
         SiteUser loggedInUser = authHelper.getLoggedInUser();
         // Look up the transaction to delete
         Transaction transaction = transactionService.getUserTransaction(loggedInUser, form.getTransactionId());
@@ -273,7 +263,7 @@ public class DashboardController {
      */
     @PostMapping("/delete-account")
     public String deleteAccount(@ModelAttribute("deleteAccountForm") DeleteAccountForm form,
-            RedirectAttributes redirectAttributes) {
+                                RedirectAttributes redirectAttributes) {
         // Look up the account the user wants to delete
         Account account = accountService.getUserAccount(authHelper.getLoggedInUser(), form.getAccountId());
 

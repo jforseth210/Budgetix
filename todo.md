@@ -1,9 +1,11 @@
 [X] Feedback to user on update username/password success/error
 [] README.md/documentation
-[] More javadoc
-[] Comprehensive tests for UserService
+[X] More javadoc
+[X] Comprehensive tests for UserService
 [] 2 Ways to Disable Logging (without modifying code)
-[] Improvements to logging, internal documentation, other tests
+[] Improvements to logging
+[X] Improvements to internal documentation
+[] Improvements to other tests
 [] More comments
 [] Presentation
-[] Get tests passing
+[X] Get tests passing

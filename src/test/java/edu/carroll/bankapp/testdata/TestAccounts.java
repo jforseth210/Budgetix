@@ -11,7 +11,7 @@ import edu.carroll.bankapp.service.AccountService;
  */
 @Component
 public class TestAccounts {
-    AccountService accountService;
+    final AccountService accountService;
 
     public TestAccounts(AccountService accountService) {
         this.accountService = accountService;

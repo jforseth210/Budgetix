@@ -26,7 +26,7 @@ public class CustomUserDetailsServiceImpl implements CustomUserDetailsService {
      *
      * @param username the username identifying the user whose data is required.
      * @return siteUser - a user that is using our site
-     * @throws UsernameNotFoundException
+     * @throws UsernameNotFoundException if there's no user matching the given username
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

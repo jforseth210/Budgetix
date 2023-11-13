@@ -25,12 +25,12 @@ public class TransactionServiceImpl implements TransactionService {
 
     /**
      * Inject dependencies
-     * 
-     * @param transactionRepository
-     * @param accountRepo
+     *
+     * @param transactionRepo - JPA repo for querying transactions
+     * @param accountRepo     - JPA repo for querying accounts
      */
-    public TransactionServiceImpl(TransactionRepository transactionRepository, AccountRepository accountRepo) {
-        this.transactionRepo = transactionRepository;
+    public TransactionServiceImpl(TransactionRepository transactionRepo, AccountRepository accountRepo) {
+        this.transactionRepo = transactionRepo;
         this.accountRepo = accountRepo;
     }
 
@@ -108,7 +108,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     public boolean createTransfer(Account toAccount, Account fromAccount, double amountInDollars) {
 
-        // Withdrawl from the fromAccount
+        // Withdraw from the fromAccount
         Transaction toTransaction = createTransaction(
                 String.format("Transfer to %s", toAccount.getName()),
                 -1 * amountInDollars,
@@ -123,9 +123,12 @@ public class TransactionServiceImpl implements TransactionService {
                 toAccount);
 
         // If either transaction creation fails, delete it all and bail out
-        if (toTransaction == null || fromTransaction == null) {
-            transactionRepo.delete(toTransaction);
+        if (toTransaction == null) {
             transactionRepo.delete(fromTransaction);
+            return false;
+        }
+        if (fromTransaction == null) {
+            transactionRepo.delete(toTransaction);
             return false;
         }
         return true;

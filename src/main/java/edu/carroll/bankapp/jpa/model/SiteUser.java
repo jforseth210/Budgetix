@@ -37,10 +37,10 @@ public class SiteUser {
     /**
      * Initialize a user with username and hashed password
      *
-     * @param fullName
-     * @param email
-     * @param username
-     * @param hashedPassword
+     * @param fullName       - The user's first and last name
+     * @param email          - The user's email address
+     * @param username       - The username of the user
+     * @param hashedPassword - The user's already-hashed password
      */
     public SiteUser(String fullName, String email, String username, String hashedPassword) {
         this.fullName = fullName;
@@ -68,7 +68,7 @@ public class SiteUser {
     }
 
     /**
-     * Whether or not this user owns the given object
+     * Whether this user owns the given object
      */
     public boolean owns(Ownable item) {
         if (item == null) {

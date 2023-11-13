@@ -11,7 +11,7 @@ import edu.carroll.bankapp.service.TransactionService;
  */
 @Component
 public class TestTransactions {
-    TransactionService transactionService;
+    final TransactionService transactionService;
 
     public TestTransactions(TransactionService transactionService) {
         this.transactionService = transactionService;

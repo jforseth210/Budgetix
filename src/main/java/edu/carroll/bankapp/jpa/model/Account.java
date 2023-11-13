@@ -7,7 +7,7 @@ import java.util.*;
 import edu.carroll.bankapp.Ownable;
 
 /**
- * An account within the application (i.e checking, savings)
+ * An account within the application (i.e. checking, savings)
  */
 @Entity
 @Table(name = "account")

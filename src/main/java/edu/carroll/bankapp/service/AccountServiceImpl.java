@@ -104,13 +104,13 @@ public class AccountServiceImpl implements AccountService {
     /**
      * Delete the given account
      *
-     * @param account
+     * @param account - the account to be deleted
      */
     public boolean deleteAccount(SiteUser loggedInUser, Account account) {
         // Make sure the user can delete this account, then delete it
         if (loggedInUser.owns(account)) {
             accountRepo.delete(account);
-            return true; 
+            return true;
         }
         return false;
     }
@@ -118,7 +118,7 @@ public class AccountServiceImpl implements AccountService {
     /**
      * Delete the account with the given id
      *
-     * @param accountID
+     * @param accountID - the id of the account to be deleted
      */
     public boolean deleteAccount(SiteUser loggedInUser, int accountID) {
         // Look up the account
@@ -128,6 +128,6 @@ public class AccountServiceImpl implements AccountService {
             return false;
         }
         // Try to delete it 
-       return deleteAccount(loggedInUser, account);
+        return deleteAccount(loggedInUser, account);
     }
 }

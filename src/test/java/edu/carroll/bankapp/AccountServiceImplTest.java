@@ -64,14 +64,14 @@ public class AccountServiceImplTest {
         SiteUser unicodeMan = testUsers.createUnicodeMan();
         Account moneybag = testAccounts.createMoneyBag(unicodeMan);
 
-        // Get unicode mans accounts, make sure they make sense
+        // Get unicode man's accounts, make sure they make sense
         List<Account> retrievedAccounts = accountService.getUserAccounts(unicodeMan);
-        assertNotNull(retrievedAccounts); 
+        assertNotNull(retrievedAccounts);
         assertEquals(retrievedAccounts.size(), 1);
 
         // Look at the first (and only) account
         Account retrievedAccount = retrievedAccounts.get(0);
-        
+
         // Make sure it matches up with the account we created
         assertEquals(retrievedAccount.getBalanceInDollars(), moneybag.getBalanceInDollars());
         assertEquals(retrievedAccount.getName(), moneybag.getName());
@@ -87,16 +87,16 @@ public class AccountServiceImplTest {
     public void testGetUserAccountsNoAccounts() {
         // Create alice, but don't give her any accounts
         SiteUser alice = testUsers.createAliceJohnson();
-        
+
         // Create some other accounts to make sure they 
         // AREN'T returned
         SiteUser john = testUsers.createJohnDoe();
         testAccounts.createChecking(john);
         testAccounts.createSavings(john);
-        
+
         // Get alice's accounts
         List<Account> accountList = accountService.getUserAccounts(alice);
-        
+
         // Make sure alice has no accounts
         assertNotNull(accountList);
         assertTrue(accountList.isEmpty());

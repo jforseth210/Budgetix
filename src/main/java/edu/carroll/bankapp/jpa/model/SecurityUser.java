@@ -16,9 +16,10 @@ public class SecurityUser implements UserDetails {
     private final SiteUser siteUser;
 
     /**
-     * Main Constructor for generating secure users
+     * Main Constructor for generating security users
      *
-     * @param siteUser
+     * @param siteUser A SiteUser to create a SecurityUser from. This is the *real* user
+     *                 object that SecurityUser is wrapping
      */
     public SecurityUser(SiteUser siteUser) {
         this.siteUser = siteUser;
@@ -45,8 +46,7 @@ public class SecurityUser implements UserDetails {
     }
 
     /**
-     *
-     * @return
+     * @return Collection of user roles
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

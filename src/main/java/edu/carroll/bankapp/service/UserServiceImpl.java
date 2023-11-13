@@ -2,6 +2,7 @@ package edu.carroll.bankapp.service;
 
 import edu.carroll.bankapp.jpa.model.SiteUser;
 import edu.carroll.bankapp.jpa.repo.UserRepository;
+
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.List;
@@ -17,9 +18,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
  */
 @Service
 public class UserServiceImpl implements UserService {
-    private static int MIN_USERNAME_LENGTH = 4;
-    private static int MIN_PASSWORD_LENGTH = 8;
-    private static int MIN_EMAIL_LENGTH = 5;
+    private static final int MIN_USERNAME_LENGTH = 4;
+    private static final int MIN_PASSWORD_LENGTH = 8;
+    private static final int MIN_EMAIL_LENGTH = 5;
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private final UserRepository userRepo;
@@ -62,7 +63,7 @@ public class UserServiceImpl implements UserService {
         // Get user by username
         List<SiteUser> siteUsers = userRepo.findByUsernameIgnoreCase(username);
         // Check if we found a user
-        if (siteUsers.size() == 0) {
+        if (siteUsers.isEmpty()) {
             log.info("Didn't find siteUser with username: {}", username);
             return null;
         }
@@ -78,23 +79,23 @@ public class UserServiceImpl implements UserService {
     /**
      * Create a username and save it in the database (without confirm password)
      *
-     * @return
+     * @return The SiteUser if created successfully, null otherwise
      */
     public SiteUser createUser(String fullName, String email, String username, String rawPassword) {
         // Validate that fields aren't blank
-        if (fullName == null || fullName == "") {
+        if (fullName == null || fullName.equals("")) {
             log.debug("Invalid username: {}", fullName);
             return null;
         }
-        if (email == null || email == "") {
+        if (email == null || email.equals("")) {
             log.debug("Invalid email: {}", email);
             return null;
         }
-        if (username == null || username == "") {
+        if (username == null || username.equals("")) {
             log.debug("Invalid username: {}", username);
             return null;
         }
-        if (rawPassword == null || rawPassword == "") {
+        if (rawPassword == null || rawPassword.equals("")) {
             log.debug("Invalid raw password");
             return null;
         }
@@ -193,7 +194,7 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Use regex from https://emailregex.com. Jakarta *should* catch this in the
+     * Use regex from <a href="https://emailregex.com">...</a>. Jakarta *should* catch this in the
      * frontend, but we want to double check in the service, just in case.
      */
     private boolean isEmail(String email) {

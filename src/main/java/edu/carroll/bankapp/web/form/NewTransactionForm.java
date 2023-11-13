@@ -60,7 +60,7 @@ public class NewTransactionForm {
      * @return amountInCents - Integer - amount of transaction in US cents
      */
     public double getAmountInCents() {
-        return (double) amountInDollars * (double) 100;
+        return amountInDollars * (double) 100;
     }
 
     public void setAmountInDollars(double amountInDollars) {

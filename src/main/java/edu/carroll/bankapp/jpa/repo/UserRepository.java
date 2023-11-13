@@ -13,16 +13,16 @@ public interface UserRepository extends JpaRepository<SiteUser, Integer> {
     /**
      * Case-insensitively fetch a SiteUser based on their username.
      *
-     * @param username
-     * @return
+     * @param username - The username to look up
+     * @return A list of SiteUsers with that name
      */
     List<SiteUser> findByUsernameIgnoreCase(String username);
 
     /**
      * Fetch a SiteUser based on the id.
-     * 
-     * @param id
-     * @return
+     *
+     * @param id - The id of the user to look up
+     * @return A list of SiteUsers with that id
      */
     List<SiteUser> findById(int id);
 }

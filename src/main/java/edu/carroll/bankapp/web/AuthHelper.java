@@ -13,7 +13,7 @@ import edu.carroll.bankapp.service.UserService;
 @Component
 public class AuthHelper {
     private static final Logger log = LoggerFactory.getLogger(AuthHelper.class);
-    private UserService userService;
+    private final UserService userService;
 
     public AuthHelper(UserService userService) {
         this.userService = userService;
@@ -26,10 +26,12 @@ public class AuthHelper {
      */
     public SiteUser getLoggedInUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // See if there's no one logged in
         if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
             log.info("No one currently logged in");
             return null;
         }
+        // Lookup the current user
         String currentUserName = authentication.getName();
         return userService.getUserByUsername(currentUserName);
     }

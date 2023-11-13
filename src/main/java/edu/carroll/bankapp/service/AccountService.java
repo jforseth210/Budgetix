@@ -35,7 +35,7 @@ public interface AccountService {
      * @param accountName      the name of the account
      * @param balanceInDollars the initial balance in dollars
      * @param owner            the owner of the account
-     * @return true if the account was created successfully, false otherwise
+     * @return Account if the account was created successfully, null otherwise
      */
     Account createAccount(String accountName, double balanceInDollars, SiteUser owner);
 

@@ -110,7 +110,7 @@ public class Transaction implements Ownable, Comparable<Transaction> {
     /**
      * Sets the transaction amount in US dollars
      *
-     * @param amountInDollars - Double - transaction abount in US dollars (anything
+     * @param amountInDollars - Double - transaction amount in US dollars (anything
      *                        less than a penny will be lost)
      */
     public void setAmountInDollars(double amountInDollars) {

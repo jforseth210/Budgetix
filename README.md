@@ -61,3 +61,60 @@ http://localhost:8080/
 ```
 
 4. Enjoy our application! You are all set to start tracking your finances like a pro!
+
+## Application Features
+### Account Creation
+We want to make using our application as easy as possible. To use our banking application, you
+simply need to register an account with us, and you are ready to go! To register, we'll ask for a
+couple pieces of information:
+* First and Last Name: We want to know what to call you!
+* Email: We get your email, but never send any spam emails or sell this information to others
+* Username: You get to be creative here! Have fun making a username to identify yourself with
+* Password: Everyone needs a password to log into an account! Pick on you'll be able to remember
+
+Things we will _never_ ask for:
+* Social Security Number: That's a bit too much of information for us! We want this to remain private
+* Birthday: We just don't need to know your birthday! Feel safe knowing that we won't be asking for much
+personally identifiable information
+
+Once you have successfully created an account, browse our application! You'll notice there's a 
+dropdown menu in the top right-hand corner. In this menu, you can change your username, change
+your password, or log out of our application!
+
+### Transaction Details
+We want to make logging a transaction simple. At the bottom of the screen, you will see a 'log 
+transaction' button. Upon clicking this button, you will be able to input the following:
+* Transaction Name: Put a description here of what you bought or received! The key is naming
+your transaction something you will understand and remember if you look at it a year into the future
+* Transaction Amount: How much did you spend or receive? Put that here!
+* From Where?: Where was this money spent? Let's say you bought a drink at Starbucks. Then put
+'Starbucks' here!
+
+At the bottom of the transaction logger, you'll see an 'income' or 'expense' button. If you _spent_
+the money, click the 'expense' button. If you _received_ the money, hit the 'income' button.
+
+### Deleting Transaction Details
+Oops! You accidentally logged a transaction you didn't really make. Deleting is simple! Next to
+each transaction is a little trash can. If you press the trash can, the transaction will be
+deleted. **Note that the trash can will not prompt you to confirm deletion. Once you click
+the trash can, that transaction is _gone forever._** However, if you delete something you shouldn't
+have, it's easy to just re-log the transaction using the transaction button detailed above.
+
+### Transfer Details
+Let's say you just moved some money from your savings wallet to your checkings wallet. You can
+log this change by using our 'transfer' button! The transfer button (located at the bottom of 
+the screen) transfers money _from_ the wallet that you are in _to_ the wallet that you specify.
+You can then input the amount of money you wish to transfer, and our application will log this
+information for you! You can easily see exactly where your money is going!
+
+### Making New Wallet Details
+You can have tons of wallets in our application. There are no shortages of budgeting atmospheres
+available to you! If you want to add a wallet, simply navigate to the 'add' button (at the top-left
+of our application). You will be prompted to name the account (i.e., 'Checking,' 'Savings,' etc).
+Then, just declare the starting balance for your wallet and you are all set!
+
+### Deleting Wallet Details
+Oops! You made a wallet that doesn't exist anymore. It's simple to delete an entire wallet. 
+**Once a wallet is deleted, it is _gone forever!_** To delete a wallet, simply navigate to the
+'delete [your wallet name]' button. You will be prompted to confirm deletion. Once you hit
+confirm, the entire wallet will be deleted!

@@ -139,6 +139,18 @@ public class UserServiceImpl implements UserService {
      * @return true / false if the password is updated
      */
     public boolean updatePassword(SiteUser user, String oldPassword, String newPassword) {
+        // Make sure user to update is valid
+        if (user == null) {
+            return false;
+        }
+        // Make sure old password is valid
+        if (oldPassword == null) {
+            return false;
+        }
+        // Make sure password is valid
+        if (newPassword == null || newPassword.length() <= MIN_PASSWORD_LENGTH) {
+            return false;
+        }
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         // Make sure the user entered their old password correctly
         if (!passwordEncoder.matches(oldPassword, user.getHashedPassword())) {
@@ -194,7 +206,8 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Use regex from <a href="https://emailregex.com">...</a>. Jakarta *should* catch this in the
+     * Use regex from <a href="https://emailregex.com">...</a>. Jakarta *should*
+     * catch this in the
      * frontend, but we want to double check in the service, just in case.
      */
     private boolean isEmail(String email) {

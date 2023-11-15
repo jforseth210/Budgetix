@@ -2,7 +2,7 @@
 <configuration>
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>[%d{HH:mm:ss}][%level] %class{0}: %message%n%xException</pattern>
+            <pattern>[%d{HH:mm:ss}][%level] %class: %message%n%xException</pattern>
         </encoder>
     </appender>
 
@@ -32,7 +32,7 @@
     <!-- Overwrite level for a internal code - Commented out for now
     <logger name="edu.carroll.cs389" level="DEBUG"/>
     -->
-
+    <!--<logger name="edu.carroll.bankapp.web.controller.DashboardController" level="WARN"/>-->
     <!-- Reduce DB startup chatter -->
     <logger name="org.hibernate" level="INFO"/>
     <logger name="com.zaxxer.hikari" level="INFO"/>

@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class AccountServiceImpl implements AccountService {
-    private static final Logger log = LoggerFactory.getLogger(DashboardController.class);
+    private static final Logger log = LoggerFactory.getLogger(AccountServiceImpl.class);
 
     private final AccountRepository accountRepo;
     private final TransactionService transactionService;
@@ -83,7 +83,7 @@ public class AccountServiceImpl implements AccountService {
         // Prevent user from creating two accounts with the same name
         for (Account account : ownerAccounts) {
             if (account.getName().equals(accountName)) {
-                log.info("{} tried to create two accounts named {}", accountName);
+                log.info("{} tried to create two accounts named {}", owner.getUsername(), accountName);
                 return null;
             }
         }
@@ -127,7 +127,7 @@ public class AccountServiceImpl implements AccountService {
             log.warn("{} tried to delete a null account", loggedInUser.getUsername());
             return false;
         }
-        // Try to delete it 
+        // Try to delete it
         return deleteAccount(loggedInUser, account);
     }
 }

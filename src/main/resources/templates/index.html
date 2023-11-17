@@ -202,10 +202,10 @@
                     <form id="newAccountForm" action="#" th:action="@{/add-account}" th:object="${newAccountForm}"
                         method="POST">
                         <label for="newAccountName">Account Name</label>
-                        <input type="text" class="mb-2 form-control" id="newAccountName" th:field="*{accountName}" />
+                        <input type="text" class="mb-2 form-control" id="newAccountName" th:field="*{accountName}" required/>
                         <label for="newAccountBalance">Starting Balance</label>
                         <input type="number" value="0" class="mb-2 form-control" id="newAccountBalance"
-                            th:field="*{accountBalance}" />
+                            th:field="*{accountBalance}" required/>
                     </form>
                 </div>
                 <div class="modal-footer">

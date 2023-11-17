@@ -30,7 +30,7 @@
       This configures the log level to log at for a package and its children packages.
     -->
     <!-- Overwrite level for a internal code - Commented out for now
-    <logger name="edu.carroll.cs389" level="DEBUG"/>
+    <logger name="edu.carroll.bankapp.web.controller.[class]" level="DEBUG"/>
     -->
     <!--<logger name="edu.carroll.bankapp.web.controller.DashboardController" level="WARN"/>-->
     <!-- Reduce DB startup chatter -->

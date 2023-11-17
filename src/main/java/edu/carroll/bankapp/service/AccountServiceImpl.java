@@ -78,7 +78,7 @@ public class AccountServiceImpl implements AccountService {
     /**
      * Create an account and save it in the database
      */
-    public Account createAccount(String accountName, double balanceInDollars, SiteUser owner) {
+    public Account createAccount(String accountName, Double balanceInDollars, SiteUser owner) {
         List<Account> ownerAccounts = getUserAccounts(owner);
         // Prevent user from creating two accounts with the same name
         for (Account account : ownerAccounts) {

@@ -100,7 +100,7 @@ public class DashboardController {
 
         // Allow Thymeleaf to display current user
         model.addAttribute("currentUser", loggedInUser);
-        // Give Thymeleaf a list of accounts to show in the navbard
+        // Give Thymeleaf a list of accounts to show in the navbar
         model.addAttribute("accounts", accounts);
         // Give Thymeleaf the account being displayed
         model.addAttribute("currentAccount", account);
@@ -148,6 +148,20 @@ public class DashboardController {
     @PostMapping("/add-account")
     public RedirectView addAccount(@Valid @ModelAttribute NewAccountForm newAccountForm,
                                    RedirectAttributes redirectAttributes) {
+        SiteUser loggedInUser = authHelper.getLoggedInUser();
+
+        // Prevent the user from creating an account with too short of a name
+        if (newAccountForm.getAccountName().length() < 4) {
+            log.info("{} tried to create an account with name {}, which is shorter than 4 characters", loggedInUser.getUsername(), newAccountForm.getAccountName());
+
+            // Let the user know that their selected account name was too short
+            FlashHelper.flash(redirectAttributes,
+                    String.format("Account name must be at least 4 letters (you entered %d)", newAccountForm.getAccountName().length()));
+
+            // Redirect back to the root path
+            return new RedirectView("/");
+        }
+
         // Create an account
         accountService.createAccount(
                 newAccountForm.getAccountName(),
@@ -155,6 +169,7 @@ public class DashboardController {
                 authHelper.getLoggedInUser());
         // Let the user know the operation completed
         FlashHelper.flash(redirectAttributes, String.format("Account %s created", newAccountForm.getAccountName()));
+
         // Redirect back to the root path
         return new RedirectView("/");
     }

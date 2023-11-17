@@ -56,15 +56,15 @@ public class DashboardController {
         // Get all the user's accounts
         List<Account> accounts = accountService.getUserAccounts(authHelper.getLoggedInUser());
 
-        // Deal with the user not having any accounts
-        if (accounts == null || accounts.isEmpty()) {
-            return new RedirectView("/add-account");
-        }
-
         // Check if the 'messages' attribute exists in the model and pass it to the
         // redirect
         if (model.containsAttribute("messages")) {
             redirectAttributes.addFlashAttribute("messages", model.getAttribute("messages"));
+        }
+
+        // Deal with the user not having any accounts
+        if (accounts == null || accounts.isEmpty()) {
+            return new RedirectView("/add-account");
         }
 
         // Redirect to the first account found

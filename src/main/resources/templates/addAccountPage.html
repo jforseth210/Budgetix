@@ -33,8 +33,10 @@
     </div>
 </nav>
 <div class="container mt-5">
-
-
+        <div th:if="${messages}">
+            <div th:each="message : ${messages}" class="alert alert-primary" th:text="${message}">
+            </div>
+        </div>
     <div class="card mx-auto my-auto p-5">
         <form id="newAccountForm" action="#" th:action="@{/add-account}" th:object="${newAccountForm}"
               method="POST">

@@ -104,7 +104,15 @@ public class UserServiceImpl implements UserService {
             log.debug("{} doesn't look like an email address", email);
             return null;
         }
-
+        // Don't accept excessively long username
+        if (username.length() > 255) {
+            log.debug("{} is too long", username);
+            return null;
+        }
+        if (fullName.length() > 255) {
+            log.debug("{} is too long", fullName);
+            return null;
+        }
         // Check arbitrary length requirements
         if (username.length() <= MIN_USERNAME_LENGTH || rawPassword.length() < MIN_PASSWORD_LENGTH
                 || email.length() <= MIN_EMAIL_LENGTH) {
@@ -149,7 +157,7 @@ public class UserServiceImpl implements UserService {
             return false;
         }
         // Make sure password is valid
-        if (newPassword == null || newPassword.length() <= MIN_PASSWORD_LENGTH) {
+        if (newPassword == null || newPassword.length() < MIN_PASSWORD_LENGTH) {
             log.info("New password was null or didn't meet length requirements");
             return false;
         }

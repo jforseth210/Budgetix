@@ -79,6 +79,14 @@ public class AccountServiceImpl implements AccountService {
      * Create an account and save it in the database
      */
     public Account createAccount(String accountName, long balanceInDollars, SiteUser owner) {
+        // Don't accept negative starting balance
+        if (balanceInDollars < 0) {
+            return null;
+        }
+        // Don't accept account names longer than the DB schema will allow
+        if (accountName.length() > 255) {
+            return null;
+        }
         List<Account> ownerAccounts = getUserAccounts(owner);
         // Prevent user from creating two accounts with the same name
         for (Account account : ownerAccounts) {

@@ -198,11 +198,16 @@ public class DashboardController {
         }
 
         // Create the transaction
-        transactionService.createTransaction(
+        Transaction transaction = transactionService.createTransaction(
                 newTransactionForm.getName(),
                 newTransactionForm.getAmountInDollars(),
                 newTransactionForm.getToFrom(),
                 account);
+        if (transaction == null) {
+            FlashHelper.flash(redirectAttributes,
+                    String.format("Failed to create transaction %s", newTransactionForm.getName()));
+            return new RedirectView("/");
+        }
         FlashHelper.flash(redirectAttributes, String.format("Transaction %s created", newTransactionForm.getName()));
         return new RedirectView("/");
     }

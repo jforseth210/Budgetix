@@ -27,11 +27,13 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/css/**", "/loginNew").permitAll()
-                        .requestMatchers("/", "/accounts").permitAll()
-                        .anyRequest().authenticated())
+                .requestMatchers("/css/**", "/loginNew").permitAll()
+                .requestMatchers("/", "/accounts").permitAll()
+                .anyRequest().authenticated())
                 .userDetailsService(myUserDetailsService)
                 .formLogin(formLogin -> formLogin.loginPage("/login").permitAll())
+                // Don't redirect to "/logout" after signing back in
+                .logout(logout -> logout.logoutSuccessUrl("/"))
                 .build();
     }
 

@@ -11,7 +11,7 @@ public class NewTransactionForm {
     private String toFrom;
 
     @NotNull
-    private double amountInDollars;
+    private long amountInDollars;
 
     @NotNull
     private String name;
@@ -48,22 +48,22 @@ public class NewTransactionForm {
     /**
      * Get the amount in dollars for the transaction (via math conversion)
      *
-     * @return amount in dollars - double - monetary amount in dollars
+     * @return amount in dollars - long - monetary amount in dollars
      */
-    public double getAmountInDollars() {
+    public long getAmountInDollars() {
         return amountInDollars;
     }
 
     /**
      * Get the amount in cents for the transaction
      *
-     * @return amountInCents - Integer - amount of transaction in US cents
+     * @return amountInCents - long - amount of transaction in US cents
      */
-    public double getAmountInCents() {
-        return amountInDollars * (double) 100;
+    public long getAmountInCents() {
+        return (long) amountInDollars * (long) 100;
     }
 
-    public void setAmountInDollars(double amountInDollars) {
+    public void setAmountInDollars(long amountInDollars) {
         this.amountInDollars = amountInDollars;
     }
 

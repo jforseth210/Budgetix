@@ -17,7 +17,7 @@ public interface TransactionService {
      * @param account         the account associated with the transaction
      * @return the created transaction
      */
-    Transaction createTransaction(String name, double amountInDollars, String toFrom, Account account);
+    Transaction createTransaction(String name, long amountInDollars, String toFrom, Account account);
 
     /**
      * Get a transaction from the given id (and make sure it belongs to the current
@@ -45,5 +45,5 @@ public interface TransactionService {
      * @param amount      - the amount of money to transfer
      * @return true if successful, false if not
      */
-    boolean createTransfer(Account toAccount, Account fromAccount, double amount);
+    boolean createTransfer(Account toAccount, Account fromAccount, long amount);
 }

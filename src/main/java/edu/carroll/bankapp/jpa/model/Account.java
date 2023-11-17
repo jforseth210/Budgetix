@@ -24,7 +24,7 @@ public class Account implements Ownable {
     // No money in floating points because Nate who's worked in financial
     // software for years and years and years would make fun of us
     @Column(name = "balance_in_cents", nullable = false)
-    private Integer balanceInCents;
+    private long balanceInCents;
     @Column(name = "name", nullable = false)
     private String name;
 
@@ -118,36 +118,36 @@ public class Account implements Ownable {
     /**
      * Gets the account balance in cents (there should not be floating point values)
      *
-     * @return balanceInCents - Integer - the account balance in cents
+     * @return balanceInCents - long - the account balance in cents
      */
-    public Integer getBalanceInCents() {
+    public long getBalanceInCents() {
         return this.balanceInCents;
     }
 
     /**
      * Returns the account balance in dollars using simple math
      *
-     * @return double - returns account balance in dollars (double)
+     * @return long - returns account balance in dollars (long)
      */
-    public double getBalanceInDollars() {
-        return (double) balanceInCents / (double) 100;
+    public long getBalanceInDollars() {
+        return (long) balanceInCents / (long) 100;
     }
 
     /**
      * Sets the account balance in cents
      *
-     * @param balanceInCents - Integer - account balance in cents
+     * @param balanceInCents - long - account balance in cents
      */
-    public void setBalanceInCents(Integer balanceInCents) {
+    public void setBalanceInCents(long balanceInCents) {
         this.balanceInCents = balanceInCents;
     }
 
-    public void addBalanceInCents(Integer additionalAmount) {
+    public void addBalanceInCents(long additionalAmount) {
         this.balanceInCents += additionalAmount;
 
     }
 
-    public void subtractBalanceInCents(Integer subtractionAmount) {
+    public void subtractBalanceInCents(long subtractionAmount) {
         this.balanceInCents -= subtractionAmount;
 
     }

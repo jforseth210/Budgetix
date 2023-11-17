@@ -19,7 +19,7 @@ public class Transaction implements Ownable, Comparable<Transaction> {
     private String toFrom;
 
     @Column(name = "amount")
-    private Integer amountInCents;
+    private long amountInCents;
 
     @Column(name = "name")
     private String name;
@@ -83,19 +83,19 @@ public class Transaction implements Ownable, Comparable<Transaction> {
     /**
      * Gets the transaction amount in cents
      *
-     * @return amountInCents - Integer - monetary amount in US cents
+     * @return amountInCents - long - monetary amount in US cents
      */
-    public Integer getAmountInCents() {
+    public long getAmountInCents() {
         return amountInCents;
     }
 
     /**
      * Gets the transaction amount in US dollars
      *
-     * @return dollar amount - double - the conversion of US cents to US dollars
+     * @return dollar amount - long - the conversion of US cents to US dollars
      */
-    public double getAmountInDollars() {
-        return (double) amountInCents / (double) 100;
+    public long getAmountInDollars() {
+        return (long) amountInCents / (long) 100;
     }
 
     /**
@@ -103,18 +103,18 @@ public class Transaction implements Ownable, Comparable<Transaction> {
      *
      * @param amountInCents - Integer - transaction amount in US cents
      */
-    public void setAmountInCents(Integer amountInCents) {
+    public void setAmountInCents(long amountInCents) {
         this.amountInCents = amountInCents;
     }
 
     /**
      * Sets the transaction amount in US dollars
      *
-     * @param amountInDollars - Double - transaction amount in US dollars (anything
+     * @param amountInDollars - Long - transaction amount in US dollars (anything
      *                        less than a penny will be lost)
      */
-    public void setAmountInDollars(double amountInDollars) {
-        setAmountInCents((int) (amountInDollars * 100));
+    public void setAmountInDollars(long amountInDollars) {
+        setAmountInCents((long) (amountInDollars * 100));
     }
 
     /**

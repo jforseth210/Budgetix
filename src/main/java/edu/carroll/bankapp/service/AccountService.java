@@ -37,7 +37,7 @@ public interface AccountService {
      * @param owner            the owner of the account
      * @return Account if the account was created successfully, null otherwise
      */
-    Account createAccount(String accountName, double balanceInDollars, SiteUser owner);
+    Account createAccount(String accountName, long balanceInDollars, SiteUser owner);
 
     /**
      * Delete the given account

@@ -37,7 +37,7 @@ public class TransactionServiceImpl implements TransactionService {
     /**
      * Create and save a new transaction in the database
      */
-    public Transaction createTransaction(String name, double amountInDollars, String toFrom, Account account) {
+    public Transaction createTransaction(String name, long amountInDollars, String toFrom, Account account) {
         log.info("Creating transaction with name: {} and account: {}", name, account.getName());
         // Create the transaction
         Transaction newTransaction = new Transaction();

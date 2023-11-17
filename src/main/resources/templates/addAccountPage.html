@@ -25,7 +25,12 @@
                        data-bs-toggle="dropdown" aria-expanded="false" th:text="'Hi, '+${currentUser.username}">
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
-                        <li><a class="dropdown-item" href="/logout">Logout</a></li>
+
+                            <form th:action="@{/logout}" method="POST">
+                                <li>
+                                    <button type="submit" class="dropdown-item">Logout</button>
+                                </li>
+                            </form>
                     </ul>
                 </li>
             </ul>

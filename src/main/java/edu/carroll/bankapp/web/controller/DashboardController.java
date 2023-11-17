@@ -149,10 +149,15 @@ public class DashboardController {
     public RedirectView addAccount(@Valid @ModelAttribute NewAccountForm newAccountForm,
                                    RedirectAttributes redirectAttributes) {
         // Create an account
-        accountService.createAccount(
+        Account account = accountService.createAccount(
                 newAccountForm.getAccountName(),
                 newAccountForm.getAccountBalance(),
                 authHelper.getLoggedInUser());
+        if (account == null) {
+            FlashHelper.flash(redirectAttributes,
+                    String.format("Unable to create account %s", newAccountForm.getAccountName()));
+            return new RedirectView("/");
+        }
         // Let the user know the operation completed
         FlashHelper.flash(redirectAttributes, String.format("Account %s created", newAccountForm.getAccountName()));
         // Redirect back to the root path

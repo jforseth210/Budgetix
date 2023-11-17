@@ -18,20 +18,20 @@ public class TestAccounts {
     }
 
     public Account createSavings(SiteUser owner) {
-        return accountService.createAccount(String.format("%s's Savings Account", owner.getFullName()), 11597.0, owner);
+        return accountService.createAccount(String.format("%s's Savings Account", owner.getFullName()), (long) 11597, owner);
     }
 
     public Account createChecking(SiteUser owner) {
-        return accountService.createAccount(String.format("%s's Checking Account", owner.getFullName()), 99104.0, owner);
+        return accountService.createAccount(String.format("%s's Checking Account", owner.getFullName()), (long) 99104, owner);
     }
 
     public Account createInvestment(SiteUser owner) {
-        return accountService.createAccount(String.format("%s's Investment Account", owner.getFullName()), 105110118.0,
+        return accountService.createAccount(String.format("%s's Investment Account", owner.getFullName()), (long) 105110118,
                 owner);
     }
 
     public Account createMoneyBag(SiteUser owner) {
-        return accountService.createAccount("💰💰💰", -128176.0, owner);
+        return accountService.createAccount("💰💰💰", (long) -128176, owner);
     }
 
 }

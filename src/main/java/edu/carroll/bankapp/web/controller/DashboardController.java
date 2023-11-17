@@ -221,6 +221,15 @@ public class DashboardController {
     @PostMapping("/add-transfer")
     public RedirectView addTransfer(@Valid @ModelAttribute NewTransferForm newTransferForm,
                                     RedirectAttributes redirectAttributes) {
+        if (newTransferForm.getToAccountId() == null) {
+            FlashHelper.flash(redirectAttributes, "Please specify an account to transfer to");
+            return new RedirectView("/");
+        }
+
+        if (newTransferForm.getFromAccountId() == newTransferForm.getToAccountId()) {
+            FlashHelper.flash(redirectAttributes, "You cannot transfer money from an account to itself");
+            return new RedirectView("/");
+        }
         // The account to send money to
         Account toAccount = accountService.getUserAccount(authHelper.getLoggedInUser(),
                 newTransferForm.getToAccountId());

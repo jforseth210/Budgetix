@@ -36,10 +36,11 @@ public class TransactionServiceImplTest {
         SiteUser john = testUsers.createJohnDoe();
         Account checking = testAccounts.createChecking(john);
 
-        double initialCheckingBalance = checking.getBalanceInDollars();
+        long initialCheckingBalance = checking.getBalanceInDollars();
 
         // Create the transaction
-        Transaction createdTransaction = transactionService.createTransaction("Test Transaction", 100.0, "Receiver",
+        Transaction createdTransaction = transactionService.createTransaction("Test Transaction", (long) 100.0,
+                "Receiver",
                 checking);
 
         // Make sure returned transaction makes sense
@@ -94,8 +95,8 @@ public class TransactionServiceImplTest {
         // Save information about state before deletion
         int numAccounts = checking.getTransactions().size();
         int transactionId = transaction.getId();
-        int transactionAmountInCents = transaction.getAmountInCents();
-        int balanceBeforeDeletionInCents = checking.getBalanceInCents();
+        long transactionAmountInCents = transaction.getAmountInCents();
+        long balanceBeforeDeletionInCents = checking.getBalanceInCents();
         // Delete transaction
         transactionService.deleteTransaction(john, transaction);
 

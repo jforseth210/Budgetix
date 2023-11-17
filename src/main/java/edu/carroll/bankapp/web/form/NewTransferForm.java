@@ -9,22 +9,22 @@ import jakarta.validation.constraints.NotNull;
 public class NewTransferForm {
 
     @NotNull
-    private double transferAmountInDollars;
+    private long transferAmountInDollars;
 
     @NotNull
     private Integer fromAccountId;
-    @NotNull
+
     private Integer toAccountId;
 
     public NewTransferForm() {
 
     }
 
-    public double getTransferAmountInDollars() {
+    public long getTransferAmountInDollars() {
         return transferAmountInDollars;
     }
 
-    public void setTransferAmountInDollars(double transferAmountInDollars) {
+    public void setTransferAmountInDollars(long transferAmountInDollars) {
         this.transferAmountInDollars = transferAmountInDollars;
     }
 

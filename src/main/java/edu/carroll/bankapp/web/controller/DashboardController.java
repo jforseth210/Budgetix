@@ -56,15 +56,15 @@ public class DashboardController {
         // Get all the user's accounts
         List<Account> accounts = accountService.getUserAccounts(authHelper.getLoggedInUser());
 
-        // Deal with the user not having any accounts
-        if (accounts == null || accounts.isEmpty()) {
-            return new RedirectView("/add-account");
-        }
-
         // Check if the 'messages' attribute exists in the model and pass it to the
         // redirect
         if (model.containsAttribute("messages")) {
             redirectAttributes.addFlashAttribute("messages", model.getAttribute("messages"));
+        }
+
+        // Deal with the user not having any accounts
+        if (accounts == null || accounts.isEmpty()) {
+            return new RedirectView("/add-account");
         }
 
         // Redirect to the first account found
@@ -163,10 +163,15 @@ public class DashboardController {
         }
 
         // Create an account
-        accountService.createAccount(
+        Account account = accountService.createAccount(
                 newAccountForm.getAccountName(),
                 newAccountForm.getAccountBalance(),
                 authHelper.getLoggedInUser());
+        if (account == null) {
+            FlashHelper.flash(redirectAttributes,
+                    String.format("Unable to create account %s", newAccountForm.getAccountName()));
+            return new RedirectView("/");
+        }
         // Let the user know the operation completed
         FlashHelper.flash(redirectAttributes, String.format("Account %s created", newAccountForm.getAccountName()));
 
@@ -208,11 +213,16 @@ public class DashboardController {
         }
 
         // Create the transaction
-        transactionService.createTransaction(
+        Transaction transaction = transactionService.createTransaction(
                 newTransactionForm.getName(),
                 newTransactionForm.getAmountInDollars(),
                 newTransactionForm.getToFrom(),
                 account);
+        if (transaction == null) {
+            FlashHelper.flash(redirectAttributes,
+                    String.format("Failed to create transaction %s", newTransactionForm.getName()));
+            return new RedirectView("/");
+        }
         FlashHelper.flash(redirectAttributes, String.format("Transaction %s created", newTransactionForm.getName()));
         return new RedirectView("/");
     }
@@ -226,6 +236,15 @@ public class DashboardController {
     @PostMapping("/add-transfer")
     public RedirectView addTransfer(@Valid @ModelAttribute NewTransferForm newTransferForm,
                                     RedirectAttributes redirectAttributes) {
+        if (newTransferForm.getToAccountId() == null) {
+            FlashHelper.flash(redirectAttributes, "Please specify an account to transfer to");
+            return new RedirectView("/");
+        }
+
+        if (newTransferForm.getFromAccountId() == newTransferForm.getToAccountId()) {
+            FlashHelper.flash(redirectAttributes, "You cannot transfer money from an account to itself");
+            return new RedirectView("/");
+        }
         // The account to send money to
         Account toAccount = accountService.getUserAccount(authHelper.getLoggedInUser(),
                 newTransferForm.getToAccountId());

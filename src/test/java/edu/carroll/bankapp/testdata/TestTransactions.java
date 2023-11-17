@@ -18,12 +18,12 @@ public class TestTransactions {
     }
 
     public Transaction createTestTransaction(Account account) {
-        return transactionService.createTransaction("Test Transaction", 100.0, "Receiver",
+        return transactionService.createTransaction("Test Transaction", (long) 100.0, "Receiver",
                 account);
     }
 
     public Transaction createATransaction(Account account) {
-        return transactionService.createTransaction("A transaction!", 100.0, "???",
+        return transactionService.createTransaction("A transaction!", (long) 100.0, "???",
                 account);
     }
 }

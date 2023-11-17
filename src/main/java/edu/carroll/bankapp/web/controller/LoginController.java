@@ -82,6 +82,7 @@ public class LoginController {
             return "loginNew";
         }
 
+        // See if username is available
         if (userService.getUserByUsername(newLoginForm.getUsername()) != null) {
             result.addError(new ObjectError("username", "Username already taken"));
             return "loginNew";
@@ -91,7 +92,7 @@ public class LoginController {
         SiteUser createdUser = userService.createUser(newLoginForm.getFullName(), newLoginForm.getEmail(),
                 newLoginForm.getUsername(), newLoginForm.getPassword());
         if (createdUser == null) {
-            // TODO: Add "something went wrong" feedback here
+            result.addError(new ObjectError("global", "Something went wrong"));
             return "loginNew";
         }
         log.info("Created a new user: {}", createdUser.getUsername());

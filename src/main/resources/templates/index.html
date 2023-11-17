@@ -138,7 +138,7 @@
                         <label for="newTransaction">Transaction Name</label>
                         <input type="text" value="0" class="mb-2 form-control" id="newName" th:field="*{name}" />
                         <label for="newTransaction">Transaction Amount</label>
-                        <input type="number" min="0" step=".01" class="mb-2 form-control" id="newAmount"
+                        <input type="number" min="0" step=".01" max="1000000" class="mb-2 form-control" id="newAmount"
                             th:field="*{amountInDollars}" />
                         <label for="newTransaction">From Where?</label>
                         <input type="text" value="0" class="mb-2 form-control" id="newToFrom" th:field="*{toFrom}" />
@@ -171,15 +171,16 @@
                         method="POST">
                         <label for="toAccount">Account to Transfer To</label>
                         <select class="mb-2 form-control" name="toAccountId">
-                            <option th:if="${accounts != null}" th:each="account: ${accounts}" class="nav-item"
+                            <option th:each="account: ${accounts}"
+                                th:if="${account.getId()} != ${currentAccount.getId()} " class="nav-item"
                                 th:value="${account.getId()}" th:text="${account.getName()}">
                             </option>
                         </select>
                         <input type="number" class="mb-2 form-control" id="accountOrigin" hidden aria-hidden
                             name="fromAccountId" th:value="${currentAccount.getId()}" />
                         <label for="newAccountBalance">Transfer Amount</label>
-                        <input type="number" value="0" class="mb-2 form-control" id="newAccountBalance"
-                            th:field="*{transferAmountInDollars}" />
+                        <input type="number" value="0" min="0" max="1000000" class="mb-2 form-control"
+                            id="newAccountBalance" th:field="*{transferAmountInDollars}" />
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -392,6 +393,17 @@
             document.getElementById("accountDeletionModalAccountId").value = accountId;
             new bootstrap.Modal(document.getElementById('accountDeletionConfirmationModal')).show();
         }
+
+
+        window.onload = function () {
+            var messages = document.querySelectorAll('.alert');
+            setTimeout(function () {
+                messages.forEach(function (message) {
+                    message.style.display = 'none';
+                });
+            }, 5000); // Change this to the number of milliseconds you want to wait before the messages disappear
+        };
+
     </script>
 </body>
 

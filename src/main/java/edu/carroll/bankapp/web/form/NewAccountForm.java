@@ -16,7 +16,7 @@ public class NewAccountForm {
 
     @NotNull
     @PositiveOrZero(message = "Account balance can't be negative")
-    private Double accountBalance;
+    private Long accountBalance;
 
     /**
      * Gets the name of the user's account
@@ -39,18 +39,18 @@ public class NewAccountForm {
     /**
      * Gets the account balance of a user's account
      *
-     * @return accountBalance - double - balance of account
+     * @return accountBalance - long - balance of account
      */
-    public Double getAccountBalance() {
+    public Long getAccountBalance() {
         return accountBalance;
     }
 
     /**
      * Sets the account balance of a user's account
      *
-     * @param accountBalance - double - balance of account
+     * @param accountBalance - long - balance of account
      */
-    public void setAccountBalance(Double accountBalance) {
+    public void setAccountBalance(long accountBalance) {
         this.accountBalance = accountBalance;
     }
 }

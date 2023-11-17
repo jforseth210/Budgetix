@@ -145,10 +145,12 @@ public class UserServiceImpl implements UserService {
         }
         // Make sure old password is valid
         if (oldPassword == null) {
+            log.info("Password didn't meet length requirements");
             return false;
         }
         // Make sure password is valid
         if (newPassword == null || newPassword.length() <= MIN_PASSWORD_LENGTH) {
+            log.info("New password was null or didn't meet length requirements");
             return false;
         }
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();

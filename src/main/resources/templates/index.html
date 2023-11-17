@@ -393,6 +393,17 @@
             document.getElementById("accountDeletionModalAccountId").value = accountId;
             new bootstrap.Modal(document.getElementById('accountDeletionConfirmationModal')).show();
         }
+
+
+        window.onload = function () {
+            var messages = document.querySelectorAll('.alert');
+            setTimeout(function () {
+                messages.forEach(function (message) {
+                    message.style.display = 'none';
+                });
+            }, 5000); // Change this to the number of milliseconds you want to wait before the messages disappear
+        };
+
     </script>
 </body>
 

@@ -1,5 +1,6 @@
 package edu.carroll.bankapp.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -112,14 +113,126 @@ public class TransactionServiceImpl implements TransactionService {
         // Save changes to account
         accountRepo.save(transaction.getAccount());
 
+        // TODO: This is hacky and bad!
+        if (transaction.getName().startsWith("Transfer from ") || transaction.getName().startsWith("Transfer to ")) {
+            deleteOtherTransferTransaction(transaction, loggedInUser);
+        }
+
         // Delete transaction from database
         transactionRepo.delete(transaction);
 
         log.info("Deleted transaction: {}", transaction.getName());
     }
 
-    public boolean createTransfer(Account toAccount, Account fromAccount, double amountInDollars) {
+    /**
+     * Given one transaction in a transfer, delete the other transaction.
+     * THE PROJECT SHOULD BE REDESIGNED SO THIS FUNCTION IS UNNECESSARY!
+     *
+     * @param givenTransaction - One transaction in a transfer
+     * @param loggedInUser     - The current user
+     * @return whether or not the operation succeeded
+     */
+    private boolean deleteOtherTransferTransaction(Transaction givenTransaction, SiteUser loggedInUser) {
+        // Determine whether transaction is sending or recieving money
+        String type = null;
+        if (givenTransaction.getName().contains("to")) {
+            // Transaction is sending money to an account
+            type = "to";
+        } else if (givenTransaction.getName().contains("from")) {
+            // Transaction is recieving money from an account
+            type = "from";
+        } else {
+            // Transaction doesn't contain "to" or "from". Are we sure it's a transfer?
+            return false;
+        }
+        // Determine the name of the other account involved in the transfer
+        String otherAccountName = givenTransaction.getName().replace("Transfer to ", "").replace("Transfer from ", "");
 
+        // Get the user's accounts
+        List<Account> userAccounts = accountRepo.findByOwner(loggedInUser);
+
+        // Find the account with a matching name
+        Account otherAccount = null;
+        for (Account userAccount : userAccounts) {
+            if (userAccount.getName().equals(otherAccountName)) {
+                otherAccount = userAccount;
+            }
+        }
+        // See if we found the account we're looking for
+        if (otherAccount == null) {
+            log.info("Couldn't find other transfer account");
+            return false;
+        }
+
+        // Look for transactions in the other account that could be the other half of
+        // the transfer
+        List<Transaction> potentialMatchingTransactions = new ArrayList<>();
+        for (Transaction accountTransaction : otherAccount.getTransactions()) {
+            //Make sure they're the same amount
+            if (accountTransaction.getAmountInDollars() != givenTransaction.getAmountInDollars()) {
+                continue;
+            }
+            // See if the transaction name looks right
+            if (type.equals("to")) {
+                if (accountTransaction.getName()
+                        .startsWith(String.format("Transfer from %s", givenTransaction.getAccount().getName()))) {
+                    // Transaction name looks right, add it
+                    potentialMatchingTransactions.add(accountTransaction);
+                }
+            } else {
+                if (accountTransaction.getName()
+                        .startsWith(String.format("Transfer to %s", givenTransaction.getAccount().getName()))) {
+                    // Transaction name looks right, add it
+                    potentialMatchingTransactions.add(accountTransaction);
+                }
+            }
+        }
+        // If the two transactions were created more than five minutes apart,
+        // they're probably not the same transfer
+        Transaction closestTransaction = getClosestTransaction(givenTransaction, potentialMatchingTransactions);
+
+        // We found it! Delete it
+        if (closestTransaction != null) {
+            // Update the account balance
+            closestTransaction.getAccount().subtractBalanceInCents(closestTransaction.getAmountInCents());
+            // Remove transaction from account
+            closestTransaction.getAccount().removeTransaction(closestTransaction);
+            // Save changes to account
+            accountRepo.save(closestTransaction.getAccount());
+            // Delete the transaction
+            transactionRepo.delete(closestTransaction);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param givenTransaction
+     * @param potentialMatchingTransactions
+     * @return
+     */
+    private Transaction getClosestTransaction(Transaction givenTransaction, List<Transaction> potentialMatchingTransactions) {
+        long minDiff = 1000 * 60 * 5;
+        Transaction closestTransaction = null;
+
+        // If there are multiple transactions that have the right name, such as if there
+        // are multiple transfers, find the one with the closes creation date to the
+        // given transaction
+        for (Transaction potentialMatchingTransaction : potentialMatchingTransactions) {
+            long diff = Math
+                    .abs(potentialMatchingTransaction.getDate().getTime() - givenTransaction.getDate().getTime());
+            if (diff < minDiff) {
+                minDiff = diff;
+                closestTransaction = potentialMatchingTransaction;
+            }
+        }
+        return closestTransaction;
+    }
+
+    public boolean createTransfer(Account toAccount, Account fromAccount, long amountInDollars) {
+        if (toAccount.getId() == fromAccount.getId()) {
+            return false;
+        }
         // Withdraw from the fromAccount
         Transaction toTransaction = createTransaction(
                 String.format("Transfer to %s", toAccount.getName()),

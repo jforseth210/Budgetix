@@ -221,7 +221,7 @@ public class DashboardController {
         if (transaction == null) {
             FlashHelper.flash(redirectAttributes,
                     String.format("Failed to create transaction %s", newTransactionForm.getName()));
-            return new RedirectView("/");
+            return new RedirectView("/account/"+account.getId());
         }
         FlashHelper.flash(redirectAttributes, String.format("Transaction %s created", newTransactionForm.getName()));
         return new RedirectView("/account/"+account.getId());

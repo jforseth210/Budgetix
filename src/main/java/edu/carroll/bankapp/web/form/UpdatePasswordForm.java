@@ -4,6 +4,10 @@ import edu.carroll.bankapp.jpa.model.SiteUser;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+/**
+ * A form object containing all of the information needed to update a user's
+ * password
+ */
 public class UpdatePasswordForm {
     @NotNull
     @Size(min = 8, message = "Password must be at least 8 characters long")

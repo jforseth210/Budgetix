@@ -35,6 +35,12 @@ public class LoginController {
     private final UserService userService;
     private final AuthHelper authHelper;
 
+    /**
+     * Constructor with dependency injection
+     * 
+     * @param userService - For creating, retrieving, and updating users
+     * @param authHelper  - For determining the current user
+     */
     public LoginController(UserService userService, AuthHelper authHelper) {
         this.userService = userService;
         this.authHelper = authHelper;
@@ -43,6 +49,9 @@ public class LoginController {
 
     /**
      * The login page
+     * 
+     * @param model to pass the form to thymeleaf
+     * @return the login page
      */
     @GetMapping("/login")
     public String loginGet(Model model) {
@@ -52,6 +61,9 @@ public class LoginController {
 
     /**
      * The sign-up pages
+     * 
+     * @param model to pass the form to thymeleaf
+     * @return sign up page
      */
     @GetMapping("/loginNew")
     public String loginNewGet(Model model) {
@@ -62,14 +74,16 @@ public class LoginController {
     /**
      * This page accepts form submissions for (user) account creation
      *
-     * @param newLoginForm The data collected from the form
-     * @param result       Form errors (if any)
+     * @param newLoginForm       The data collected from the form
+     * @param result             Form errors (if any)
+     * @param request            To log the user in with their new account
+     * @param redirectAttributes - for flashing messages
      * @return String redirect view - redirect leads user to new page based on
-     * submission
+     *         submission
      */
     @PostMapping("/loginNew")
     public String loginNewPost(HttpServletRequest request, @Valid @ModelAttribute NewLoginForm newLoginForm,
-                               BindingResult result, RedirectAttributes redirectAttributes) {
+            BindingResult result, RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             return "loginNew";
         }
@@ -111,12 +125,13 @@ public class LoginController {
     /**
      * Updates the password for a user
      *
-     * @param form - update password form
+     * @param form               - update password form
+     * @param redirectAttributes - for flashing messages
      * @return - redirect to the homepage
      */
     @PostMapping("/update-password")
     public String updatePassword(@ModelAttribute("updatePassword") UpdatePasswordForm form,
-                                 RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes) {
         SiteUser user = authHelper.getLoggedInUser();
 
         // Handle the case where the user doesn't exist
@@ -145,12 +160,14 @@ public class LoginController {
     /**
      * Changes the username for the user
      *
-     * @param form - update username form
+     * @param form               - update username form
+     * @param redirectAttributes - for flashing messages
+     * @param request            - to log the user out and in again
      * @return redirect to the home page
      */
     @PostMapping("/update-username")
     public String updateUsername(@ModelAttribute("updateUsername") UpdateUsernameForm form,
-                                 HttpServletRequest request, RedirectAttributes redirectAttributes) {
+            HttpServletRequest request, RedirectAttributes redirectAttributes) {
         SiteUser user = authHelper.getLoggedInUser();
         // Try updating the username
         boolean success = userService.updateUsername(user, form.getConfirmPassword(), form.getNewUsername());

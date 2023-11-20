@@ -11,7 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * Set up Spring Security
+ * Setup Spring Security
  */
 @Configuration
 @EnableWebSecurity
@@ -20,6 +20,11 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService myUserDetailsService;
 
+    /**
+     * Counstructor with dependency injection
+     * 
+     * @param myUserDetailsService - service for looking up persisted users
+     */
     public SecurityConfig(CustomUserDetailsService myUserDetailsService) {
         this.myUserDetailsService = myUserDetailsService;
     }

@@ -101,12 +101,17 @@ public class Account implements Ownable {
     /**
      * Sets a list of transactions
      *
-     * @param transactions - Set<> - list of transactions
+     * @param transactions - Set - list of transactions
      */
     public void setTransactions(Set<Transaction> transactions) {
         this.transactions = transactions;
     }
 
+    /**
+     * Add a transaction to the set of transactions in this account
+     * 
+     * @param transaction the transaction to be added
+     */
     public void addTransaction(Transaction transaction) {
         // If we don't have any transactions, create a set
         if (this.transactions == null) {
@@ -142,16 +147,31 @@ public class Account implements Ownable {
         this.balanceInCents = balanceInCents;
     }
 
+    /**
+     * Increments the balance by additionalAmount
+     * 
+     * @param additionalAmount the amount to add to the balance
+     */
     public void addBalanceInCents(long additionalAmount) {
         this.balanceInCents += additionalAmount;
 
     }
 
+    /**
+     * Decrements the balance by subtractionAmount
+     * 
+     * @param subtractionAmount the amount to subract from the balance
+     */
     public void subtractBalanceInCents(long subtractionAmount) {
         this.balanceInCents -= subtractionAmount;
 
     }
 
+    /**
+     * Removes a transaction from this account
+     * 
+     * @param transaction to be removed
+     */
     public void removeTransaction(Transaction transaction) {
         this.transactions.remove(transaction);
     }

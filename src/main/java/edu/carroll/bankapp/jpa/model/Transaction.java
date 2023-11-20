@@ -153,14 +153,27 @@ public class Transaction implements Ownable, Comparable<Transaction> {
         this.account = account;
     }
 
+    /**
+     * Getter method for the creation date of the transaction
+     * 
+     * @return creation date
+     */
     public Date getDate() {
         return date;
     }
 
+    /**
+     * Setter method for the creation date of the transaction
+     * 
+     * @param date date to set
+     */
     public void setDate(Date date) {
         this.date = date;
     }
 
+    /**
+     * Comparison method for sorting transactions by creation date
+     */
     @Override
     public int compareTo(Transaction t) {
         return getDate().compareTo(t.getDate());

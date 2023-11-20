@@ -3,6 +3,9 @@ package edu.carroll.bankapp;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * Class for application entry-point
+ */
 @SpringBootApplication
 public class BankappApplication {
     /**

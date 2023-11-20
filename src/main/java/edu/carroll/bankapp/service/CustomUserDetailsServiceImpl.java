@@ -17,6 +17,11 @@ public class CustomUserDetailsServiceImpl implements CustomUserDetailsService {
     private static final Logger log = LoggerFactory.getLogger(CustomUserDetailsServiceImpl.class);
     private final UserServiceImpl userServiceImpl;
 
+    /**
+     * Inject needed dependencies
+     * 
+     * @param userServiceImpl - To do the actual heavy-lifting working with users
+     */
     public CustomUserDetailsServiceImpl(UserServiceImpl userServiceImpl) {
         this.userServiceImpl = userServiceImpl;
     }
@@ -26,7 +31,8 @@ public class CustomUserDetailsServiceImpl implements CustomUserDetailsService {
      *
      * @param username the username identifying the user whose data is required.
      * @return siteUser - a user that is using our site
-     * @throws UsernameNotFoundException if there's no user matching the given username
+     * @throws UsernameNotFoundException if there's no user matching the given
+     *                                   username
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -39,7 +45,7 @@ public class CustomUserDetailsServiceImpl implements CustomUserDetailsService {
             throw new UsernameNotFoundException("Didn't find user with username: " + username);
         }
 
-        // Create a Spring Security UserDetails object from siteUser 
+        // Create a Spring Security UserDetails object from siteUser
         return new SecurityUser(siteUser);
     }
 }

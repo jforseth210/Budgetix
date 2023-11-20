@@ -44,6 +44,7 @@ public interface AccountService {
      *
      * @param loggedInUser the currently logged-in user
      * @param account      the account to be deleted
+     * @return true if successful, false if failed
      */
     boolean deleteAccount(SiteUser loggedInUser, Account account);
 
@@ -52,6 +53,7 @@ public interface AccountService {
      *
      * @param loggedInUser the currently logged-in user
      * @param accountID    the id of the account to be deleted
+     * @return true if successful, false if failed
      */
     boolean deleteAccount(SiteUser loggedInUser, int accountID);
 }

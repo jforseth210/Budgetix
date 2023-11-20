@@ -12,13 +12,16 @@ import java.util.Collection;
  * Security expects from the UserDetails interface.
  */
 public class SecurityUser implements UserDetails {
-
+    /**
+     * The SiteUser being wrapped
+     */
     private final SiteUser siteUser;
 
     /**
      * Main Constructor for generating security users
      *
-     * @param siteUser A SiteUser to create a SecurityUser from. This is the *real* user
+     * @param siteUser A SiteUser to create a SecurityUser from. This is the *real*
+     *                 user
      *                 object that SecurityUser is wrapping
      */
     public SecurityUser(SiteUser siteUser) {

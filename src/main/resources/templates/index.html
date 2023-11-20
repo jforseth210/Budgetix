@@ -78,7 +78,7 @@
                     <td th:text="${transaction.getName()}"></td>
                     <td th:text="${transaction.getToFrom()}"></td>
                     <td style="text-align: left"
-                        th:text="${#numbers.formatDecimal(transaction.getAmountInDollars(), 0, 'COMMA', 2, 'POINT')}"
+                        th:text="'$' + ${#numbers.formatDecimal(transaction.getAmountInDollars(), 0, 'COMMA', 2, 'POINT')}"
                         th:classappend="${transaction.getAmountInDollars()<0} ? text-danger : text-success">
                     </td>
                     </td>
@@ -95,7 +95,7 @@
                     <td>Account Total</td>
                     <td></td>
                     <td style="text-align: left"
-                        th:text="${#numbers.formatDecimal(currentAccount.getBalanceInDollars(), 0, 'COMMA', 2, 'POINT' )}"
+                        th:text="'$' + ${#numbers.formatDecimal(currentAccount.getBalanceInDollars(), 0, 'COMMA', 2, 'POINT' )}"
                         th:classappend=" ${currentAccount.getBalanceInDollars()<0} ? text-danger : text-success">
                     </td>
                     <td></td>

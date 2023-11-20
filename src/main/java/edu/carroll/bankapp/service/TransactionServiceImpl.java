@@ -39,7 +39,7 @@ public class TransactionServiceImpl implements TransactionService {
      * Create and save a new transaction in the database
      */
     public Transaction createTransaction(String name, long amountInDollars, String toFrom, Account account) {
-        if (name == null || name.equals("") || toFrom == null || toFrom.equals("")) {
+        if (name == null || name.equals("") || toFrom == null) {
             return null;
         }
         // Don't accept excessively long transaction names

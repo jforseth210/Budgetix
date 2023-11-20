@@ -224,7 +224,7 @@ public class DashboardController {
             return new RedirectView("/");
         }
         FlashHelper.flash(redirectAttributes, String.format("Transaction %s created", newTransactionForm.getName()));
-        return new RedirectView("/");
+        return new RedirectView("/account/"+account.getId());
     }
 
     /**
@@ -265,7 +265,7 @@ public class DashboardController {
             FlashHelper.flash(redirectAttributes, "Something went wrong, the money was not transfered");
         }
 
-        return new RedirectView("/");
+        return new RedirectView("/account/"+fromAccount.getId());
     }
 
     /**

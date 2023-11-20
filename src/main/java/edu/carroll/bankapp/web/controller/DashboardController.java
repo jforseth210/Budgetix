@@ -262,7 +262,7 @@ public class DashboardController {
             FlashHelper.flash(redirectAttributes,
                     String.format("Created transfer from %s to %s", fromAccount.getName(), toAccount.getName()));
         } else {
-            FlashHelper.flash(redirectAttributes, "Something went wrong, the money was not transfered");
+            FlashHelper.flash(redirectAttributes, "Something went wrong, the money was not transferred");
         }
 
         return new RedirectView("/");

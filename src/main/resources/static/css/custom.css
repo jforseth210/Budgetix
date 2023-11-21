@@ -139,3 +139,9 @@ https://stackoverflow.com/questions/60680652/how-to-add-a-shadow-under-a-navbar-
 body {
     font-family: 'Noto Sans JP', sans-serif;
 }
+
+/* Change the alert color to make our eggshell color */
+.alert-warning {
+    --bs-alert-bg: #F4F1DE;
+    --bs-alert-border-color: #F4F1DE;
+}

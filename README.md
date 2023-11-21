@@ -31,7 +31,7 @@ Windows Download: https://www.oracle.com/java/technologies/downloads/#jdk17-wind
 https://github.com/jforseth210/CS-389-Semester-Project.git
 ```
 
-4. Download the IDE of your choice if you don't have one installed already.
+4. Download the IDE of your choice if you don't have one installed already (optional if running in terminal).
 ```
 # Eclipse (Free)
 Windows: https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/2023-09/R/eclipse-java-2023-09-R-win32-x86_64.zip
@@ -118,3 +118,16 @@ Oops! You made a wallet that doesn't exist anymore. It's simple to delete an ent
 **Once a wallet is deleted, it is _gone forever!_** To delete a wallet, simply navigate to the
 'delete [your wallet name]' button. You will be prompted to confirm deletion. Once you hit
 confirm, the entire wallet will be deleted!
+
+## Developer Guide
+### Running our Unit Tests
+1. Upon up the Terminal Command Prompt within your IDE.
+2. Type in ```./gradlew test```
+3. All of the tests created for our program will run and display whether they are successful
+or not.
+
+### Accessing Documentation
+1. Navigate to the 'build' folder.
+2. Within the 'build' folder, navigate to 'docs.'
+3. Find the 'index.html' file. Open this file in the browser of your choice and browse through
+our javadoc for our classes, interfaces, and methods!

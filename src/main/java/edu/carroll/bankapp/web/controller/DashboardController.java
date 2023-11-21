@@ -38,9 +38,13 @@ public class DashboardController {
 
     /**
      * Inject needed services
+     * 
+     * @param transactionService - For working with transactions
+     * @param accountService     - For working with accounts
+     * @param authHelper         - For determining current user
      */
     public DashboardController(AccountService accountService,
-                               TransactionService transactionService, AuthHelper authHelper) {
+            TransactionService transactionService, AuthHelper authHelper) {
         this.accountService = accountService;
         this.transactionService = transactionService;
         this.authHelper = authHelper;
@@ -48,7 +52,9 @@ public class DashboardController {
 
     /**
      * Redirect from the root path to the first user account found
-     *
+     * 
+     * @param redirectAttributes - for flashing messages
+     * @param model              - For getting messages from previous page
      * @return - redirect to the appropriate page
      */
     @GetMapping("/")
@@ -75,8 +81,9 @@ public class DashboardController {
     /**
      * Page for viewing an account
      *
-     * @param accountId the id of the account being viewed
-     * @param model     data to pass to Thymeleaf
+     * @param accountId          the id of the account being viewed
+     * @param model              data to pass to Thymeleaf
+     * @param redirectAttributes - for flashing messages
      * @return - account page or redirect
      */
     @GetMapping("/account/{accountId}")
@@ -142,21 +149,24 @@ public class DashboardController {
     /**
      * Accept form submissions for (financial) account creation
      *
-     * @param newAccountForm form information needed to create the account
+     * @param newAccountForm     form information needed to create the account
+     * @param redirectAttributes - for flashing messages
      * @return redirect to root path
      */
     @PostMapping("/add-account")
     public RedirectView addAccount(@Valid @ModelAttribute NewAccountForm newAccountForm,
-                                   RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes) {
         SiteUser loggedInUser = authHelper.getLoggedInUser();
 
         // Prevent the user from creating an account with too short of a name
         if (newAccountForm.getAccountName().length() < 4) {
-            log.info("{} tried to create an account with name {}, which is shorter than 4 characters", loggedInUser.getUsername(), newAccountForm.getAccountName());
+            log.info("{} tried to create an account with name {}, which is shorter than 4 characters",
+                    loggedInUser.getUsername(), newAccountForm.getAccountName());
 
             // Let the user know that their selected account name was too short
             FlashHelper.flash(redirectAttributes,
-                    String.format("Account name must be at least 4 letters (you entered %d)", newAccountForm.getAccountName().length()));
+                    String.format("Account name must be at least 4 letters (you entered %d)",
+                            newAccountForm.getAccountName().length()));
 
             // Redirect back to the root path
             return new RedirectView("/");
@@ -183,11 +193,12 @@ public class DashboardController {
      * Accept form submission for transaction addition
      *
      * @param newTransactionForm form information needed to create the transaction
+     * @param redirectAttributes - for flashing messages
      * @return redirect view to page showing new transaction
      */
     @PostMapping("/add-transaction")
     public RedirectView addTransaction(@Valid @ModelAttribute NewTransactionForm newTransactionForm,
-                                       RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes) {
         Account account = accountService.getUserAccount(authHelper.getLoggedInUser(),
                 newTransactionForm.getAccountId());
 
@@ -230,12 +241,13 @@ public class DashboardController {
     /**
      * Accept form submission for transfer addition
      *
-     * @param newTransferForm form information needed to create transfer
+     * @param newTransferForm    form information needed to create transfer
+     * @param redirectAttributes - for flashing messages
      * @return redirect view to page showing new transaction
      */
     @PostMapping("/add-transfer")
     public RedirectView addTransfer(@Valid @ModelAttribute NewTransferForm newTransferForm,
-                                    RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes) {
         if (newTransferForm.getToAccountId() == null) {
             FlashHelper.flash(redirectAttributes, "Please specify an account to transfer to");
             return new RedirectView("/account/" + newTransferForm.getFromAccountId());
@@ -271,12 +283,13 @@ public class DashboardController {
     /**
      * Delete a transaction from the transaction database
      *
-     * @param form - a delete transaction form
+     * @param form               - a delete transaction form
+     * @param redirectAttributes - for flashing messages
      * @return a redirect to the home page
      */
     @PostMapping("/delete-transaction")
     public String deleteTransaction(@ModelAttribute("deleteTransactionForm") DeleteTransactionForm form,
-                                    RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes) {
         SiteUser loggedInUser = authHelper.getLoggedInUser();
         // Look up the transaction to delete
         Transaction transaction = transactionService.getUserTransaction(loggedInUser, form.getTransactionId());
@@ -292,12 +305,13 @@ public class DashboardController {
     /**
      * Delete an account (i.e., savings or checking) from a user's list of accounts
      *
-     * @param form - delete account form
+     * @param form               - delete account form
+     * @param redirectAttributes - for flashing messages
      * @return redirect to the home page
      */
     @PostMapping("/delete-account")
     public String deleteAccount(@ModelAttribute("deleteAccountForm") DeleteAccountForm form,
-                                RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes) {
         // Look up the account the user wants to delete
         Account account = accountService.getUserAccount(authHelper.getLoggedInUser(), form.getAccountId());
 

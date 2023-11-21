@@ -46,7 +46,7 @@ public class NewTransactionForm {
     }
 
     /**
-     * Get the amount in dollars for the transaction (via math conversion)
+     * Get the amount in dollars for the transaction
      *
      * @return amount in dollars - long - monetary amount in dollars
      */
@@ -63,6 +63,11 @@ public class NewTransactionForm {
         return (long) amountInDollars * (long) 100;
     }
 
+    /**
+     * Set the amount in dollars for the transaction
+     *
+     * @param amountInDollars amount in dollars - long - monetary amount in dollars
+     */
     public void setAmountInDollars(long amountInDollars) {
         this.amountInDollars = amountInDollars;
     }

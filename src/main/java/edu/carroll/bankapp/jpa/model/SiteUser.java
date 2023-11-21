@@ -69,6 +69,9 @@ public class SiteUser {
 
     /**
      * Whether this user owns the given object
+     * 
+     * @param item the Ownable to check ownership of
+     * @return true if owned by this user, false if not
      */
     public boolean owns(Ownable item) {
         if (item == null) {

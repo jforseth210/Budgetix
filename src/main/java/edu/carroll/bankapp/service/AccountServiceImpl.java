@@ -25,7 +25,8 @@ public class AccountServiceImpl implements AccountService {
     /**
      * Default constructor
      *
-     * @param accountRepo - account database repo
+     * @param accountRepo        - account database repo
+     * @param transactionService - for creating starting transactions
      */
     public AccountServiceImpl(AccountRepository accountRepo, TransactionService transactionService) {
         this.accountRepo = accountRepo;
@@ -113,7 +114,9 @@ public class AccountServiceImpl implements AccountService {
     /**
      * Delete the given account
      *
-     * @param account - the account to be deleted
+     * @param loggedInUser - for ownership check
+     * @param account      - the account to be deleted
+     * @return true if successful, false if failed
      */
     public boolean deleteAccount(SiteUser loggedInUser, Account account) {
         // Make sure the user can delete this account, then delete it
@@ -126,8 +129,10 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * Delete the account with the given id
-     *
-     * @param accountID - the id of the account to be deleted
+     * 
+     * @param loggedInUser - for ownership check
+     * @param accountID    - the id of the account to be deleted
+     * @return true if successful, false if failed
      */
     public boolean deleteAccount(SiteUser loggedInUser, int accountID) {
         // Look up the account

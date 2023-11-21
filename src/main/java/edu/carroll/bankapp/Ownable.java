@@ -8,6 +8,8 @@ import edu.carroll.bankapp.jpa.model.SiteUser;
 public interface Ownable {
     /**
      * The owner of the object
+     * 
+     * @return SiteUser that owns the item
      */
     SiteUser getOwner();
 }

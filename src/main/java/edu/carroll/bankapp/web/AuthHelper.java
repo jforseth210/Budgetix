@@ -10,11 +10,19 @@ import org.springframework.stereotype.Component;
 import edu.carroll.bankapp.jpa.model.SiteUser;
 import edu.carroll.bankapp.service.UserService;
 
+/**
+ * A class for determining who the currently logged-in user is
+ */
 @Component
 public class AuthHelper {
     private static final Logger log = LoggerFactory.getLogger(AuthHelper.class);
     private final UserService userService;
 
+    /**
+     * Inject needed dependencies
+     * 
+     * @param userService - For looking up persisted users
+     */
     public AuthHelper(UserService userService) {
         this.userService = userService;
     }

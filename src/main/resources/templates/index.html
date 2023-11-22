@@ -5,7 +5,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>BudgetApp</title>
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
     <!--CSS for bootstrap-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous" />
@@ -61,9 +63,12 @@
 
     <div class="container mt-3">
         <div th:if="${messages}">
-            <div th:each="message : ${messages}" class="alert alert-primary" th:text="${message}">
+            <div th:each="message : ${messages}" class="alert alert-warning alert-dismissible fade show" role="alert">
+                <span th:text="${message}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         </div>
+
         <!--Transaction table-->
         <table class="table">
             <thead>
@@ -78,7 +83,7 @@
                     <td th:text="${transaction.getName()}"></td>
                     <td th:text="${transaction.getToFrom()}"></td>
                     <td style="text-align: left"
-                        th:text="${#numbers.formatDecimal(transaction.getAmountInDollars(), 0, 'COMMA', 2, 'POINT')}"
+                        th:text="'$' + ${#numbers.formatDecimal(transaction.getAmountInDollars(), 0, 'COMMA', 2, 'POINT')}"
                         th:classappend="${transaction.getAmountInDollars()<0} ? text-danger : text-success">
                     </td>
                     </td>
@@ -95,7 +100,7 @@
                     <td>Account Total</td>
                     <td></td>
                     <td style="text-align: left"
-                        th:text="${#numbers.formatDecimal(currentAccount.getBalanceInDollars(), 0, 'COMMA', 2, 'POINT' )}"
+                        th:text="'$' + ${#numbers.formatDecimal(currentAccount.getBalanceInDollars(), 0, 'COMMA', 2, 'POINT' )}"
                         th:classappend=" ${currentAccount.getBalanceInDollars()<0} ? text-danger : text-success">
                     </td>
                     <td></td>
@@ -147,7 +152,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" name="type" value="income" class="btn btn-success"
+                    <button type="submit" name="type" value="income" class="btn btn-secondary"
                         form="newTransaction">Income
                     </button>
                     <button type="submit" name="type" value="expense" class="btn btn-danger"
@@ -395,14 +400,14 @@
         }
 
 
-        window.onload = function () {
-            var messages = document.querySelectorAll('.alert');
-            setTimeout(function () {
-                messages.forEach(function (message) {
-                    message.style.display = 'none';
-                });
-            }, 5000); // Change this to the number of milliseconds you want to wait before the messages disappear
-        };
+        // window.onload = function () {
+        //     var messages = document.querySelectorAll('.alert');
+        //     setTimeout(function () {
+        //         messages.forEach(function (message) {
+        //             message.style.display = 'none';
+        //         });
+        //     }, 5000); // Change this to the number of milliseconds you want to wait before the messages disappear
+        // };
 
     </script>
 </body>

@@ -211,8 +211,8 @@ public class DashboardController {
             // Transaction is an invalid type
             log.info("Invalid transaction type {}", newTransactionForm.getType());
             FlashHelper.flash(redirectAttributes,
-                    String.format("Invalid transation type: %s", newTransactionForm.getType()));
-            return new RedirectView("/");
+                    String.format("Invalid transaction type: %s", newTransactionForm.getType()));
+            return new RedirectView("/account/" + account.getId());
         }
 
         // Only allow user to submit positives amounts in income/expenses
@@ -236,10 +236,10 @@ public class DashboardController {
         if (transaction == null) {
             FlashHelper.flash(redirectAttributes,
                     String.format("Failed to create transaction %s", newTransactionForm.getName()));
-            return new RedirectView("/");
+            return new RedirectView("/account/" + account.getId());
         }
         FlashHelper.flash(redirectAttributes, String.format("Transaction %s created", newTransactionForm.getName()));
-        return new RedirectView("/");
+        return new RedirectView("/account/" + account.getId());
     }
 
     /**
@@ -261,7 +261,7 @@ public class DashboardController {
 
         if (newTransferForm.getFromAccountId() == newTransferForm.getToAccountId()) {
             FlashHelper.flash(redirectAttributes, "You cannot transfer money from an account to itself");
-            return new RedirectView("/");
+            return new RedirectView("/account/" + newTransferForm.getFromAccountId());
         }
         // The account to send money to
         Account toAccount = accountService.getUserAccount(authHelper.getLoggedInUser(),
@@ -280,10 +280,10 @@ public class DashboardController {
             FlashHelper.flash(redirectAttributes,
                     String.format("Created transfer from %s to %s", fromAccount.getName(), toAccount.getName()));
         } else {
-            FlashHelper.flash(redirectAttributes, "Something went wrong, the money was not transfered");
+            FlashHelper.flash(redirectAttributes, "Something went wrong, the money was not transferred");
         }
 
-        return new RedirectView("/");
+        return new RedirectView("/account/" + fromAccount.getId());
     }
 
     /**

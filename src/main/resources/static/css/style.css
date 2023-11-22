@@ -11,14 +11,14 @@
 /* Make all of the fonts the same */
 .title, p, label, input {
     font-family: 'Noto Sans JP', sans-serif;
-    color: #4F3B38;
+    color: #3D405B;
     display: block;
 }
 
 /* Link Styling */
 a {
     text-decoration: none;
-    color: #9C6F69;
+    color: #E07A5F;
 }
 
 /* mouse over link */
@@ -53,7 +53,7 @@ p {
     padding: 0.375em 0.75em;
     width: 450px;
     border-radius: 25px;
-    border: 1px solid #9C6F69;
+    border: 1px solid #E07A5F;
     background-clip: padding-box;
 }
 
@@ -62,7 +62,7 @@ p {
 .button {
     width: 472.5px;
     height: 32.5px;
-    background: #9C6F69;
+    background: #E07A5F;
     border-radius: 25px;
     border: none;
     color: #fff;

@@ -12,6 +12,7 @@ import jakarta.validation.constraints.Size;
 public class NewAccountForm {
 
     @NotNull
+    @Size(min = 4)
     private String accountName;
 
     @NotNull

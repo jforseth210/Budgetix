@@ -1,19 +1,21 @@
 package edu.carroll.bankapp.web.form;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 
 /**
  * This form collects and validates the necessary information to create a new
  * transfer
  */
 public class NewTransferForm {
-
     @NotNull
+    @PositiveOrZero
     private long transferAmountInDollars;
 
     @NotNull
     private Integer fromAccountId;
 
+    @NotNull
     private Integer toAccountId;
 
     /**

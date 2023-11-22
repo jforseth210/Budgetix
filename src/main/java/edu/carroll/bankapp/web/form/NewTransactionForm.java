@@ -1,6 +1,8 @@
 package edu.carroll.bankapp.web.form;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Pattern;
 
 /**
  * This form collects and validates the necessary information to create a new
@@ -11,13 +13,17 @@ public class NewTransactionForm {
     private String toFrom;
 
     @NotNull
+    @PositiveOrZero
     private long amountInDollars;
 
     @NotNull
     private String name;
-
+    
+    @NotNull
+    @Pattern(regexp = "^(income|expense)$", message = "Transaction type should be 'income' or 'expense'")
     private String type;
 
+    @NotNull
     private Integer accountId;
 
     /**

@@ -1,9 +1,12 @@
 package edu.carroll.bankapp.web.form;
 
+import jakarta.validation.constraints.NotNull;
+
 /**
  * Form object for deleting a transaction
  */
 public class DeleteTransactionForm {
+    @NotNull
     private int transactionId;
 
     /**

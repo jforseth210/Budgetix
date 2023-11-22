@@ -12,6 +12,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
+import javax.naming.Binding;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,8 +85,8 @@ public class LoginController {
      */
     @PostMapping("/loginNew")
     public String loginNewPost(HttpServletRequest request, @Valid @ModelAttribute NewLoginForm newLoginForm,
-            BindingResult result, RedirectAttributes redirectAttributes) {
-        if (result.hasErrors()) {
+            BindingResult validation, RedirectAttributes redirectAttributes) {
+        if (validation.hasErrors()) {
             return "loginNew";
         }
 
@@ -92,13 +94,13 @@ public class LoginController {
         if (!newLoginForm.getPassword().equals(newLoginForm.getConfirm())) {
             log.info("A user, {}, attempted to make an account with non-matching passwords",
                     newLoginForm.getUsername());
-            result.addError(new ObjectError("confirm", "Passwords must match"));
+            validation.addError(new ObjectError("confirm", "Passwords must match"));
             return "loginNew";
         }
 
         // See if username is available
         if (userService.getUserByUsername(newLoginForm.getUsername()) != null) {
-            result.addError(new ObjectError("username", "Username already taken"));
+            validation.addError(new ObjectError("username", "Username already taken"));
             return "loginNew";
         }
 
@@ -106,7 +108,7 @@ public class LoginController {
         SiteUser createdUser = userService.createUser(newLoginForm.getFullName(), newLoginForm.getEmail(),
                 newLoginForm.getUsername(), newLoginForm.getPassword());
         if (createdUser == null) {
-            result.addError(new ObjectError("global", "Something went wrong"));
+            validation.addError(new ObjectError("global", "Something went wrong"));
             return "loginNew";
         }
         log.info("Created a new user: {}", createdUser.getUsername());
@@ -130,8 +132,14 @@ public class LoginController {
      * @return - redirect to the homepage
      */
     @PostMapping("/update-password")
-    public String updatePassword(@ModelAttribute("updatePassword") UpdatePasswordForm form,
+    public String updatePassword(@ModelAttribute("updatePassword") UpdatePasswordForm form, BindingResult validation,
             RedirectAttributes redirectAttributes) {
+        if (validation.hasErrors()) {
+            for (ObjectError error : validation.getAllErrors()) {
+                FlashHelper.flash(redirectAttributes, error.getDefaultMessage());
+            }
+            return "redirect:/";
+        }
         SiteUser user = authHelper.getLoggedInUser();
 
         // Handle the case where the user doesn't exist
@@ -166,8 +174,14 @@ public class LoginController {
      * @return redirect to the home page
      */
     @PostMapping("/update-username")
-    public String updateUsername(@ModelAttribute("updateUsername") UpdateUsernameForm form,
+    public String updateUsername(@ModelAttribute("updateUsername") UpdateUsernameForm form, BindingResult validation,
             HttpServletRequest request, RedirectAttributes redirectAttributes) {
+        if (validation.hasErrors()) {
+            for (ObjectError error : validation.getAllErrors()) {
+                FlashHelper.flash(redirectAttributes, error.getDefaultMessage());
+            }
+            return "redirect:/";
+        }
         SiteUser user = authHelper.getLoggedInUser();
         // Try updating the username
         boolean success = userService.updateUsername(user, form.getConfirmPassword(), form.getNewUsername());

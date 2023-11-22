@@ -12,6 +12,8 @@ import jakarta.validation.Valid;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
@@ -154,23 +156,18 @@ public class DashboardController {
      * @return redirect to root path
      */
     @PostMapping("/add-account")
-    public RedirectView addAccount(@Valid @ModelAttribute NewAccountForm newAccountForm,
+    public RedirectView addAccount(@Valid @ModelAttribute NewAccountForm newAccountForm, BindingResult validation,
             RedirectAttributes redirectAttributes) {
-        SiteUser loggedInUser = authHelper.getLoggedInUser();
-
-        // Prevent the user from creating an account with too short of a name
-        if (newAccountForm.getAccountName().length() < 4) {
-            log.info("{} tried to create an account with name {}, which is shorter than 4 characters",
-                    loggedInUser.getUsername(), newAccountForm.getAccountName());
-
-            // Let the user know that their selected account name was too short
-            FlashHelper.flash(redirectAttributes,
-                    String.format("Account name must be at least 4 letters (you entered %d)",
-                            newAccountForm.getAccountName().length()));
-
-            // Redirect back to the root path
+        if (validation.hasErrors()) {
+            for (ObjectError error : validation.getAllErrors()) {
+                FlashHelper.flash(redirectAttributes, error.getDefaultMessage());
+            }
             return new RedirectView("/");
         }
+        SiteUser loggedInUser = authHelper.getLoggedInUser();
+
+        log.info("{} tried to create an account with name {}, which is shorter than 4 characters",
+                loggedInUser.getUsername(), newAccountForm.getAccountName());
 
         // Create an account
         Account account = accountService.createAccount(
@@ -198,7 +195,14 @@ public class DashboardController {
      */
     @PostMapping("/add-transaction")
     public RedirectView addTransaction(@Valid @ModelAttribute NewTransactionForm newTransactionForm,
+            BindingResult validation,
             RedirectAttributes redirectAttributes) {
+        if (validation.hasErrors()) {
+            for (ObjectError error : validation.getAllErrors()) {
+                FlashHelper.flash(redirectAttributes, error.getDefaultMessage());
+            }
+            return new RedirectView("/");
+        }
         Account account = accountService.getUserAccount(authHelper.getLoggedInUser(),
                 newTransactionForm.getAccountId());
 
@@ -246,10 +250,12 @@ public class DashboardController {
      * @return redirect view to page showing new transaction
      */
     @PostMapping("/add-transfer")
-    public RedirectView addTransfer(@Valid @ModelAttribute NewTransferForm newTransferForm,
+    public RedirectView addTransfer(@Valid @ModelAttribute NewTransferForm newTransferForm, BindingResult validation,
             RedirectAttributes redirectAttributes) {
-        if (newTransferForm.getToAccountId() == null) {
-            FlashHelper.flash(redirectAttributes, "Please specify an account to transfer to");
+        if (validation.hasErrors()) {
+            for (ObjectError error : validation.getAllErrors()) {
+                FlashHelper.flash(redirectAttributes, error.getDefaultMessage());
+            }
             return new RedirectView("/");
         }
 
@@ -289,7 +295,14 @@ public class DashboardController {
      */
     @PostMapping("/delete-transaction")
     public String deleteTransaction(@ModelAttribute("deleteTransactionForm") DeleteTransactionForm form,
+            BindingResult validation,
             RedirectAttributes redirectAttributes) {
+        if (validation.hasErrors()) {
+            for (ObjectError error : validation.getAllErrors()) {
+                FlashHelper.flash(redirectAttributes, error.getDefaultMessage());
+            }
+            return "redirect:/";
+        }
         SiteUser loggedInUser = authHelper.getLoggedInUser();
         // Look up the transaction to delete
         Transaction transaction = transactionService.getUserTransaction(loggedInUser, form.getTransactionId());
@@ -310,8 +323,14 @@ public class DashboardController {
      * @return redirect to the home page
      */
     @PostMapping("/delete-account")
-    public String deleteAccount(@ModelAttribute("deleteAccountForm") DeleteAccountForm form,
+    public String deleteAccount(@ModelAttribute("deleteAccountForm") DeleteAccountForm form, BindingResult validation,
             RedirectAttributes redirectAttributes) {
+        if (validation.hasErrors()) {
+            for (ObjectError error : validation.getAllErrors()) {
+                FlashHelper.flash(redirectAttributes, error.getDefaultMessage());
+            }
+            return "redirect:/";
+        }
         // Look up the account the user wants to delete
         Account account = accountService.getUserAccount(authHelper.getLoggedInUser(), form.getAccountId());
 

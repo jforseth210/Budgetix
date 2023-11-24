@@ -53,7 +53,7 @@ public class CustomUserDetailsServiceImplTest {
         userService.createUser(JOHN_NAME, JOHN_EMAIL, JOHN_USERNAME, JOHN_PASSWORD);
         // Create some other users
         userService.createUser(ALICE_NAME, ALICE_EMAIL, ALICE_USERNAME, ALICE_PASSWORD);
-        userService.createUser(JANE_NAME, JANE_EMAIL, JANE_USERNAME, JANE_PASSWORD);
+        userService.createUser(JANE_NAME, JANE_EMAIL, JANE_USERNAME, JANE_PASSWORD).getResult();
 
         // Fetch user
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(JOHN_USERNAME);
@@ -68,7 +68,7 @@ public class CustomUserDetailsServiceImplTest {
         // Create some users
         userService.createUser(JOHN_NAME, JOHN_EMAIL, JOHN_USERNAME, JOHN_PASSWORD);
         userService.createUser(ALICE_NAME, ALICE_EMAIL, ALICE_USERNAME, ALICE_PASSWORD);
-        userService.createUser(JANE_NAME, JANE_EMAIL, JANE_USERNAME, JANE_PASSWORD);
+        userService.createUser(JANE_NAME, JANE_EMAIL, JANE_USERNAME, JANE_PASSWORD).getResult();
 
         // Make sure not existent user throws error
         assertThrows(UsernameNotFoundException.class, () -> {
@@ -80,12 +80,12 @@ public class CustomUserDetailsServiceImplTest {
     @Test
     public void testLoadUserByUsernameUnicodeUsername() {
         // Create user
-        userService.createUser(UNICODE_NAME, UNICODE_EMAIL, UNICODE_USERNAME, UNICODE_PASSWORD);
+        userService.createUser(UNICODE_NAME, UNICODE_EMAIL, UNICODE_USERNAME, UNICODE_PASSWORD).getResult();
         ;
         // Create some other users
         userService.createUser(JOHN_NAME, JOHN_EMAIL, JOHN_USERNAME, JOHN_PASSWORD);
         userService.createUser(ALICE_NAME, ALICE_EMAIL, ALICE_USERNAME, ALICE_PASSWORD);
-        userService.createUser(JANE_NAME, JANE_EMAIL, JANE_USERNAME, JANE_PASSWORD);
+        userService.createUser(JANE_NAME, JANE_EMAIL, JANE_USERNAME, JANE_PASSWORD).getResult();
 
         // Fetch user
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(UNICODE_USERNAME);

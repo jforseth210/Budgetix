@@ -2,6 +2,7 @@ package edu.carroll.bankapp.web.controller;
 
 import edu.carroll.bankapp.FlashHelper;
 import edu.carroll.bankapp.jpa.model.SiteUser;
+import edu.carroll.bankapp.service.ServiceResponse;
 import edu.carroll.bankapp.service.UserService;
 import edu.carroll.bankapp.web.AuthHelper;
 import edu.carroll.bankapp.web.form.LoginForm;
@@ -11,6 +12,8 @@ import edu.carroll.bankapp.web.form.UpdateUsernameForm;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+
+import java.security.Provider.Service;
 
 import javax.naming.Binding;
 
@@ -105,13 +108,14 @@ public class LoginController {
         }
 
         // Create the user
-        SiteUser createdUser = userService.createUser(newLoginForm.getFullName(), newLoginForm.getEmail(),
+        ServiceResponse<SiteUser> response = userService.createUser(newLoginForm.getFullName(), newLoginForm.getEmail(),
                 newLoginForm.getUsername(), newLoginForm.getPassword());
-        if (createdUser == null) {
-            validation.addError(new ObjectError("global", "Something went wrong"));
+
+        if (response.getResult() == null) {
+            validation.addError(new ObjectError("global", response.getMessage()));
             return "loginNew";
         }
-        log.info("Created a new user: {}", createdUser.getUsername());
+        log.info("Created a new user: {}", response.getResult().getUsername());
 
         // Attempt to log the user into the application
         try {
@@ -156,12 +160,10 @@ public class LoginController {
         }
 
         // Update the user's password
-        boolean success = userService.updatePassword(user, form.getOldPassword(), form.getNewPassword());
-        if (success) {
-            FlashHelper.flash(redirectAttributes, "Your password has been updated successfully");
-        } else {
-            FlashHelper.flash(redirectAttributes, "Password change unsuccessful. Please try again.");
-        }
+        ServiceResponse<Boolean> response = userService.updatePassword(user, form.getOldPassword(),
+                form.getNewPassword());
+
+        FlashHelper.flash(redirectAttributes, response.getMessage());
         return "redirect:/";
     }
 
@@ -184,11 +186,10 @@ public class LoginController {
         }
         SiteUser user = authHelper.getLoggedInUser();
         // Try updating the username
-        boolean success = userService.updateUsername(user, form.getConfirmPassword(), form.getNewUsername());
-
-        // Let the user know if update failed
-        if (!success) {
-            FlashHelper.flash(redirectAttributes, "Something went wrong. Your username has not been changed");
+        ServiceResponse<Boolean> response = userService.updateUsername(user, form.getConfirmPassword(),
+                form.getNewUsername());
+        if (!response.getResult()) {
+            FlashHelper.flash(redirectAttributes, response.getMessage());
             return "redirect:/";
         }
 

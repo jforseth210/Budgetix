@@ -51,13 +51,13 @@ public class AccountServiceImplTest {
     @Test
     public void testGetUserAccounts() {
         // Create some users
-        SiteUser john = userService.createUser(JOHN_NAME, JOHN_EMAIL, JOHN_USERNAME, JOHN_PASSWORD);
-        SiteUser jane = userService.createUser(JANE_NAME, JANE_EMAIL, JANE_USERNAME, JANE_PASSWORD);
+        SiteUser john = userService.createUser(JOHN_NAME, JOHN_EMAIL, JOHN_USERNAME, JOHN_PASSWORD).getResult();
+        SiteUser jane = userService.createUser(JANE_NAME, JANE_EMAIL, JANE_USERNAME, JANE_PASSWORD).getResult();
 
         // Make some accounts for john
         List<Account> createdAccounts = new ArrayList<>();
-        createdAccounts.add(accountService.createAccount("Checking", (long) 1940, john));
-        createdAccounts.add(accountService.createAccount("Savings", (long) 36553, john));
+        createdAccounts.add(accountService.createAccount("Checking", (long) 1940, john).getResult());
+        createdAccounts.add(accountService.createAccount("Savings", (long) 36553, john).getResult());
 
         // Make an account for jane
         accountService.createAccount("Investments", (long) -15.10, jane);
@@ -83,9 +83,10 @@ public class AccountServiceImplTest {
     @Test
     public void testGetUserAccountsWithCrazyUnicode() {
         // Create test data
-        SiteUser unicodeMan = userService.createUser(UNICODE_NAME, UNICODE_EMAIL, UNICODE_USERNAME, UNICODE_PASSWORD);
+        SiteUser unicodeMan = userService.createUser(UNICODE_NAME, UNICODE_EMAIL, UNICODE_USERNAME, UNICODE_PASSWORD)
+                .getResult();
         assertNotNull(unicodeMan);
-        Account moneybag = accountService.createAccount("💰💰💰", (long) 0, unicodeMan);
+        Account moneybag = accountService.createAccount("💰💰💰", (long) 0, unicodeMan).getResult();
         assertNotNull(moneybag, "Account should be created");
         // Get unicode man's accounts, make sure they make sense
         List<Account> retrievedAccounts = accountService.getUserAccounts(unicodeMan);
@@ -109,11 +110,11 @@ public class AccountServiceImplTest {
     @Test
     public void testGetUserAccountsNoAccounts() {
         // Create alice, but don't give her any accounts
-        SiteUser alice = userService.createUser(ALICE_NAME, ALICE_EMAIL, ALICE_USERNAME, ALICE_PASSWORD);
+        SiteUser alice = userService.createUser(ALICE_NAME, ALICE_EMAIL, ALICE_USERNAME, ALICE_PASSWORD).getResult();
 
         // Create some other accounts to make sure they
         // AREN'T returned
-        SiteUser john = userService.createUser(JOHN_NAME, JOHN_EMAIL, JOHN_USERNAME, JOHN_PASSWORD);
+        SiteUser john = userService.createUser(JOHN_NAME, JOHN_EMAIL, JOHN_USERNAME, JOHN_PASSWORD).getResult();
         accountService.createAccount("Checking", (long) 1940, john);
         accountService.createAccount("Checking", (long) 1940, john);
 

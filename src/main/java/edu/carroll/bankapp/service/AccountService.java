@@ -12,7 +12,7 @@ public interface AccountService {
 
     /**
      * Returns a list of Accounts owned by the given user
-     *
+     * 
      * @param user the user to get accounts for
      * @return list of accounts
      */
@@ -37,16 +37,16 @@ public interface AccountService {
      * @param owner            the owner of the account
      * @return Account if the account was created successfully, null otherwise
      */
-    Account createAccount(String accountName, Long balanceInDollars, SiteUser owner);
+    ServiceResponse<Account> createAccount(String accountName, Long balanceInDollars, SiteUser owner);
 
     /**
      * Delete the given account
-     *
+     * 
      * @param loggedInUser the currently logged-in user
      * @param account      the account to be deleted
      * @return true if successful, false if failed
      */
-    boolean deleteAccount(SiteUser loggedInUser, Account account);
+    ServiceResponse<Boolean> deleteAccount(SiteUser loggedInUser, Account account);
 
     /**
      * Delete the account with the given id
@@ -55,5 +55,5 @@ public interface AccountService {
      * @param accountID    the id of the account to be deleted
      * @return true if successful, false if failed
      */
-    boolean deleteAccount(SiteUser loggedInUser, int accountID);
+    ServiceResponse<Boolean> deleteAccount(SiteUser loggedInUser, int accountID);
 }

@@ -4,6 +4,7 @@ import edu.carroll.bankapp.jpa.model.Account;
 import edu.carroll.bankapp.jpa.model.SiteUser;
 import edu.carroll.bankapp.jpa.model.Transaction;
 import edu.carroll.bankapp.service.AccountService;
+import edu.carroll.bankapp.service.ServiceResponse;
 import edu.carroll.bankapp.service.TransactionService;
 import edu.carroll.bankapp.web.AuthHelper;
 import edu.carroll.bankapp.web.form.*;
@@ -170,17 +171,12 @@ public class DashboardController {
                 loggedInUser.getUsername(), newAccountForm.getAccountName());
 
         // Create an account
-        Account account = accountService.createAccount(
+        ServiceResponse<Account> response = accountService.createAccount(
                 newAccountForm.getAccountName(),
                 newAccountForm.getAccountBalance(),
                 authHelper.getLoggedInUser());
-        if (account == null) {
-            FlashHelper.flash(redirectAttributes,
-                    String.format("Unable to create account %s", newAccountForm.getAccountName()));
-            return new RedirectView("/");
-        }
-        // Let the user know the operation completed
-        FlashHelper.flash(redirectAttributes, String.format("Account %s created", newAccountForm.getAccountName()));
+
+        FlashHelper.flash(redirectAttributes, response.getMessage());
 
         // Redirect back to the root path
         return new RedirectView("/");
@@ -228,17 +224,13 @@ public class DashboardController {
         }
 
         // Create the transaction
-        Transaction transaction = transactionService.createTransaction(
+        ServiceResponse<Transaction> response = transactionService.createTransaction(
                 newTransactionForm.getName(),
                 newTransactionForm.getAmountInDollars(),
                 newTransactionForm.getToFrom(),
                 account);
-        if (transaction == null) {
-            FlashHelper.flash(redirectAttributes,
-                    String.format("Failed to create transaction %s", newTransactionForm.getName()));
-            return new RedirectView("/account/" + account.getId());
-        }
-        FlashHelper.flash(redirectAttributes, String.format("Transaction %s created", newTransactionForm.getName()));
+
+        FlashHelper.flash(redirectAttributes, response.getMessage());
         return new RedirectView("/account/" + account.getId());
     }
 
@@ -272,17 +264,11 @@ public class DashboardController {
                 newTransferForm.getFromAccountId());
 
         // Transfer the money
-        boolean success = transactionService.createTransfer(toAccount, fromAccount,
+        ServiceResponse<Boolean> response = transactionService.createTransfer(toAccount, fromAccount,
                 newTransferForm.getTransferAmountInDollars());
 
         // Give the user feedback
-        if (success) {
-            FlashHelper.flash(redirectAttributes,
-                    String.format("Created transfer from %s to %s", fromAccount.getName(), toAccount.getName()));
-        } else {
-            FlashHelper.flash(redirectAttributes, "Something went wrong, the money was not transferred");
-        }
-
+        FlashHelper.flash(redirectAttributes, response.getMessage());
         return new RedirectView("/account/" + fromAccount.getId());
     }
 

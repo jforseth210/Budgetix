@@ -55,15 +55,15 @@ public class TransactionServiceImplTest {
     @Test
     public void testCreateTransaction() {
         // Create a user and account
-        SiteUser john = userService.createUser(JOHN_NAME, JOHN_EMAIL, JOHN_USERNAME, JOHN_PASSWORD);
-        Account checking = accountService.createAccount("Checking", (long) 1940, john);
+        SiteUser john = userService.createUser(JOHN_NAME, JOHN_EMAIL, JOHN_USERNAME, JOHN_PASSWORD).getResult();
+        Account checking = accountService.createAccount("Checking", (long) 1940, john).getResult();
 
         long initialCheckingBalance = checking.getBalanceInDollars();
 
         // Create the transaction
         Transaction createdTransaction = transactionService.createTransaction("Test Transaction", (long) 100.0,
                 "Receiver",
-                checking);
+                checking).getResult();
 
         // Make sure returned transaction makes sense
         assertNotNull(createdTransaction);
@@ -90,10 +90,10 @@ public class TransactionServiceImplTest {
     @Test
     public void testGetUserTransaction() {
         // Make a user, account, transaction
-        SiteUser john = userService.createUser(JOHN_NAME, JOHN_EMAIL, JOHN_USERNAME, JOHN_PASSWORD);
-        Account checking = accountService.createAccount("Checking", (long) 1940, john);
+        SiteUser john = userService.createUser(JOHN_NAME, JOHN_EMAIL, JOHN_USERNAME, JOHN_PASSWORD).getResult();
+        Account checking = accountService.createAccount("Checking", (long) 1940, john).getResult();
         Transaction createdTransaction = transactionService.createTransaction("A transaction!", (long) 100.0, "???",
-                checking);
+                checking).getResult();
 
         // Fetch the transaction from the database
         Transaction fetchedTransaction = transactionService.getUserTransaction(john, createdTransaction.getId());
@@ -111,10 +111,10 @@ public class TransactionServiceImplTest {
     @Test
     public void testDeleteTransaction() {
         // Populate database
-        SiteUser john = userService.createUser(JOHN_NAME, JOHN_EMAIL, JOHN_USERNAME, JOHN_PASSWORD);
-        Account checking = accountService.createAccount("Checking", (long) 1940, john);
+        SiteUser john = userService.createUser(JOHN_NAME, JOHN_EMAIL, JOHN_USERNAME, JOHN_PASSWORD).getResult();
+        Account checking = accountService.createAccount("Checking", (long) 1940, john).getResult();
         Transaction transaction = transactionService.createTransaction("A transaction!", (long) 100.0, "???",
-                checking);
+                checking).getResult();
 
         // Save information about state before deletion
         int numAccounts = checking.getTransactions().size();

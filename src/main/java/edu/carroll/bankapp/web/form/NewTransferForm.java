@@ -15,7 +15,7 @@ public class NewTransferForm {
     @NotNull
     private Integer fromAccountId;
 
-    @NotNull
+    @NotNull(message = "Must select an account to transfer to")
     private Integer toAccountId;
 
     /**

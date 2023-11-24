@@ -1,5 +1,4 @@
 package edu.carroll.bankapp;
-
 import edu.carroll.bankapp.jpa.model.SiteUser;
 import edu.carroll.bankapp.service.UserService;
 import jakarta.transaction.Transactional;
@@ -91,12 +90,12 @@ public class UserServiceImplTest {
         // Attempt to create a user with an already taken username
         public void testCreateUserWithExistingUsername() {
                 // Create user
-                assertNotNull(userService.createUser(JOHN_NAME, JOHN_EMAIL, JOHN_USERNAME, JOHN_PASSWORD),
+                assertNotNull(userService.createUser(JOHN_NAME, JOHN_EMAIL, JOHN_USERNAME, JOHN_PASSWORD).getResult(),
                                 "Setup failed, unable to create initial user");
                 // Make sure the user isn't created
                 assertNull(
                                 userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, JOHN_USERNAME,
-                                                GENERIC_PASSWORD),
+                                                GENERIC_PASSWORD).getResult(),
                                 "Allowed creation of a user with an existing username");
                 // Make sure nothing actually changes
                 SiteUser johnDoeFromDB = userService.getUserByUsername(JOHN_USERNAME);
@@ -108,7 +107,7 @@ public class UserServiceImplTest {
         // Attempt to create user without a name
         public void testCreateUserNullFullName() {
                 // Assert that the createUser method returns null when the full name is null
-                assertNull(userService.createUser(null, GENERIC_EMAIL, GENERIC_USERNAME, GENERIC_PASSWORD),
+                assertNull(userService.createUser(null, GENERIC_EMAIL, GENERIC_USERNAME, GENERIC_PASSWORD).getResult(),
                                 "User should not be created when the full name is null");
 
                 // Assert that the user is not created in the database
@@ -120,7 +119,7 @@ public class UserServiceImplTest {
         // Attempt to create user without an email
         public void testCreateUserNullEmail() {
                 // Assert that the createUser method returns null when the email is null
-                assertNull(userService.createUser(GENERIC_FULL_NAME, null, GENERIC_USERNAME, GENERIC_PASSWORD),
+                assertNull(userService.createUser(GENERIC_FULL_NAME, null, GENERIC_USERNAME, GENERIC_PASSWORD).getResult(),
                                 "User should not be created when the email is null");
 
                 // Assert that the user is not created in the database
@@ -133,7 +132,7 @@ public class UserServiceImplTest {
         public void testCreateUserNullFullNameAndEmail() {
                 // Assert that the createUser method returns null when the full name and email
                 // are null
-                assertNull(userService.createUser(null, null, GENERIC_USERNAME, GENERIC_PASSWORD),
+                assertNull(userService.createUser(null, null, GENERIC_USERNAME, GENERIC_PASSWORD).getResult(),
                                 "User should not be created when the full name and email are null");
 
                 // Assert that the user is not created in the database
@@ -145,7 +144,7 @@ public class UserServiceImplTest {
         // Attempt to create user without a username
         public void testCreateUserNullUsername() {
                 // Assert that the createUser method returns null when the username is null
-                assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, null, GENERIC_PASSWORD),
+                assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, null, GENERIC_PASSWORD).getResult(),
                                 "User should not be created when the username is null");
 
                 // Since the username is a unique identifier, there's no need to check for the
@@ -157,7 +156,7 @@ public class UserServiceImplTest {
         public void testCreateUserNullUsernameAndEmail() {
                 // Assert that the createUser method returns null when both the username and
                 // email are null
-                assertNull(userService.createUser(GENERIC_FULL_NAME, null, null, GENERIC_PASSWORD),
+                assertNull(userService.createUser(GENERIC_FULL_NAME, null, null, GENERIC_PASSWORD).getResult(),
                                 "User should not be created when both the username and email are null");
 
                 // Since both the username and email are required fields, there's no need to
@@ -169,7 +168,7 @@ public class UserServiceImplTest {
         public void testCreateUserNullInputsAndPassword() {
                 // Assert that the createUser method returns null when all other fields are null
                 // and only the password is provided
-                assertNull(userService.createUser(null, null, null, GENERIC_PASSWORD),
+                assertNull(userService.createUser(null, null, null, GENERIC_PASSWORD).getResult(),
                                 "User should not be created when all other fields are null and only the password is provided");
 
                 // Since all other fields are required, there's no need to check for the user's
@@ -180,7 +179,7 @@ public class UserServiceImplTest {
         // Attempt to create a user without a password
         public void testCreateUserNullPassword() {
                 // Assert that the createUser method returns null when the password is null
-                assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, GENERIC_USERNAME, null),
+                assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, GENERIC_USERNAME, null).getResult(),
                                 "User should not be created when the password is null");
 
                 // Assert that the user is not created in the database
@@ -193,7 +192,7 @@ public class UserServiceImplTest {
         public void testCreateUserNullUsernameAndPassword() {
                 // Assert that the createUser method returns null when both the username and
                 // password are null
-                assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, null, null),
+                assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, null, null).getResult(),
                                 "User should not be created when both the username and password are null");
 
                 // Since both the username and password are required fields, there's no need to
@@ -205,7 +204,7 @@ public class UserServiceImplTest {
         public void testCreateUserNullUsernameFullNameAndPassword() {
                 // Assert that the createUser method returns null when only the full name is
                 // provided
-                assertNull(userService.createUser(GENERIC_FULL_NAME, null, null, null),
+                assertNull(userService.createUser(GENERIC_FULL_NAME, null, null, null).getResult(),
                                 "User should not be created when only the full name is provided");
 
                 // Since none of the required fields are provided, there's no need to check for
@@ -216,7 +215,7 @@ public class UserServiceImplTest {
         // Attempt to create a user with all null values
         public void testCreateUserAllNullInputs() {
                 // Assert that the createUser method returns null when all fields are null
-                assertNull(userService.createUser(null, null, null, null),
+                assertNull(userService.createUser(null, null, null, null).getResult(),
                                 "User should not be created when all fields are null");
 
                 // Since none of the required fields are provided, there's no need to check for
@@ -228,7 +227,7 @@ public class UserServiceImplTest {
         public void testCreateUserEmptyFullName() {
                 // Assert that the createUser method returns null when the full name is an empty
                 // string
-                assertNull(userService.createUser("", GENERIC_EMAIL, GENERIC_USERNAME, GENERIC_PASSWORD),
+                assertNull(userService.createUser("", GENERIC_EMAIL, GENERIC_USERNAME, GENERIC_PASSWORD).getResult(),
                                 "User should not be created when the full name is an empty string");
 
                 // Assert that the user is not created in the database
@@ -241,7 +240,7 @@ public class UserServiceImplTest {
         public void testCreateUserEmptyEmail() {
                 // Assert that the createUser method returns null when the email is an empty
                 // string
-                assertNull(userService.createUser(GENERIC_FULL_NAME, "", GENERIC_USERNAME, GENERIC_PASSWORD),
+                assertNull(userService.createUser(GENERIC_FULL_NAME, "", GENERIC_USERNAME, GENERIC_PASSWORD).getResult(),
                                 "User should not be created when the email is an empty string");
 
                 // Assert that the user is not created in the database
@@ -254,7 +253,7 @@ public class UserServiceImplTest {
         public void testCreateUserEmptyFullNameAndEmail() {
                 // Assert that the createUser method returns null when both the full name and
                 // email are empty strings
-                assertNull(userService.createUser("", "", GENERIC_USERNAME, GENERIC_PASSWORD),
+                assertNull(userService.createUser("", "", GENERIC_USERNAME, GENERIC_PASSWORD).getResult(),
                                 "User should not be created when both the full name and email are empty strings");
 
                 // Assert that the user is not created in the database
@@ -267,7 +266,7 @@ public class UserServiceImplTest {
         public void testCreateUserEmptyUsername() {
                 // Assert that the createUser method returns null when the username is an empty
                 // string
-                assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, "", GENERIC_PASSWORD),
+                assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, "", GENERIC_PASSWORD).getResult(),
                                 "User should not be created when the username is an empty string");
 
                 // Since the username is a unique identifier, there's no need to check for the
@@ -279,7 +278,7 @@ public class UserServiceImplTest {
         public void testCreateUserEmptyUsernameAndEmail() {
                 // Assert that the createUser method returns null when both the email and
                 // username are empty strings
-                assertNull(userService.createUser(GENERIC_FULL_NAME, "", "", GENERIC_PASSWORD),
+                assertNull(userService.createUser(GENERIC_FULL_NAME, "", "", GENERIC_PASSWORD).getResult(),
                                 "User should not be created when both the email and username are empty strings");
 
                 // Since both the email and username are required fields, there's no need to
@@ -292,7 +291,7 @@ public class UserServiceImplTest {
         public void testCreateUserEmptyInputsAndFullName() {
                 // Assert that the createUser method returns null when all fields are empty
                 // strings except for the full name
-                assertNull(userService.createUser("", "", "", GENERIC_PASSWORD),
+                assertNull(userService.createUser("", "", "", GENERIC_PASSWORD).getResult(),
                                 "User should not be created when all fields are empty strings except for the full name");
 
                 // Since none of the required fields are provided, there's no need to check for
@@ -304,7 +303,7 @@ public class UserServiceImplTest {
         public void testCreateUserEmptyPassword() {
                 // Assert that the createUser method returns null when the password is an empty
                 // string
-                assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, GENERIC_PASSWORD, ""),
+                assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, GENERIC_PASSWORD, "").getResult(),
                                 "User should not be created when the password is an empty string");
 
                 // Assert that the user is not created in the database
@@ -317,7 +316,7 @@ public class UserServiceImplTest {
         public void testCreateUserEmptyUsernameAndPassword() {
                 // Assert that the createUser method returns null when both the username and
                 // password are empty strings
-                assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, "", ""),
+                assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, "", "").getResult(),
                                 "User should not be created when both the username and password are empty strings");
 
                 // Since both the username and password are required fields, there's no need to
@@ -330,7 +329,7 @@ public class UserServiceImplTest {
         public void testCreateUserEmptyUsernameFullNameAndPassword() {
                 // Assert that the createUser method returns null when all fields are empty
                 // strings except for the full name
-                assertNull(userService.createUser(GENERIC_FULL_NAME, "", "", ""),
+                assertNull(userService.createUser(GENERIC_FULL_NAME, "", "", "").getResult(),
                                 "User should not be created when all fields are empty strings except for the full name");
 
                 // Since none of the required fields are provided, there's no need to check for
@@ -342,7 +341,7 @@ public class UserServiceImplTest {
         public void testCreateUserAllEmptyInputs() {
                 // Assert that the createUser method returns null when all fields are empty
                 // strings
-                assertNull(userService.createUser("", "", "", ""),
+                assertNull(userService.createUser("", "", "", "").getResult(),
                                 "User should not be created when all fields are empty strings");
 
                 // Since none of the required fields are provided, there's no need to check for
@@ -354,7 +353,7 @@ public class UserServiceImplTest {
         public void testCreateUserWithBadCredentials() {
                 // Assert that the createUser method returns null when all credentials are
                 // invalid
-                assertNull(userService.createUser(BAD_USER_NAME, BAD_USER_EMAIL, BAD_USER_USERNAME, BAD_USER_PASSWORD),
+                assertNull(userService.createUser(BAD_USER_NAME, BAD_USER_EMAIL, BAD_USER_USERNAME, BAD_USER_PASSWORD).getResult(),
                                 "User should not be created when all credentials are invalid");
         }
 
@@ -363,7 +362,7 @@ public class UserServiceImplTest {
         public void testCreateUserWithShortUsername() {
                 final String shortUsername = "B";
                 // Assert that the createUser method returns null when the username is too short
-                assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, shortUsername, GENERIC_PASSWORD),
+                assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, shortUsername, GENERIC_PASSWORD).getResult(),
                                 "User should not be created when the username is too short");
         }
 
@@ -374,7 +373,7 @@ public class UserServiceImplTest {
 
                 // Assert that the createUser method creates a user with a valid short email
                 // address
-                assertNotNull(userService.createUser(GENERIC_FULL_NAME, shortEmail, GENERIC_USERNAME, GENERIC_PASSWORD),
+                assertNotNull(userService.createUser(GENERIC_FULL_NAME, shortEmail, GENERIC_USERNAME, GENERIC_PASSWORD).getResult(),
                                 "User should be created when the email address is short but valid");
 
                 // Verify that the user is created correctly
@@ -394,19 +393,19 @@ public class UserServiceImplTest {
                 // Assert that the createUser method returns null when the email address lacks
                 // an '@' symbol
                 assertNull(userService.createUser(GENERIC_FULL_NAME, shortEmailNoAt, GENERIC_USERNAME,
-                                GENERIC_PASSWORD),
+                                GENERIC_PASSWORD).getResult(),
                                 "User should not be created when the email address lacks an '@' symbol");
 
                 // Assert that the createUser method returns null when the email address lacks a
                 // top-level domain (TLD)
                 assertNull(userService.createUser(GENERIC_FULL_NAME, shortEmailNoTld, GENERIC_USERNAME,
-                                GENERIC_PASSWORD),
+                                GENERIC_PASSWORD).getResult(),
                                 "User should not be created when the email address lacks a top-level domain (TLD)");
 
                 // Assert that the createUser method returns null when the email address lacks
                 // both an '@' symbol and a TLD
                 assertNull(userService.createUser(GENERIC_FULL_NAME, shortEmailNoAtNoTld, GENERIC_USERNAME,
-                                GENERIC_PASSWORD),
+                                GENERIC_PASSWORD).getResult(),
                                 "User should not be created when the email address lacks both an '@' symbol and a top-level domain (TLD)");
         }
 
@@ -418,7 +417,7 @@ public class UserServiceImplTest {
                 // Assert that the createUser method creates a user with a valid numeric
                 // password
                 assertNotNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, GENERIC_USERNAME,
-                                numericPassword),
+                                numericPassword).getResult(),
                                 "User should be created when the password contains numbers and meets the minimum length requirement");
 
                 // Verify that the user is created correctly
@@ -432,7 +431,8 @@ public class UserServiceImplTest {
                 final String shortPassword = "pass";
 
                 // Assert that the createUser method returns null when the password is too short
-                assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, GENERIC_USERNAME, shortPassword),
+                assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, GENERIC_USERNAME, shortPassword)
+                                .getResult(),
                                 "User should not be created when the password is too short (less than the minimum 8-character requirement)");
 
                 // Verify that the user is not created in the database
@@ -450,7 +450,7 @@ public class UserServiceImplTest {
                 // Create users
                 SiteUser createdJohn = userService.createUser(JOHN_NAME, JOHN_EMAIL, JOHN_USERNAME, JOHN_PASSWORD)
                                 .getResult();
-                userService.createUser(ALICE_NAME, ALICE_EMAIL, ALICE_USERNAME, ALICE_PASSWORD);
+                userService.createUser(ALICE_NAME, ALICE_EMAIL, ALICE_USERNAME, ALICE_PASSWORD).getResult();
                 userService.createUser(JANE_NAME, JANE_EMAIL, JANE_USERNAME, JANE_PASSWORD).getResult();
 
                 // Get an existing user by their ID
@@ -543,8 +543,7 @@ public class UserServiceImplTest {
                 final String incorrectPassword = "incorrectpassword";
                 final String newPassword = "newpassword456";
                 // Get a user for password update
-                SiteUser user = userService.createUser(UNICODE_NAME, UNICODE_EMAIL, UNICODE_USERNAME, UNICODE_PASSWORD)
-                                .getResult();
+                SiteUser user = userService.createUser(UNICODE_NAME, UNICODE_EMAIL, UNICODE_USERNAME, UNICODE_PASSWORD).getResult();
 
                 // Attempt to update the user's password with an incorrect current password
                 assertFalse(userService.updatePassword(user, incorrectPassword, newPassword).getResult(),

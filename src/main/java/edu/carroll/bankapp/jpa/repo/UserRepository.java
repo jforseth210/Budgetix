@@ -25,4 +25,12 @@ public interface UserRepository extends JpaRepository<SiteUser, Integer> {
      * @return A list of SiteUsers with that id
      */
     List<SiteUser> findById(int id);
+
+    /**
+     * Fetch a SiteUser based on the email.
+     *
+     * @param email - The email of the user to look up
+     * @return A list of SiteUsers with that id
+     */
+    List<SiteUser> findByEmailIgnoreCase(String email);
 }

@@ -77,53 +77,77 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * Check whether a given email adress is already in use
+     * 
+     * @param email the email to look up
+     * @return true if available, false if taken
+     */
+    public boolean isEmailAvailable(String email) {
+        return userRepo.findByEmailIgnoreCase(email).isEmpty();
+    }
+
+    /**
      * Create a username and save it in the database (without confirm password)
      *
      * @return The SiteUser if created successfully, null otherwise
      */
-    public SiteUser createUser(String fullName, String email, String username, String rawPassword) {
+    public ServiceResponse<SiteUser> createUser(String fullName, String email, String username, String rawPassword) {
         // Validate that fields aren't blank
         if (fullName == null || fullName.equals("")) {
             log.debug("Invalid username: {}", fullName);
-            return null;
+            return new ServiceResponse<SiteUser>(null, "Full name cannot be blank");
         }
         if (email == null || email.equals("")) {
             log.debug("Invalid email: {}", email);
-            return null;
+            return new ServiceResponse<SiteUser>(null, "Email cannot be blank");
         }
         if (username == null || username.equals("")) {
             log.debug("Invalid username: {}", username);
-            return null;
+            return new ServiceResponse<SiteUser>(null, "Username cannot be blank");
         }
         if (rawPassword == null || rawPassword.equals("")) {
             log.debug("Invalid raw password");
-            return null;
+            return new ServiceResponse<SiteUser>(null, "Password cannot be blank");
         }
         // Make sure email is actually an email
         if (!isEmail(email)) {
             log.debug("{} doesn't look like an email address", email);
-            return null;
+            return new ServiceResponse<SiteUser>(null, "Email must be a valid email address");
         }
         // Don't accept excessively long username
         if (username.length() > 255) {
             log.debug("{} is too long", username);
-            return null;
+            return new ServiceResponse<SiteUser>(null, "Username is too long");
         }
         if (fullName.length() > 255) {
             log.debug("{} is too long", fullName);
-            return null;
+            return new ServiceResponse<SiteUser>(null, "Full name is too long");
         }
-        // Check arbitrary length requirements
-        if (username.length() <= MIN_USERNAME_LENGTH || rawPassword.length() < MIN_PASSWORD_LENGTH
-                || email.length() <= MIN_EMAIL_LENGTH) {
-            log.debug("username {}, password, or email {} doesn't meet length requirements", username, email);
-            return null;
+        // Check arbitrary length requirements for username
+        if (username.length() <= MIN_USERNAME_LENGTH) {
+            log.debug("Username {} doesn't meet length requirements", username);
+            return new ServiceResponse<SiteUser>(null, "Username doesn't meet length requirements");
+        }
+
+        // Check arbitrary length requirements for password
+        if (rawPassword.length() < MIN_PASSWORD_LENGTH) {
+            log.debug("Password doesn't meet length requirements");
+            return new ServiceResponse<SiteUser>(null, "Password doesn't meet length requirements");
+        }
+
+        // Check arbitrary length requirements for email
+        if (email.length() <= MIN_EMAIL_LENGTH) {
+            log.debug("Email {} doesn't meet length requirements", email);
+            return new ServiceResponse<SiteUser>(null, "Email doesn't meet length requirements");
         }
 
         // Make sure the username isn't taken
         if (getUserByUsername(username) != null) {
             log.info("Attempt was made to create existing user {}", username);
-            return null;
+            return new ServiceResponse<SiteUser>(null, "Username already taken");
+        }
+        if (!isEmailAvailable(email)) {
+            return new ServiceResponse<SiteUser>(null, "Email already in use");
         }
         log.info("Creating a user with username: {}", username);
         // Create new user object
@@ -134,7 +158,7 @@ public class UserServiceImpl implements UserService {
                 BCrypt.hashpw(rawPassword, BCrypt.gensalt()));
         // Save user to database
         userRepo.save(newUser);
-        return newUser;
+        return new ServiceResponse<SiteUser>(newUser, "User created successfully");
     }
 
     /**
@@ -146,33 +170,40 @@ public class UserServiceImpl implements UserService {
      * @param newPassword - the new password for the user's account
      * @return true / false if the password is updated
      */
-    public boolean updatePassword(SiteUser user, String oldPassword, String newPassword) {
+    public ServiceResponse<Boolean> updatePassword(SiteUser user, String oldPassword, String newPassword) {
         // Make sure user to update is valid
         if (user == null) {
-            return false;
+            return new ServiceResponse<Boolean>(false, "User cannot be blank");
         }
         // Make sure old password is valid
         if (oldPassword == null) {
-            log.info("Password didn't meet length requirements");
-            return false;
+            log.info("Old password cannot be blank");
+            return new ServiceResponse<Boolean>(false, "Old password cannot be blank");
         }
-        // Make sure password is valid
-        if (newPassword == null || newPassword.length() < MIN_PASSWORD_LENGTH) {
-            log.info("New password was null or didn't meet length requirements");
-            return false;
+        // Check if new password is null
+        if (newPassword == null) {
+            log.info("New password was null");
+            return new ServiceResponse<Boolean>(false, "New password cannot be blank");
         }
+
+        // Check if new password meets length requirements
+        if (newPassword.length() < MIN_PASSWORD_LENGTH) {
+            log.info("New password doesn't meet length requirements");
+            return new ServiceResponse<Boolean>(false, "New password is too short");
+        }
+
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         // Make sure the user entered their old password correctly
         if (!passwordEncoder.matches(oldPassword, user.getHashedPassword())) {
             log.info("{} inputted an incorrect current password", user.getUsername());
-            return false;
+            return new ServiceResponse<Boolean>(false, "Incorrect old password");
         }
 
         // Update the password to the new one
         user.setHashedPassword(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
         userRepo.save(user);
         log.info("Successfully saved new password for {}", user.getUsername());
-        return true;
+        return new ServiceResponse<Boolean>(true, "Your password has been updated");
     }
 
     /**
@@ -184,35 +215,35 @@ public class UserServiceImpl implements UserService {
      * @param newUsername     - the new username for the user's account
      * @return true / false if the username is updated
      */
-    public boolean updateUsername(SiteUser user, String confirmPassword, String newUsername) {
+    public ServiceResponse<Boolean> updateUsername(SiteUser user, String confirmPassword, String newUsername) {
         // Make sure the password is correct
         if (!BCrypt.checkpw(confirmPassword, user.getHashedPassword())) {
             log.info("Password confirmation incorrect");
-            return false;
+            return new ServiceResponse<Boolean>(false, "Password confirmation incorrect");
         }
         // Make sure the username isn't empty
         if (newUsername == null || newUsername.equals("")) {
             log.info("Attempt was made to update username from {} to empty string", user.getUsername(),
                     newUsername);
-            return false;
+            return new ServiceResponse<Boolean>(false, "New username not provided");
         }
         // Make sure the username meets length requirements
         if (newUsername.length() <= MIN_USERNAME_LENGTH) {
             log.info("Username {} doesn't meet the minimum length requirements", user.getUsername(),
                     newUsername);
-            return false;
+            return new ServiceResponse<Boolean>(false, "New username not provided");
         }
         // Make sure the username we're changing to isn't already taken
         if (getUserByUsername(newUsername) != null) {
             log.info("Attempt was made to update username from {} to existing user {}", user.getUsername(),
                     newUsername);
-            return false;
+            return new ServiceResponse<Boolean>(false, "Username already taken");
         }
 
         // Update the usernameS
         user.setUsername(newUsername);
         userRepo.save(user);
-        return true;
+        return new ServiceResponse<Boolean>(true, "Username updated");
     }
 
     /**

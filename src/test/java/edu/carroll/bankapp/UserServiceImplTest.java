@@ -136,7 +136,7 @@ public class UserServiceImplTest {
 
         // Ensure nothing unexpected changes for the first user
         SiteUser user1FromDB = userService.getUserByUsername(JOHN_USERNAME);
-        assertEquals(user1FromDB.getFullName(), JOHN_USERNAME, "First user's name was changed");
+        assertEquals(user1FromDB.getFullName(), JOHN_NAME, "First user's name was changed");
         assertEquals(user1FromDB.getEmail(), JOHN_EMAIL, "First user's email was changed");
     }
 

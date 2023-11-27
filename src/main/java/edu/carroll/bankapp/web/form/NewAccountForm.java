@@ -13,7 +13,7 @@ import jakarta.validation.constraints.Size;
 public class NewAccountForm {
 
     @NotNull
-    @NotBlank
+    @NotBlank(message = "Account name must not be blank")
     @Size(min = 4, message = "Account name must be at least 4 characters")
     private String accountName;
 

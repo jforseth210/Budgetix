@@ -10,7 +10,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 public class NewTransferForm {
     @NotNull
     @PositiveOrZero
-    private long transferAmountInDollars;
+    private double transferAmountInDollars;
 
     @NotNull
     private Integer fromAccountId;
@@ -28,19 +28,19 @@ public class NewTransferForm {
     /**
      * Getter for the transfer amount
      * 
-     * @return long representing the amount of money to transfer
+     * @return double representing the amount of money to transfer
      */
-    public long getTransferAmountInDollars() {
+    public double getTransferAmountInDollars() {
         return transferAmountInDollars;
     }
 
     /**
      * Setter for transfer amount
      * 
-     * @param transferAmountInDollars long representing the amount of money to
+     * @param transferAmountInDollars double representing the amount of money to
      *                                transfer
      */
-    public void setTransferAmountInDollars(long transferAmountInDollars) {
+    public void setTransferAmountInDollars(double transferAmountInDollars) {
         this.transferAmountInDollars = transferAmountInDollars;
     }
 

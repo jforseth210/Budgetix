@@ -173,7 +173,7 @@ public class DashboardController {
         // Create an account
         ServiceResponse<Account> response = accountService.createAccount(
                 newAccountForm.getAccountName(),
-                newAccountForm.getAccountBalance(),
+                (long) newAccountForm.getAccountBalance(),
                 authHelper.getLoggedInUser());
 
         FlashHelper.flash(redirectAttributes, response.getMessage());
@@ -226,7 +226,7 @@ public class DashboardController {
         // Create the transaction
         ServiceResponse<Transaction> response = transactionService.createTransaction(
                 newTransactionForm.getName(),
-                newTransactionForm.getAmountInDollars(),
+                (long)newTransactionForm.getAmountInDollars(),
                 newTransactionForm.getToFrom(),
                 account);
 
@@ -265,7 +265,7 @@ public class DashboardController {
 
         // Transfer the money
         ServiceResponse<Boolean> response = transactionService.createTransfer(toAccount, fromAccount,
-                newTransferForm.getTransferAmountInDollars());
+                (long)newTransferForm.getTransferAmountInDollars());
 
         // Give the user feedback
         FlashHelper.flash(redirectAttributes, response.getMessage());

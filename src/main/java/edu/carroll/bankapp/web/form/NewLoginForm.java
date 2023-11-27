@@ -1,6 +1,7 @@
 package edu.carroll.bankapp.web.form;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -10,21 +11,26 @@ import jakarta.validation.constraints.Size;
  */
 public class NewLoginForm {
     @NotNull
+    @NotBlank
     private String fullName;
 
     @NotNull
+    @NotBlank
     @Size(min = 6, message = "Username must be at least 6 characters long")
     private String username;
 
     @NotNull
+    @NotBlank
     @Email(message = "Must be a valid email address")
     private String email;
 
     @NotNull
+    @NotBlank
     @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
 
     @NotNull
+    @NotBlank
     @Size(min = 8, message = "Password must be at least 8 characters long")
     private String confirm;
 

@@ -2,6 +2,7 @@ package edu.carroll.bankapp.web.controller;
 
 import edu.carroll.bankapp.FlashHelper;
 import edu.carroll.bankapp.jpa.model.SiteUser;
+import edu.carroll.bankapp.service.ServiceResponse;
 import edu.carroll.bankapp.service.UserService;
 import edu.carroll.bankapp.web.AuthHelper;
 import edu.carroll.bankapp.web.form.LoginForm;
@@ -11,6 +12,10 @@ import edu.carroll.bankapp.web.form.UpdateUsernameForm;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+
+import java.security.Provider.Service;
+
+import javax.naming.Binding;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,8 +88,8 @@ public class LoginController {
      */
     @PostMapping("/loginNew")
     public String loginNewPost(HttpServletRequest request, @Valid @ModelAttribute NewLoginForm newLoginForm,
-            BindingResult result, RedirectAttributes redirectAttributes) {
-        if (result.hasErrors()) {
+            BindingResult validation, RedirectAttributes redirectAttributes) {
+        if (validation.hasErrors()) {
             return "loginNew";
         }
 
@@ -92,24 +97,25 @@ public class LoginController {
         if (!newLoginForm.getPassword().equals(newLoginForm.getConfirm())) {
             log.info("A user, {}, attempted to make an account with non-matching passwords",
                     newLoginForm.getUsername());
-            result.addError(new ObjectError("confirm", "Passwords must match"));
+            validation.addError(new ObjectError("confirm", "Passwords must match"));
             return "loginNew";
         }
 
         // See if username is available
         if (userService.getUserByUsername(newLoginForm.getUsername()) != null) {
-            result.addError(new ObjectError("username", "Username already taken"));
+            validation.addError(new ObjectError("username", "Username already taken"));
             return "loginNew";
         }
 
         // Create the user
-        SiteUser createdUser = userService.createUser(newLoginForm.getFullName(), newLoginForm.getEmail(),
+        ServiceResponse<SiteUser> response = userService.createUser(newLoginForm.getFullName(), newLoginForm.getEmail(),
                 newLoginForm.getUsername(), newLoginForm.getPassword());
-        if (createdUser == null) {
-            result.addError(new ObjectError("global", "Something went wrong"));
+
+        if (response.getResult() == null) {
+            validation.addError(new ObjectError("global", response.getMessage()));
             return "loginNew";
         }
-        log.info("Created a new user: {}", createdUser.getUsername());
+        log.info("Created a new user: {}", response.getResult().getUsername());
 
         // Attempt to log the user into the application
         try {
@@ -130,8 +136,14 @@ public class LoginController {
      * @return - redirect to the homepage
      */
     @PostMapping("/update-password")
-    public String updatePassword(@ModelAttribute("updatePassword") UpdatePasswordForm form,
+    public String updatePassword(@ModelAttribute("updatePassword") UpdatePasswordForm form, BindingResult validation,
             RedirectAttributes redirectAttributes) {
+        if (validation.hasErrors()) {
+            for (ObjectError error : validation.getAllErrors()) {
+                FlashHelper.flash(redirectAttributes, error.getDefaultMessage());
+            }
+            return "redirect:/";
+        }
         SiteUser user = authHelper.getLoggedInUser();
 
         // Handle the case where the user doesn't exist
@@ -148,12 +160,10 @@ public class LoginController {
         }
 
         // Update the user's password
-        boolean success = userService.updatePassword(user, form.getOldPassword(), form.getNewPassword());
-        if (success) {
-            FlashHelper.flash(redirectAttributes, "Your password has been updated successfully");
-        } else {
-            FlashHelper.flash(redirectAttributes, "Password change unsuccessful. Please try again.");
-        }
+        ServiceResponse<Boolean> response = userService.updatePassword(user, form.getOldPassword(),
+                form.getNewPassword());
+
+        FlashHelper.flash(redirectAttributes, response.getMessage());
         return "redirect:/";
     }
 
@@ -166,15 +176,20 @@ public class LoginController {
      * @return redirect to the home page
      */
     @PostMapping("/update-username")
-    public String updateUsername(@ModelAttribute("updateUsername") UpdateUsernameForm form,
+    public String updateUsername(@ModelAttribute("updateUsername") UpdateUsernameForm form, BindingResult validation,
             HttpServletRequest request, RedirectAttributes redirectAttributes) {
+        if (validation.hasErrors()) {
+            for (ObjectError error : validation.getAllErrors()) {
+                FlashHelper.flash(redirectAttributes, error.getDefaultMessage());
+            }
+            return "redirect:/";
+        }
         SiteUser user = authHelper.getLoggedInUser();
         // Try updating the username
-        boolean success = userService.updateUsername(user, form.getConfirmPassword(), form.getNewUsername());
-
-        // Let the user know if update failed
-        if (!success) {
-            FlashHelper.flash(redirectAttributes, "Something went wrong. Your username has not been changed");
+        ServiceResponse<Boolean> response = userService.updateUsername(user, form.getConfirmPassword(),
+                form.getNewUsername());
+        if (!response.getResult()) {
+            FlashHelper.flash(redirectAttributes, response.getMessage());
             return "redirect:/";
         }
 

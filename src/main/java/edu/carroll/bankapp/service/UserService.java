@@ -23,6 +23,14 @@ public interface UserService {
     SiteUser getUserByUsername(String username);
 
     /**
+     * Check whether a given email adress is already in use
+     * 
+     * @param email the email to look up
+     * @return true if available, false if taken
+     */
+    boolean isEmailAvailable(String email);
+
+    /**
      * Create a new user and save it in the database (without confirm password).
      *
      * @param fullName    the full name of the user
@@ -31,7 +39,7 @@ public interface UserService {
      * @param rawPassword the raw password of the user
      * @return the created user
      */
-    SiteUser createUser(String fullName, String email, String username, String rawPassword);
+    ServiceResponse<SiteUser> createUser(String fullName, String email, String username, String rawPassword);
 
     /**
      * Allows the user to update their password and compares that the passwords that
@@ -42,7 +50,7 @@ public interface UserService {
      * @param newPassword - the new password for the user's account
      * @return true / false if the password is updated
      */
-    boolean updatePassword(SiteUser user, String oldPassword, String newPassword);
+    ServiceResponse<Boolean> updatePassword(SiteUser user, String oldPassword, String newPassword);
 
     /**
      * Allows the user to update their username and password, then logs them out and
@@ -53,6 +61,6 @@ public interface UserService {
      * @param newUsername     - the new username for the user's account
      * @return true / false if the username is updated
      */
-    boolean updateUsername(SiteUser user, String confirmPassword, String newUsername);
+    ServiceResponse<Boolean> updateUsername(SiteUser user, String confirmPassword, String newUsername);
 
 }

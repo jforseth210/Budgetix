@@ -4,9 +4,8 @@ import edu.carroll.bankapp.jpa.model.Account;
 import edu.carroll.bankapp.jpa.model.SiteUser;
 import edu.carroll.bankapp.jpa.model.Transaction;
 import edu.carroll.bankapp.service.TransactionService;
-import edu.carroll.bankapp.testdata.TestAccounts;
-import edu.carroll.bankapp.testdata.TestTransactions;
-import edu.carroll.bankapp.testdata.TestUsers;
+import edu.carroll.bankapp.service.UserService;
+import edu.carroll.bankapp.service.AccountService;
 import jakarta.transaction.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,24 +23,47 @@ public class TransactionServiceImplTest {
     private TransactionService transactionService;
 
     @Autowired
-    private TestUsers testUsers;
+    private UserService userService;
     @Autowired
-    private TestAccounts testAccounts;
-    @Autowired
-    private TestTransactions testTransactions;
+    private AccountService accountService;
+
+    public static final String JOHN_NAME = "John Doe";
+    public static final String JOHN_EMAIL = "john@example.com";
+    public static final String JOHN_USERNAME = "johndoe";
+    public static final String JOHN_PASSWORD = "password123";
+
+    public static final String JANE_NAME = "Jane Smith";
+    public static final String JANE_EMAIL = "jane@example.com";
+    public static final String JANE_USERNAME = "janesmith";
+    public static final String JANE_PASSWORD = "letmein456";
+
+    public static final String ALICE_NAME = "Alice Johnson";
+    public static final String ALICE_EMAIL = "alice@example.com";
+    public static final String ALICE_USERNAME = "alicejohnson";
+    public static final String ALICE_PASSWORD = "mysecret123";
+
+    public static final String UNICODE_NAME = "𝔘𝔫𝔦𝔠𝔬𝔡𝔢 𝔐𝔞𝔫!";
+    public static final String UNICODE_EMAIL = "iliketobreakthings@email.com";
+    public static final String UNICODE_USERNAME = "☕☕☕☕☕";
+    public static final String UNICODE_PASSWORD = "⿈⍺✋⇏⮊⎏⇪⤸Ⲥ↴⍁➄⼉⦕ⶓ∧⻟⍀⇝⧽";
+
+    public static final String BAD_USER_NAME = "Bob Marley";
+    public static final String BAD_USER_EMAIL = "bobby";
+    public static final String BAD_USER_USERNAME = "B";
+    public static final String BAD_USER_PASSWORD = "p";
 
     @Test
     public void testCreateTransaction() {
         // Create a user and account
-        SiteUser john = testUsers.createJohnDoe();
-        Account checking = testAccounts.createChecking(john);
+        SiteUser john = userService.createUser(JOHN_NAME, JOHN_EMAIL, JOHN_USERNAME, JOHN_PASSWORD).getResult();
+        Account checking = accountService.createAccount("Checking", (long) 1940, john).getResult();
 
         long initialCheckingBalance = checking.getBalanceInDollars();
 
         // Create the transaction
         Transaction createdTransaction = transactionService.createTransaction("Test Transaction", (long) 100.0,
                 "Receiver",
-                checking);
+                checking).getResult();
 
         // Make sure returned transaction makes sense
         assertNotNull(createdTransaction);
@@ -68,9 +90,10 @@ public class TransactionServiceImplTest {
     @Test
     public void testGetUserTransaction() {
         // Make a user, account, transaction
-        SiteUser john = testUsers.createJohnDoe();
-        Account checking = testAccounts.createChecking(john);
-        Transaction createdTransaction = testTransactions.createATransaction(checking);
+        SiteUser john = userService.createUser(JOHN_NAME, JOHN_EMAIL, JOHN_USERNAME, JOHN_PASSWORD).getResult();
+        Account checking = accountService.createAccount("Checking", (long) 1940, john).getResult();
+        Transaction createdTransaction = transactionService.createTransaction("A transaction!", (long) 100.0, "???",
+                checking).getResult();
 
         // Fetch the transaction from the database
         Transaction fetchedTransaction = transactionService.getUserTransaction(john, createdTransaction.getId());
@@ -88,9 +111,10 @@ public class TransactionServiceImplTest {
     @Test
     public void testDeleteTransaction() {
         // Populate database
-        SiteUser john = testUsers.createJohnDoe();
-        Account checking = testAccounts.createChecking(john);
-        Transaction transaction = testTransactions.createATransaction(checking);
+        SiteUser john = userService.createUser(JOHN_NAME, JOHN_EMAIL, JOHN_USERNAME, JOHN_PASSWORD).getResult();
+        Account checking = accountService.createAccount("Checking", (long) 1940, john).getResult();
+        Transaction transaction = transactionService.createTransaction("A transaction!", (long) 100.0, "???",
+                checking).getResult();
 
         // Save information about state before deletion
         int numAccounts = checking.getTransactions().size();

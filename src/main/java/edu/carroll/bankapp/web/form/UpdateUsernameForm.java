@@ -1,5 +1,6 @@
 package edu.carroll.bankapp.web.form;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -8,9 +9,11 @@ import jakarta.validation.constraints.Size;
  */
 public class UpdateUsernameForm {
     @NotNull
+    @NotBlank
     private String confirmPassword;
 
     @NotNull
+    @NotBlank
     @Size(min = 4, message = "Username must be at least 4 characters long")
     private String newUsername;
 

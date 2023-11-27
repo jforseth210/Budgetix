@@ -1,19 +1,21 @@
 package edu.carroll.bankapp.web.form;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 
 /**
  * This form collects and validates the necessary information to create a new
  * transfer
  */
 public class NewTransferForm {
-
     @NotNull
-    private long transferAmountInDollars;
+    @PositiveOrZero
+    private double transferAmountInDollars;
 
     @NotNull
     private Integer fromAccountId;
 
+    @NotNull(message = "Must select an account to transfer to")
     private Integer toAccountId;
 
     /**
@@ -26,19 +28,19 @@ public class NewTransferForm {
     /**
      * Getter for the transfer amount
      * 
-     * @return long representing the amount of money to transfer
+     * @return double representing the amount of money to transfer
      */
-    public long getTransferAmountInDollars() {
+    public double getTransferAmountInDollars() {
         return transferAmountInDollars;
     }
 
     /**
      * Setter for transfer amount
      * 
-     * @param transferAmountInDollars long representing the amount of money to
+     * @param transferAmountInDollars double representing the amount of money to
      *                                transfer
      */
-    public void setTransferAmountInDollars(long transferAmountInDollars) {
+    public void setTransferAmountInDollars(double transferAmountInDollars) {
         this.transferAmountInDollars = transferAmountInDollars;
     }
 

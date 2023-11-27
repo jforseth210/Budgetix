@@ -17,7 +17,7 @@ public interface TransactionService {
      * @param account         the account associated with the transaction
      * @return the created transaction
      */
-    Transaction createTransaction(String name, long amountInDollars, String toFrom, Account account);
+    ServiceResponse<Transaction> createTransaction(String name, long amountInDollars, String toFrom, Account account);
 
     /**
      * Get a transaction from the given id (and make sure it belongs to the current
@@ -35,7 +35,7 @@ public interface TransactionService {
      * @param loggedInUser the currently logged-in user
      * @param transaction  the transaction to be deleted
      */
-    void deleteTransaction(SiteUser loggedInUser, Transaction transaction);
+    ServiceResponse<Boolean> deleteTransaction(SiteUser loggedInUser, Transaction transaction);
 
     /**
      * Create a transfer between two accounts
@@ -45,5 +45,5 @@ public interface TransactionService {
      * @param amount      - the amount of money to transfer
      * @return true if successful, false if not
      */
-    boolean createTransfer(Account toAccount, Account fromAccount, long amount);
+    ServiceResponse<Boolean> createTransfer(Account toAccount, Account fromAccount, long amount);
 }

@@ -2,7 +2,6 @@ package edu.carroll.bankapp;
 
 import edu.carroll.bankapp.jpa.model.SiteUser;
 import edu.carroll.bankapp.service.UserService;
-import edu.carroll.bankapp.testdata.TestUsers;
 import jakarta.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
@@ -17,14 +16,37 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UserServiceImplTest {
     @Autowired
     private UserService userService;
-    @Autowired
-    private TestUsers testUsers;
 
     // Constants for any time we want a generic value for a field
     private final String GENERIC_USERNAME = "a_user";
     private final String GENERIC_EMAIL = "someone@example.com";
     private final String GENERIC_PASSWORD = "password";
     private final String GENERIC_FULL_NAME = "A Name";
+
+    public static final String JOHN_NAME = "John Doe";
+    public static final String JOHN_EMAIL = "john@example.com";
+    public static final String JOHN_USERNAME = "johndoe";
+    public static final String JOHN_PASSWORD = "password123";
+
+    public static final String JANE_NAME = "Jane Smith";
+    public static final String JANE_EMAIL = "jane@example.com";
+    public static final String JANE_USERNAME = "janesmith";
+    public static final String JANE_PASSWORD = "letmein456";
+
+    public static final String ALICE_NAME = "Alice Johnson";
+    public static final String ALICE_EMAIL = "alice@example.com";
+    public static final String ALICE_USERNAME = "alicejohnson";
+    public static final String ALICE_PASSWORD = "mysecret123";
+
+    public static final String UNICODE_NAME = "𝔘𝔫𝔦𝔠𝔬𝔡𝔢 𝔐𝔞𝔫!";
+    public static final String UNICODE_EMAIL = "iliketobreakthings@email.com";
+    public static final String UNICODE_USERNAME = "☕☕☕☕☕";
+    public static final String UNICODE_PASSWORD = "⿈⍺✋⇏⮊⎏⇪⤸Ⲥ↴⍁➄⼉⦕ⶓ∧⻟⍀⇝⧽";
+
+    public static final String BAD_USER_NAME = "Bob Marley";
+    public static final String BAD_USER_EMAIL = "bobby";
+    public static final String BAD_USER_USERNAME = "B";
+    public static final String BAD_USER_PASSWORD = "p";
 
     /**
      * User Creation Tests:
@@ -40,317 +62,586 @@ public class UserServiceImplTest {
         final String password = "secure123";
 
         // Create a new user
-        SiteUser newUser = userService.createUser(name, email, username, password);
+        SiteUser newUser = userService.createUser(name, email, username, password)
+                .getResult();
 
-        // Ensure the created user is not null
-        assertNotNull(newUser);
-        // Verify that the user's full name is set correctly
-        assertEquals(name, newUser.getFullName());
-        // Verify that the user's email is set correctly
-        assertEquals(email, newUser.getEmail());
-        // Verify that the username is set correctly
-        assertEquals(username, newUser.getUsername());
+        // Expect the created user to be present
+        assertNotNull(newUser, "The user should have been created");
+        // Expect the user's full name to be set correctly
+        assertEquals(name, newUser.getFullName(), "Full name should be set correctly");
+        // Expect the user's email to be set correctly
+        assertEquals(email, newUser.getEmail(), "Email should be set correctly");
+        // Expect the username to be set correctly
+        assertEquals(username, newUser.getUsername(), "Username should be set correctly");
 
-        // Make sure user is actually in the database
+        // Expect the user to be found in the database
         SiteUser fetchedUser = userService.getUserByUsername(username);
-        // Ensure the created user is not null
-        assertNotNull(fetchedUser);
-        // Verify that the user's full name is set correctly
-        assertEquals(name, fetchedUser.getFullName());
-        // Verify that the user's email is set correctly
-        assertEquals(email, fetchedUser.getEmail());
-        // Verify that the username is set correctly
-        assertEquals(username, fetchedUser.getUsername());
-        assertEquals(username, fetchedUser.getUsername());
+        assertNotNull(fetchedUser, "The user should be stored in the database");
+        // Expect the retrieved user's full name to match the
+        // created user's name
+        assertEquals(name, fetchedUser.getFullName(),
+                "Retrieved user full name should match the created user's name");
+        // Expect the retrieved user's email to match the
+        // created user's email
+        assertEquals(email, fetchedUser.getEmail(),
+                "Retrieved user email should match the created user's email");
+        // Expect the retrieved user's username to match the
+        // created user's username
+        assertEquals(username, fetchedUser.getUsername(),
+                "Retrieved user username should match the created user's username");
     }
 
     @Test
     // Attempt to create a user with an already taken username
     public void testCreateUserWithExistingUsername() {
         // Create user
-        testUsers.createJohnDoe();
+        assertNotNull(userService.createUser(JOHN_NAME, JOHN_EMAIL, JOHN_USERNAME,
+                JOHN_PASSWORD)
+                .getResult(),
+                "Setup failed, unable to create initial user");
         // Make sure the user isn't created
         assertNull(
-                userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, TestUsers.JOHN_USERNAME,
-                        GENERIC_PASSWORD));
+                userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL,
+                        JOHN_USERNAME,
+                        GENERIC_PASSWORD)
+                        .getResult(),
+                "Allowed creation of a user with an existing username");
         // Make sure nothing actually changes
-        SiteUser johnDoeFromDB = userService.getUserByUsername(TestUsers.JOHN_USERNAME);
-        assertEquals(johnDoeFromDB.getFullName(), TestUsers.JOHN_NAME);
-        assertEquals(johnDoeFromDB.getEmail(), TestUsers.JOHN_EMAIL);
+        SiteUser johnDoeFromDB = userService.getUserByUsername(JOHN_USERNAME);
+        assertEquals(johnDoeFromDB.getFullName(), JOHN_NAME,
+                "Existing user\'s name was changed");
+        assertEquals(johnDoeFromDB.getEmail(), JOHN_EMAIL,
+                "Existing user\'s email was changed");
+    }
+
+    @Test
+    // Attempt to create a user with a duplicate password
+    public void testCreateUserWithDuplicatePassword() {
+        // Create user with a password
+        assertNotNull(userService.createUser(JOHN_NAME, JOHN_EMAIL, JOHN_USERNAME, GENERIC_PASSWORD)
+                .getResult(),
+                "Setup failed, unable to create initial user");
+
+        // Attempt to create a user with the same password
+        assertNotNull(
+                userService.createUser(JANE_NAME, JANE_EMAIL,
+                        JANE_USERNAME,
+                        GENERIC_PASSWORD)
+                        .getResult(),
+                "Failed to create a user with a duplicate password");
+
+        // Verify that the second user is created
+        SiteUser user2FromDB = userService.getUserByUsername(JANE_USERNAME);
+        assertNotNull(user2FromDB, "User with duplicate password not created");
+
+        // Ensure nothing unexpected changes for the first user
+        SiteUser user1FromDB = userService.getUserByUsername(JOHN_USERNAME);
+        assertEquals(user1FromDB.getFullName(), JOHN_NAME, "First user's name was changed");
+        assertEquals(user1FromDB.getEmail(), JOHN_EMAIL, "First user's email was changed");
     }
 
     @Test
     // Attempt to create user without a name
     public void testCreateUserNullFullName() {
-        assertNull(userService.createUser(null, GENERIC_EMAIL, GENERIC_USERNAME, GENERIC_PASSWORD));
-        assertNull(userService.getUserByUsername(GENERIC_USERNAME));
-    }
-
+        // Assert that the createUser method returns null when
+        // the full name is null
+        assertNull(userService.createUser(null, GENERIC_EMAIL, GENERIC_USERNAME,
+                GENERIC_PASSWORD)
+                .getResult(), "User should not be created when the full name is null");
+        // Assert that the user is not created in the database 
+                assertNull(userService.getUserByUsername(GENERIC_USERNAME), "User should not exist in the database when the full name is null"); 
+    } 
     @Test
-    // Attempt to create user without an email
+    // Test Attempt to create user without an email
     public void testCreateUserNullEmail() {
-        assertNull(userService.createUser(GENERIC_FULL_NAME, null, GENERIC_USERNAME, GENERIC_PASSWORD));
-        assertNull(userService.getUserByUsername(GENERIC_USERNAME));
+        // Assert that the createUser method returns null when
+        // the email is null
+        assertNull(userService.createUser(GENERIC_FULL_NAME, null, GENERIC_USERNAME,
+                GENERIC_PASSWORD)
+                .getResult(),
+                "User should not be created when the email is null");
+
+        // Assert that the user is not created in the database
+        assertNull(userService.getUserByUsername(GENERIC_USERNAME),
+                "User should not exist in the database when the email is null");
     }
 
     @Test
     // Attempt to create user without a name or email
     public void testCreateUserNullFullNameAndEmail() {
-        assertNull(userService.createUser(null, null, GENERIC_USERNAME, GENERIC_PASSWORD));
-        assertNull(userService.getUserByUsername(GENERIC_USERNAME));
+        // Assert that the createUser method returns null when
+        // the full name and email
+        // are null
+        assertNull(userService.createUser(null, null, GENERIC_USERNAME, GENERIC_PASSWORD)
+                .getResult(),
+                "User should not be created when the full name and email are null");
+
+        // Assert that the user is not created in the database
+        assertNull(userService.getUserByUsername(GENERIC_USERNAME),
+                "User should not exist in the database when the full name and email are null");
     }
 
     @Test
     // Attempt to create user without a username
     public void testCreateUserNullUsername() {
-        assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, null, GENERIC_PASSWORD));
-        // No way to check this in the database
+        // Assert that the createUser method returns null when
+        // the username is null
+        assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL,
+                null,
+                GENERIC_PASSWORD)
+                .getResult(),
+                "User should not be created when the username is null");
+
+        // Since the username is a unique identifier, there's no
+        // need to check for the
+        // user's existence in the database.
     }
 
     @Test
     // Attempt to create user without a username or email
     public void testCreateUserNullUsernameAndEmail() {
-        assertNull(userService.createUser(GENERIC_FULL_NAME, null, null, GENERIC_PASSWORD));
-        // No way to check this in the database
+        // Assert that the createUser method returns null when
+        // both the username and
+        // email are null
+        assertNull(userService.createUser(GENERIC_FULL_NAME, null, null, GENERIC_PASSWORD)
+                .getResult(),
+                "User should not be created when both the username and email are null");
+
+        // Since both the username and email are required
+        // fields, there's no need to
+        // check for the user's existence in the database.
     }
 
     @Test
-    // Attempt to create user a password and nulls for other values
+    // Attempt to create user with a password and nulls for other values
     public void testCreateUserNullInputsAndPassword() {
-        assertNull(userService.createUser(null, null, null, GENERIC_PASSWORD));
-        // No way to check this in the database
+        // Assert that the createUser method returns null when
+        // all other fields are null
+        // and only the password is provided
+        assertNull(userService.createUser(null, null, null, GENERIC_PASSWORD)
+                .getResult(),
+                "User should not be created when all other fields are null and only the password is provided");
+
+        // Since all other fields are required, there's no need
+        // to check for the user's
+        // existence in the database.
     }
 
     @Test
     // Attempt to create a user without a password
     public void testCreateUserNullPassword() {
-        assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, GENERIC_USERNAME, null));
-        assertNull(userService.getUserByUsername(GENERIC_USERNAME));
+        // Assert that the createUser method returns null when
+        // the password is null
+        assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL,
+                GENERIC_USERNAME,
+                null)
+                .getResult(),
+                "User should not be created when the password is null");
+
+        // Assert that the user is not created in the database
+        assertNull(userService.getUserByUsername(GENERIC_USERNAME),
+                "User should not exist in the database when the password is null");
     }
 
     @Test
     // Attempt to create a user without a username or password
     public void testCreateUserNullUsernameAndPassword() {
-        assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, null, null));
-        // No way to check this in the database
+        // Assert that the createUser method returns null when
+        // both the username and
+        // password are null
+        assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL,
+                null,
+                null)
+                .getResult(),
+                "User should not be created when both the username and password are null");
+
+        // Since both the username and password are required
+        // fields, there's no need to
+        // check for the user's existence in the database.
     }
 
     @Test
     // Attempt to create a user with only a full name
     public void testCreateUserNullUsernameFullNameAndPassword() {
-        assertNull(userService.createUser(GENERIC_FULL_NAME, null, null, null));
-        // No way to check this in the database
+        // Assert that the createUser method returns null when
+        // only the full name is
+        // provided
+        assertNull(userService.createUser(GENERIC_FULL_NAME, null, null, null)
+                .getResult(),
+                "User should not be created when only the full name is provided");
+
+        // Since none of the required fields are provided,
+        // there's no need to check for
+        // the user's existence in the database.
     }
 
     @Test
     // Attempt to create a user with all null values
     public void testCreateUserAllNullInputs() {
-        assertNull(userService.createUser(null, null, null, null));
-        // No way to check this in the database
+        // Assert that the createUser method returns null when
+        // all fields are null
+        assertNull(userService.createUser(null, null, null, null).getResult(),
+                "User should not be created when all fields are null");
+
+        // Since none of the required fields are provided,
+        // there's no need to check for
+        // the user's existence in the database.
     }
 
     @Test
     // Attempt to create a user with an empty string for the first name
     public void testCreateUserEmptyFullName() {
-        assertNull(userService.createUser("", GENERIC_EMAIL, GENERIC_USERNAME, GENERIC_PASSWORD));
-        assertNull(userService.getUserByUsername(GENERIC_USERNAME));
+        // Assert that the createUser method returns null when
+        // the full name is an empty
+        // string
+        assertNull(userService.createUser("", GENERIC_EMAIL, GENERIC_USERNAME,
+                GENERIC_PASSWORD)
+                .getResult(),
+                "User should not be created when the full name is an empty string");
+
+        // Assert that the user is not created in the database
+        assertNull(userService.getUserByUsername(GENERIC_USERNAME),
+                "User should not exist in the database when the full name is an empty string");
     }
 
     @Test
     // Attempt to create a user with an empty string for the email
     public void testCreateUserEmptyEmail() {
-        assertNull(userService.createUser(GENERIC_FULL_NAME, "", GENERIC_USERNAME, GENERIC_PASSWORD));
-        assertNull(userService.getUserByUsername(GENERIC_USERNAME));
+        // Assert that the createUser method returns null when
+        // the email is an empty
+        // string
+        assertNull(userService.createUser(GENERIC_FULL_NAME, "", GENERIC_USERNAME,
+                GENERIC_PASSWORD)
+                .getResult(),
+                "User should not be created when the email is an empty string");
+
+        // Assert that the user is not created in the database
+        assertNull(userService.getUserByUsername(GENERIC_USERNAME),
+                "User should not exist in the database when the email is an empty string");
     }
 
     @Test
+    // Attempt to create a user with an empty string for the full name and email
     public void testCreateUserEmptyFullNameAndEmail() {
-        // Attempt to create a user with an empty string for the full name and email
-        assertNull(userService.createUser("", "", GENERIC_USERNAME, GENERIC_PASSWORD));
-        assertNull(userService.getUserByUsername(GENERIC_USERNAME));
+        // Assert that the createUser method returns null when
+        // both the full name and
+        // email are empty strings
+        assertNull(userService.createUser("", "", GENERIC_USERNAME, GENERIC_PASSWORD)
+                .getResult(),
+                "User should not be created when both the full name and email are empty strings");
+
+        // Assert that the user is not created in the database
+        assertNull(userService.getUserByUsername(GENERIC_USERNAME),
+                "User should not exist in the database when both the full name and email are empty strings");
     }
 
     @Test
     // Attempt to create a user with an empty string for the username
     public void testCreateUserEmptyUsername() {
-        assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, "", GENERIC_PASSWORD));
-        assertNull(userService.getUserByUsername(""));
+        // Assert that the createUser method returns null when
+        // the username is an empty
+        // string
+        assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL,
+                "",
+                GENERIC_PASSWORD)
+                .getResult(),
+                "User should not be created when the username is an empty string");
+
+        // Since the username is a unique identifier, there's no
+        // need to check for the
+        // user's existence in the database.
     }
 
     @Test
     // Attempt to create a user with an empty string for the email and username
     public void testCreateUserEmptyUsernameAndEmail() {
-        assertNull(userService.createUser(GENERIC_FULL_NAME, "", "", GENERIC_PASSWORD));
-        assertNull(userService.getUserByUsername(""));
+        // Assert that the createUser method returns null when
+        // both the email and
+        // username are empty strings
+        assertNull(userService.createUser(GENERIC_FULL_NAME, "", "", GENERIC_PASSWORD)
+                .getResult(),
+                "User should not be created when both the email and username are empty strings");
+
+        // Since both the email and username are required
+        // fields, there's no need to
+        // check for the user's existence in the database.
     }
 
     @Test
     // Attempt to create a user with an empty string for the full name, email, and
     // username
     public void testCreateUserEmptyInputsAndFullName() {
-        assertNull(userService.createUser("", "", "", GENERIC_PASSWORD));
-        assertNull(userService.getUserByUsername(""));
+        // Assert that the createUser method returns null when
+        // all fields are empty
+        // strings except for the full name
+        assertNull(userService.createUser("", "", "", GENERIC_PASSWORD).getResult(),
+                "User should not be created when all fields are empty strings except for the full name");
+
+        // Since none of the required fields are provided,
+        // there's no need to check for
+        // the user's existence in the database.
     }
 
     @Test
     // Attempt to create a user with an empty string for the password
     public void testCreateUserEmptyPassword() {
-        assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, GENERIC_PASSWORD, ""));
-        assertNull(userService.getUserByUsername(GENERIC_USERNAME));
+        // Assert that the createUser method returns null when
+        // the password is an empty
+        // string
+        assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL,
+                GENERIC_PASSWORD,
+                "")
+                .getResult(),
+                "User should not be created when the password is an empty string");
+
+        // Assert that the user is not created in the database
+        assertNull(userService.getUserByUsername(GENERIC_USERNAME),
+                "User should not exist in the database when the password is an empty string");
     }
 
     @Test
     // Attempt to create a user with an empty string for the username and password
     public void testCreateUserEmptyUsernameAndPassword() {
-        assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, "", ""));
-        assertNull(userService.getUserByUsername(""));
+        // Assert that the createUser method returns null when
+        // both the username and
+        // password are empty strings
+        assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL,
+                "",
+                "")
+                .getResult(),
+                "User should not be created when both the username and password are empty strings");
+
+        // Since both the username and password are required
+        // fields, there's no need to
+        // check for the user's existence in the database.
     }
 
     @Test
     // Attempt to create a user with an empty string for the email, username, and
     // password
     public void testCreateUserEmptyUsernameFullNameAndPassword() {
-        assertNull(userService.createUser(GENERIC_FULL_NAME, "", "", ""));
-        assertNull(userService.getUserByUsername(""));
+        // Assert that the createUser method returns null when
+        // all fields are empty
+        // strings except for the full name
+        assertNull(userService.createUser(GENERIC_FULL_NAME, "", "", "").getResult(),
+                "User should not be created when all fields are empty strings except for the full name");
+
+        // Since none of the required fields are provided,
+        // there's no need to check for
+        // the user's existence in the database.
     }
 
     @Test
     // Attempt to create a user with an empty string for everything
     public void testCreateUserAllEmptyInputs() {
-        assertNull(userService.createUser("", "", "", ""));
-        assertNull(userService.getUserByUsername(""));
+        // Assert that the createUser method returns null when
+        // all fields are empty
+        // strings
+        assertNull(userService.createUser("", "", "", "").getResult(),
+                "User should not be created when all fields are empty strings");
+
+        // Since none of the required fields are provided,
+        // there's no need to check for
+        // the user's existence in the database.
     }
 
     @Test
     // Attempt to create a user with bad credentials
     public void testCreateUserWithBadCredentials() {
-        // This user has a short password, short username, and invalid email address
-        assertNull(testUsers.createBadUser());
+        // Assert that the createUser method returns null when
+        // all credentials are
+        // invalid
+        assertNull(userService.createUser(BAD_USER_NAME, BAD_USER_EMAIL, BAD_USER_USERNAME,
+                BAD_USER_PASSWORD)
+                .getResult(),
+                "User should not be created when all credentials are invalid");
     }
 
     @Test
     // Create a user that doesn't meet username length reqs
     public void testCreateUserWithShortUsername() {
         final String shortUsername = "B";
-        assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, shortUsername, GENERIC_PASSWORD));
+        // Assert that the createUser method returns null when
+        // the username is too short
+        assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL,
+                shortUsername,
+                GENERIC_PASSWORD)
+                .getResult(),
+                "User should not be created when the username is too short");
     }
 
     @Test
     // Attempt to create a user with a short but valid email
     public void testCreateUserWithShortValidEmail() {
         final String shortEmail = "m@m.com";
-        // we expect the mail to work since this has proper 'mail formatting'
-        assertNotNull(userService.createUser(GENERIC_FULL_NAME, shortEmail, GENERIC_USERNAME, GENERIC_PASSWORD));
-        // Make sure user is created correctly
+
+        // Assert that the createUser method creates a user with
+        // a valid short email
+        // address
+        assertNotNull(userService.createUser(GENERIC_FULL_NAME, shortEmail,
+                GENERIC_USERNAME,
+                GENERIC_PASSWORD)
+                .getResult(),
+                "User should be created when the email address is short but valid");
+
+        // Verify that the user is created correctly
         SiteUser user = userService.getUserByUsername(GENERIC_USERNAME);
-        assertNotNull(user);
-        assertEquals(user.getEmail(), shortEmail);
+        assertNotNull(user, "User should exist in the database after creation");
+        assertEquals(user.getEmail(), shortEmail,
+                "User's email address should match the specified short email address");
     }
 
+    @Test
     // Attempt to create a user with short invalid emails
     public void testCreateUsersWithShortInvalidEmails() {
         final String shortEmailNoAt = "mm.com";
         final String shortEmailNoTld = "m@m";
         final String shortEmailNoAtNoTld = "mm";
-        // we expect this mail to not work because there is no '@'
-        assertNull(userService.createUser(GENERIC_FULL_NAME, shortEmailNoAt, GENERIC_USERNAME, GENERIC_PASSWORD));
 
-        // we expect this mail to not work because there is no '.com'
-        assertNull(userService.createUser(GENERIC_FULL_NAME, shortEmailNoTld, GENERIC_USERNAME, GENERIC_PASSWORD));
+        // Assert that the createUser method returns null when
+        // the email address lacks
+        // an '@' symbol
+        assertNull(userService.createUser(GENERIC_FULL_NAME, shortEmailNoAt,
+                GENERIC_USERNAME,
+                GENERIC_PASSWORD)
+                .getResult(),
+                "User should not be created when the email address lacks an '@' symbol");
 
-        // we expect this mail to not work because there is no '@' and '.com'
-        assertNull(userService.createUser(GENERIC_FULL_NAME, shortEmailNoAtNoTld, GENERIC_USERNAME, GENERIC_PASSWORD));
+        // Assert that the createUser method returns null when
+        // the email address lacks a
+        // top-level domain (TLD)
+        assertNull(userService.createUser(GENERIC_FULL_NAME, shortEmailNoTld,
+                GENERIC_USERNAME,
+                GENERIC_PASSWORD)
+                .getResult(),
+                "User should not be created when the email address lacks a top-level domain (TLD)");
+
+        // Assert that the createUser method returns null when
+        // the email address lacks
+        // both an '@' symbol and a TLD
+        assertNull(userService.createUser(GENERIC_FULL_NAME, shortEmailNoAtNoTld,
+                GENERIC_USERNAME,
+                GENERIC_PASSWORD)
+                .getResult(),
+                "User should not be created when the email address lacks both an '@' symbol and a top-level domain (TLD)");
     }
 
     @Test
     // Make sure numeric passwords work
     public void testCreateUserWithValidPasswordContainingNumbers() {
         final String numericPassword = "12345678";
-        // we expect this password to work since it has proper 'password formatting
-        // (i.e., 8 character minimum)
 
-        // Make sure the user doesn't exist before we create it
-        assertNull(userService.getUserByUsername(GENERIC_USERNAME));
+        // Assert that the createUser method creates a user with
+        // a valid numeric
+        // password
+        assertNotNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL,
+                GENERIC_USERNAME,
+                numericPassword)
+                .getResult(),
+                "User should be created when the password contains numbers and meets the minimum length requirement");
 
-        assertNotNull(
-                userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, GENERIC_USERNAME, numericPassword));
-        // Make sure user is created correctly
+        // Verify that the user is created correctly
         SiteUser user = userService.getUserByUsername(GENERIC_USERNAME);
-        assertNotNull(user);
+        assertNotNull(user, "User should exist in the database after creation");
     }
 
     @Test
     // Attempt to create a user with a password that's too short
     public void testCreateUserWithInvalidShortPassword() {
         final String shortPassword = "pass";
-        // we expect this password to NOT work since it is too short (i.e., less than 8
-        // character minimum)
-        assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL, GENERIC_USERNAME, shortPassword));
-        assertNull(userService.getUserByUsername(GENERIC_USERNAME));
+
+        // Assert that the createUser method returns null when
+        // the password is too short
+        assertNull(userService.createUser(GENERIC_FULL_NAME, GENERIC_EMAIL,
+                GENERIC_USERNAME,
+                shortPassword)
+                .getResult(),
+                "User should not be created when the password is too short (less than the minimum 8-character requirement)");
+
+        // Verify that the user is not created in the database
+        assertNull(userService.getUserByUsername(GENERIC_USERNAME),
+                "User should not exist in the database since creation failed due to a short password");
     }
 
     /*
      * User Lookup Tests
      */
-
     @Test
     // Lookup a user by id
     public void testGetUserById() {
         // Create users
-        SiteUser createdJohn = testUsers.createJohnDoe();
-        testUsers.createAliceJohnson();
-        testUsers.createJaneSmith();
+        SiteUser createdJohn = userService
+                .createUser(JOHN_NAME, JOHN_EMAIL, JOHN_USERNAME,
+                        JOHN_PASSWORD)
+                .getResult();
+        assertNotNull(createdJohn, "User should be created successfully");
+        assertNotNull(userService.createUser(ALICE_NAME, ALICE_EMAIL, ALICE_USERNAME,
+                ALICE_PASSWORD)
+                .getResult(),
+                "User should be created successfully");
+        assertNotNull(userService.createUser(JANE_NAME, JANE_EMAIL, JANE_USERNAME,
+                JANE_PASSWORD)
+                .getResult(),
+                "User should be created successfully");
 
         // Get an existing user by their ID
         SiteUser fetchedJohn = userService.getUserById(createdJohn.getId());
 
         // Ensure the returned user is not null
-        assertNotNull(fetchedJohn);
+        assertNotNull(fetchedJohn, "The user should exist");
         // Verify that the user's full name matches
-        assertEquals(createdJohn.getFullName(), fetchedJohn.getFullName());
+        assertEquals(createdJohn.getFullName(), fetchedJohn.getFullName(),
+                "The user should have the correct full name");
         // Verify that the user's email matches
-        assertEquals(createdJohn.getEmail(), fetchedJohn.getEmail());
+        assertEquals(createdJohn.getEmail(), fetchedJohn.getEmail(),
+                "The user should have the correct email address");
         // Verify that the username matches
-        assertEquals(createdJohn.getUsername(), fetchedJohn.getUsername());
-    }
-
-    @Test
-    // Look up a user that doesn't exist by their id
-    public void testGetNonExistentUserById() {
-        final String nonExistantUsername = "nonexistentusername";
-        // Attempt to get a user that does not exist by their ID
-        SiteUser user = userService.getUserByUsername(nonExistantUsername);
-        assertNull(user);
-    }
-
-    @Test
-    // Look up a user by username
-    public void testGetUserByUsername() {
-        // Create users
-        testUsers.createJohnDoe();
-        testUsers.createAliceJohnson();
-        SiteUser createdJane = testUsers.createJaneSmith();
-
-        // Get an existing user by their username
-        SiteUser fetchedJane = userService.getUserByUsername(createdJane.getUsername());
-
-        // Ensure the returned user is not null
-        assertNotNull(fetchedJane);
-        // Verify that the user's full name matches
-        assertEquals(createdJane.getFullName(), fetchedJane.getFullName());
-        // Verify that the user's email matches
-        assertEquals(createdJane.getEmail(), fetchedJane.getEmail());
-        // Verify that the username matches
-        assertEquals(createdJane.getUsername(), fetchedJane.getUsername());
+        assertEquals(createdJohn.getUsername(), fetchedJohn.getUsername(),
+                "The user should have the correct username");
     }
 
     @Test
     // Look up a nonexistent user by username
     public void testGetNonExistentUserByUsername() {
         final String nonExistantUsername = "nonexistentusername";
-        // Attempt to get a user that does not exist by their username
+        // Attempt to get a user that does not exist by their
+        // username
         SiteUser user = userService.getUserByUsername(nonExistantUsername);
-        assertNull(user);
+        assertNull(user, "Retrieving a non-existant user from the database should return null");
+    }
+
+    @Test
+    // Look up a user by username
+    public void testGetUserByUsername() {
+        // Create users
+        assertNotNull(userService.createUser(JOHN_NAME, JOHN_EMAIL, JOHN_USERNAME,
+                JOHN_PASSWORD)
+                .getResult(),
+                "Initial user creation should succeed");
+        assertNotNull(userService.createUser(ALICE_NAME, ALICE_EMAIL, ALICE_USERNAME,
+                ALICE_PASSWORD)
+                .getResult(),
+                "Initial user creation should succeed");
+        SiteUser createdJane = userService
+                .createUser(JANE_NAME, JANE_EMAIL, JANE_USERNAME,
+                        JANE_PASSWORD)
+                .getResult();
+        assertNotNull(createdJane, "Initial user creation should succeed");
+
+        // Get an existing user by their username
+        SiteUser fetchedJane = userService.getUserByUsername(createdJane.getUsername());
+
+        // Ensure the returned user is not null
+        assertNotNull(fetchedJane, "User should be retrieved from the database");
+        // Verify that the user's full name matches
+        assertEquals(createdJane.getFullName(), fetchedJane.getFullName(),
+                "Retrieved user should have the correct full name");
+        // Verify that the user's email matches
+        assertEquals(createdJane.getEmail(), fetchedJane.getEmail(),
+                "Retrieved user should have the correct email");
+        // Verify that the username matches
+        assertEquals(createdJane.getUsername(), fetchedJane.getUsername(),
+                "Retrieved user should have the correct username");
     }
 
     /**
@@ -362,15 +653,21 @@ public class UserServiceImplTest {
     public void testUpdatePassword() {
         final String newPassword = "newpassword456";
         // Get a user for password update
-        SiteUser unicodeMan = testUsers.createUnicodeMan();
+        SiteUser unicodeMan = userService
+                .createUser(UNICODE_NAME, UNICODE_EMAIL,
+                        UNICODE_USERNAME,
+                        UNICODE_PASSWORD)
+                .getResult();
+        assertNotNull(unicodeMan, "Initial user creation should succeed");
 
         // Update the user's password
-        userService.updatePassword(unicodeMan, TestUsers.UNICODE_PASSWORD, newPassword);
+        userService.updatePassword(unicodeMan, UNICODE_PASSWORD, newPassword);
 
         // Verify that the password has been updated
         SiteUser updatedUser = userService.getUserById(unicodeMan.getId());
-        assertNotNull(updatedUser);
-        assertTrue(BCrypt.checkpw(newPassword, unicodeMan.getHashedPassword()));
+        assertNotNull(updatedUser, "User should exist");
+        assertTrue(BCrypt.checkpw(newPassword, unicodeMan.getHashedPassword()),
+                "Hashed password should match newly created password");
     }
 
     @Test
@@ -379,10 +676,16 @@ public class UserServiceImplTest {
         final String incorrectPassword = "incorrectpassword";
         final String newPassword = "newpassword456";
         // Get a user for password update
-        SiteUser user = testUsers.createUnicodeMan();
-
-        // Attempt to update the user's password with an incorrect current password
-        assertFalse(userService.updatePassword(user, incorrectPassword, newPassword));
+        SiteUser user = userService.createUser(UNICODE_NAME, UNICODE_EMAIL,
+                UNICODE_USERNAME,
+                UNICODE_PASSWORD)
+                .getResult();
+        assertNotNull(user, "Initial user creation should succeed");
+        // Attempt to update the user's password with an
+        // incorrect current password
+        assertFalse(userService.updatePassword(user, incorrectPassword, newPassword)
+                .getResult(),
+                "Password change should fail");
     }
 
     @Test
@@ -390,10 +693,17 @@ public class UserServiceImplTest {
     public void testUpdatePasswordWithWeakNewPassword() {
         final String weakPassword = "weak";
         // Get a user for password update
-        SiteUser user = testUsers.createUnicodeMan();
+        SiteUser user = userService.createUser(UNICODE_NAME, UNICODE_EMAIL,
+                UNICODE_USERNAME,
+                UNICODE_PASSWORD)
+                .getResult();
+        assertNotNull(user, "Initial user creation should succeed");
 
-        // Attempt to update the user's password with a weak new password
-        assertFalse(userService.updatePassword(user, TestUsers.UNICODE_PASSWORD, weakPassword));
+        // Attempt to update the user's password with a weak new
+        // password
+        assertFalse(userService.updatePassword(user, UNICODE_PASSWORD, weakPassword)
+                .getResult(),
+                "Service shouldn't allow password change");
     }
 
     @Test
@@ -401,20 +711,34 @@ public class UserServiceImplTest {
     public void testUpdatePasswordWithEmptyNewPassword() {
         final String emptyPassword = "";
         // Get a user for password update
-        SiteUser user = testUsers.createUnicodeMan();
+        SiteUser user = userService.createUser(UNICODE_NAME, UNICODE_EMAIL,
+                UNICODE_USERNAME,
+                UNICODE_PASSWORD)
+                .getResult();
+        assertNotNull(user, "Initial user creation should succeed");
 
-        // Attempt to update the user's password with an empty new password
-        assertFalse(userService.updatePassword(user, TestUsers.UNICODE_PASSWORD, emptyPassword));
+        // Attempt to update the user's password with an empty
+        // new password
+        assertFalse(userService.updatePassword(user, UNICODE_PASSWORD, emptyPassword)
+                .getResult(),
+                "Service shouldn't allow password change to empty password");
     }
 
     @Test
     // Try to update a password with a null new password
     public void testUpdatePasswordWithNullNewPassword() {
         // Get a user for password update
-        SiteUser user = testUsers.createUnicodeMan();
+        SiteUser user = userService.createUser(UNICODE_NAME, UNICODE_EMAIL,
+                UNICODE_USERNAME,
+                UNICODE_PASSWORD)
+                .getResult();
+        assertNotNull(user, "Initial user creation should succeed");
 
-        // Attempt to update the user's password with a null new password
-        assertFalse(userService.updatePassword(user, TestUsers.UNICODE_PASSWORD, null));
+        // Attempt to update the user's password with a null new
+        // password
+        assertFalse(userService.updatePassword(user, UNICODE_PASSWORD, null)
+                .getResult(),
+                "Service shouldn't allow password change to null password");
     }
 
     @Test
@@ -423,7 +747,9 @@ public class UserServiceImplTest {
         final String newPassword = "newpassword456";
 
         // Attempt to update the password for a null user
-        assertFalse(userService.updatePassword(null, TestUsers.UNICODE_PASSWORD, newPassword));
+        assertFalse(userService.updatePassword(null, UNICODE_PASSWORD, newPassword)
+                .getResult(),
+                "Service shouldn't allow password change for null user");
     }
 
     @Test
@@ -431,10 +757,16 @@ public class UserServiceImplTest {
     public void testUpdatePasswordWithoutCurrentPassword() {
         final String newPassword = "newpassword456";
         // Get a user for password update
-        SiteUser user = testUsers.createUnicodeMan();
+        SiteUser user = userService.createUser(UNICODE_NAME, UNICODE_EMAIL,
+                UNICODE_USERNAME,
+                UNICODE_PASSWORD)
+                .getResult();
+        assertNotNull(user, "Initial user creation should succeed");
 
-        // Attempt to update the password without providing a current password
-        assertFalse(userService.updatePassword(user, null, newPassword));
+        // Attempt to update the password without providing a
+        // current password
+        assertFalse(userService.updatePassword(user, null, newPassword).getResult(),
+                "Service shouldn't allow password change without authenticating");
     }
 
     /*
@@ -445,81 +777,125 @@ public class UserServiceImplTest {
     public void testUpdateUsername() {
         final String newUsername = "newusername123";
         // Get a user for username update
-        SiteUser unicodeMan = testUsers.createUnicodeMan();
+        SiteUser unicodeMan = userService
+                .createUser(UNICODE_NAME, UNICODE_EMAIL,
+                        UNICODE_USERNAME,
+                        UNICODE_PASSWORD)
+                .getResult();
+        assertNotNull(unicodeMan, "Initial user creation should succeed");
 
         // Update the user's username
-        assertTrue(userService.updateUsername(unicodeMan, TestUsers.UNICODE_PASSWORD, newUsername));
+        assertTrue(userService.updateUsername(unicodeMan, UNICODE_PASSWORD,
+                newUsername)
+                .getResult(),
+                "Service should report password change success");
 
         // Verify that the username has been updated
         SiteUser updatedUser = userService.getUserById(unicodeMan.getId());
-        assertNotNull(updatedUser);
-        assertEquals(newUsername, updatedUser.getUsername());
+        assertNotNull(updatedUser, "User id should not change");
+        assertEquals(newUsername, updatedUser.getUsername(), "Username should not change");
 
         // Make sure fetching by username works too
         updatedUser = userService.getUserByUsername(newUsername);
-        assertNotNull(updatedUser);
-        assertEquals(newUsername, updatedUser.getUsername());
+        assertNotNull(updatedUser, "Should be able to retrieve by new username");
+        assertEquals(unicodeMan.getId(), updatedUser.getId(), "Ids should still match");
 
         // Make sure old username doesn't work anymore
-        updatedUser = userService.getUserByUsername(TestUsers.UNICODE_USERNAME);
-        assertNull(updatedUser);
+        updatedUser = userService.getUserByUsername(UNICODE_USERNAME);
+        assertNull(updatedUser, "Shouldn't be possible to retrieve by old username");
     }
 
     @Test
     // Attempt to update a username with a name that doesn't meet length
     // requirements
     public void testUpdateShortUsername() {
-        final String newPassword = TestUsers.JANE_PASSWORD;
+        final String newPassword = JANE_PASSWORD;
         final String newShortUsername = "j";
-        SiteUser jane = testUsers.createJaneSmith();
+        SiteUser jane = userService.createUser(JANE_NAME, JANE_EMAIL, JANE_USERNAME,
+                JANE_PASSWORD)
+                .getResult();
+        assertNotNull(jane, "Initial user creation should succeed");
 
-        // Should not update username because username is too short
-        assertFalse(userService.updateUsername(jane, newPassword, newShortUsername));
-        assertEquals(TestUsers.JANE_USERNAME, jane.getUsername());
+        // Should not update username because username is too
+        // short
+        assertFalse(userService.updateUsername(jane, newPassword, newShortUsername)
+                .getResult(),
+                "Should report username unchanged");
+        assertEquals(JANE_USERNAME, jane.getUsername(), "Username should not be changed");
     }
 
     @Test
     // Attempt to update a username with an incorrect password confirmation
-    public void testUpdateWrongPassword() {
+    public void testUpdateUsernameWrongPassword() {
         final String wrongPassword = "this_password_is_wrong";
         final String newUsername = "janie";
-        SiteUser jane = testUsers.createJaneSmith();
+        SiteUser jane = userService.createUser(JANE_NAME, JANE_EMAIL, JANE_USERNAME,
+                JANE_PASSWORD)
+                .getResult();
+        assertNotNull(jane, "Initial user creation should succeed");
         final int janeId = jane.getId();
 
         // Should not update username because password is wrong
-        assertFalse(userService.updateUsername(jane, wrongPassword, newUsername));
-        assertEquals(TestUsers.JANE_USERNAME, jane.getUsername());
-        assertNull(userService.getUserByUsername(newUsername));
-        assertEquals(userService.getUserById(janeId).getUsername(), TestUsers.JANE_USERNAME);
+        assertFalse(userService.updateUsername(jane, wrongPassword, newUsername)
+                .getResult(),
+                "Service should report username unchanged");
+        assertEquals(JANE_USERNAME, jane.getUsername(), "Username should be unchanged");
+        assertNull(userService.getUserByUsername(newUsername),
+                "Shouldn't be possible to retrieve user from db by new username");
+        assertEquals(userService.getUserById(janeId).getUsername(), JANE_USERNAME,
+                "Should still be possible to retieve user by id");
     }
 
     @Test
     // Attempt to update a username with a null value
     public void testUpdateNullUsername() {
-        final String newPassword = TestUsers.JANE_PASSWORD;
+        final String newPassword = JANE_PASSWORD;
         final String emptyUsername = "";
         final String nullUsername = null;
-        SiteUser jane = testUsers.createJaneSmith();
+        SiteUser jane = userService.createUser(JANE_NAME, JANE_EMAIL, JANE_USERNAME,
+                JANE_PASSWORD)
+                .getResult();
+        assertNotNull(jane, "Initial user creation should succeed");
 
-        // Should not update (thus return false) for an empty username
-        assertFalse(userService.updateUsername(jane, newPassword, emptyUsername));
-        assertEquals(TestUsers.JANE_USERNAME, jane.getUsername());
+        // Should not update (thus return false) for an empty
+        // username
+        assertFalse(userService.updateUsername(jane, newPassword, emptyUsername)
+                .getResult(),
+                "Should report username unchanged for empty username");
+        assertEquals(JANE_USERNAME, jane.getUsername(), "Username should remain unchanged");
 
-        // Should not update (thus return false) for a null username
-        assertFalse(userService.updateUsername(jane, newPassword, nullUsername));
-        assertEquals(TestUsers.JANE_USERNAME, jane.getUsername());
+        // Should not update (thus return false) for a null
+        // username
+        assertFalse(userService.updateUsername(jane, newPassword, nullUsername)
+                .getResult(),
+                "Should report username unchanged for null username");
+        assertEquals(JANE_USERNAME, jane.getUsername(), "Username should remain unchanged");
     }
 
     @Test
     // Attempt to change username to one that's already taken
     public void testUpdateUsernameWithExistingUsername() {
-        testUsers.createUnicodeMan();
-        // Get a user for username update
-        SiteUser user = userService.getUserByUsername(TestUsers.UNICODE_USERNAME);
+        SiteUser john = userService.createUser(JOHN_NAME, JOHN_EMAIL, JOHN_USERNAME,
+                JOHN_PASSWORD)
+                .getResult();
+        assertNotNull(john, "Initial user creation should succeed");
+        SiteUser user = userService.createUser(UNICODE_NAME, UNICODE_EMAIL,
+                UNICODE_USERNAME,
+                UNICODE_PASSWORD)
+                .getResult();
+        assertNotNull(user, "Initial user creation should succeed");
 
-        // Attempt to update the user's username to an existing username
-        assertFalse(userService.updateUsername(user, TestUsers.UNICODE_USERNAME, TestUsers.JOHN_USERNAME));
-        assertNotNull(userService.getUserByUsername(TestUsers.UNICODE_USERNAME));
+        // Attempt to update the user's username to an existing
+        // username
+        assertFalse(userService.updateUsername(user, UNICODE_USERNAME, JOHN_USERNAME)
+                .getResult(),
+                "Username should remain unchanged");
+
+        SiteUser unicodeMan = userService.getUserByUsername(JOHN_USERNAME);
+        assertEquals(unicodeMan.getFullName(), JOHN_NAME,
+                "Existing user\'s name should be unchanged");
+        assertEquals(unicodeMan.getEmail(), JOHN_EMAIL,
+                "Existing user\'s email should be unchanged");
     }
 
 }

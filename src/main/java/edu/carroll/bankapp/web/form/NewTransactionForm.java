@@ -1,6 +1,9 @@
 package edu.carroll.bankapp.web.form;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Pattern;
 
 /**
  * This form collects and validates the necessary information to create a new
@@ -8,16 +11,22 @@ import jakarta.validation.constraints.NotNull;
  */
 public class NewTransactionForm {
     @NotNull
+    @NotBlank
     private String toFrom;
 
     @NotNull
-    private long amountInDollars;
+    @PositiveOrZero
+    private double amountInDollars;
 
     @NotNull
+    @NotBlank
     private String name;
-
+    
+    @NotNull
+    @Pattern(regexp = "^(income|expense)$", message = "Transaction type should be 'income' or 'expense'")
     private String type;
 
+    @NotNull
     private Integer accountId;
 
     /**
@@ -50,7 +59,7 @@ public class NewTransactionForm {
      *
      * @return amount in dollars - long - monetary amount in dollars
      */
-    public long getAmountInDollars() {
+    public double getAmountInDollars() {
         return amountInDollars;
     }
 
@@ -59,8 +68,8 @@ public class NewTransactionForm {
      *
      * @return amountInCents - long - amount of transaction in US cents
      */
-    public long getAmountInCents() {
-        return (long) amountInDollars * (long) 100;
+    public double getAmountInCents() {
+        return amountInDollars * 100;
     }
 
     /**
@@ -68,7 +77,7 @@ public class NewTransactionForm {
      *
      * @param amountInDollars amount in dollars - long - monetary amount in dollars
      */
-    public void setAmountInDollars(long amountInDollars) {
+    public void setAmountInDollars(double amountInDollars) {
         this.amountInDollars = amountInDollars;
     }
 

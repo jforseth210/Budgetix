@@ -1,6 +1,7 @@
 package edu.carroll.bankapp.web.form;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 
@@ -12,11 +13,13 @@ import jakarta.validation.constraints.Size;
 public class NewAccountForm {
 
     @NotNull
+    @NotBlank
+    @Size(min = 4, message = "Account name must be at least 4 characters")
     private String accountName;
 
     @NotNull
     @PositiveOrZero(message = "Account balance can't be negative")
-    private Long accountBalance;
+    private double accountBalance;
 
     /**
      * Gets the name of the user's account
@@ -39,18 +42,18 @@ public class NewAccountForm {
     /**
      * Gets the account balance of a user's account
      *
-     * @return accountBalance - long - balance of account
+     * @return accountBalance - double - balance of account
      */
-    public Long getAccountBalance() {
+    public double getAccountBalance() {
         return accountBalance;
     }
 
     /**
      * Sets the account balance of a user's account
      *
-     * @param accountBalance - long - balance of account
+     * @param accountBalance - double - balance of account
      */
-    public void setAccountBalance(long accountBalance) {
+    public void setAccountBalance(double accountBalance) {
         this.accountBalance = accountBalance;
     }
 }

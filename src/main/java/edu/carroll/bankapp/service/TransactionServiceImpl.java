@@ -38,18 +38,19 @@ public class TransactionServiceImpl implements TransactionService {
     /**
      * Create and save a new transaction in the database
      */
-    public Transaction createTransaction(String name, long amountInDollars, String toFrom, Account account) {
-        if (name == null || name.equals("") || toFrom == null) {
-            return null;
+    public ServiceResponse<Transaction> createTransaction(String name, long amountInDollars, String toFrom,
+            Account account) {
+        if (name == null || name.equals("")) {
+            return new ServiceResponse<Transaction>(null, "Transaction name cannot be blank");
         }
         // Don't accept excessively long transaction names
         if (name.length() > 255) {
-            return null;
+            return new ServiceResponse<Transaction>(null, "Transaction name is too long");
         }
 
         // Don't accept excessively long transaction recipients
         if (toFrom.length() > 255) {
-            return null;
+            return new ServiceResponse<Transaction>(null, "Transaction recipient is too long");
         }
         log.info("Creating transaction with name: {} and account: {}", name, account.getName());
         // Create the transaction
@@ -68,7 +69,7 @@ public class TransactionServiceImpl implements TransactionService {
         account.addTransaction(newTransaction);
         // Save the account
         accountRepo.save(account);
-        return newTransaction;
+        return new ServiceResponse<Transaction>(newTransaction, "Transaction created successfully");
     }
 
     public Transaction getUserTransaction(SiteUser loggedInUser, int id) {
@@ -97,13 +98,14 @@ public class TransactionServiceImpl implements TransactionService {
     /**
      * Delete the given transaction if owned by the currently logged-in user
      */
-    public void deleteTransaction(SiteUser loggedInUser, Transaction transaction) {
+    public ServiceResponse<Boolean> deleteTransaction(SiteUser loggedInUser, Transaction transaction) {
         // Make sure the account is the current user's to delete
         if (!loggedInUser.owns(transaction)) {
             log.warn("{} tried to delete transaction \"{}\" belonging to {}",
                     loggedInUser.getUsername(),
                     transaction.getName(), transaction.getOwner());
-            return;
+            // User may be trying to do something bad, don't tell them anything useful
+            return new ServiceResponse<Boolean>(false, "Something went wrong");
         }
 
         // Update the account balance
@@ -122,6 +124,7 @@ public class TransactionServiceImpl implements TransactionService {
         transactionRepo.delete(transaction);
 
         log.info("Deleted transaction: {}", transaction.getName());
+        return new ServiceResponse<Boolean>(true, "Deleted transaction");
     }
 
     /**
@@ -132,7 +135,8 @@ public class TransactionServiceImpl implements TransactionService {
      * @param loggedInUser     - The current user
      * @return whether or not the operation succeeded
      */
-    private boolean deleteOtherTransferTransaction(Transaction givenTransaction, SiteUser loggedInUser) {
+    private ServiceResponse<Boolean> deleteOtherTransferTransaction(Transaction givenTransaction,
+            SiteUser loggedInUser) {
         // Determine whether transaction is sending or recieving money
         String type = null;
         if (givenTransaction.getName().contains("to")) {
@@ -143,7 +147,7 @@ public class TransactionServiceImpl implements TransactionService {
             type = "from";
         } else {
             // Transaction doesn't contain "to" or "from". Are we sure it's a transfer?
-            return false;
+            return new ServiceResponse<Boolean>(false, "Transfer deletion failed...");
         }
         // Determine the name of the other account involved in the transfer
         String otherAccountName = givenTransaction.getName().replace("Transfer to ", "").replace("Transfer from ", "");
@@ -161,14 +165,14 @@ public class TransactionServiceImpl implements TransactionService {
         // See if we found the account we're looking for
         if (otherAccount == null) {
             log.info("Couldn't find other transfer account");
-            return false;
+            return new ServiceResponse<Boolean>(false, "Failed to locate other transfer transaction");
         }
 
         // Look for transactions in the other account that could be the other half of
         // the transfer
         List<Transaction> potentialMatchingTransactions = new ArrayList<>();
         for (Transaction accountTransaction : otherAccount.getTransactions()) {
-            //Make sure they're the same amount
+            // Make sure they're the same amount
             if (accountTransaction.getAmountInDollars() != givenTransaction.getAmountInDollars()) {
                 continue;
             }
@@ -201,9 +205,9 @@ public class TransactionServiceImpl implements TransactionService {
             accountRepo.save(closestTransaction.getAccount());
             // Delete the transaction
             transactionRepo.delete(closestTransaction);
-            return true;
+            return new ServiceResponse<Boolean>(true, "Deleted transfer transaction");
         }
-        return false;
+        return new ServiceResponse<Boolean>(false, "Something went wrong");
     }
 
     /**
@@ -211,7 +215,8 @@ public class TransactionServiceImpl implements TransactionService {
      * @param potentialMatchingTransactions
      * @return
      */
-    private Transaction getClosestTransaction(Transaction givenTransaction, List<Transaction> potentialMatchingTransactions) {
+    private Transaction getClosestTransaction(Transaction givenTransaction,
+            List<Transaction> potentialMatchingTransactions) {
         long minDiff = 1000 * 60 * 5;
         Transaction closestTransaction = null;
 
@@ -229,33 +234,35 @@ public class TransactionServiceImpl implements TransactionService {
         return closestTransaction;
     }
 
-    public boolean createTransfer(Account toAccount, Account fromAccount, long amountInDollars) {
+    public ServiceResponse<Boolean> createTransfer(Account toAccount, Account fromAccount, long amountInDollars) {
         if (toAccount.getId() == fromAccount.getId()) {
-            return false;
+            return new ServiceResponse<Boolean>(false, "Cannot transfer money from an account to itself");
         }
         // Withdraw from the fromAccount
-        Transaction toTransaction = createTransaction(
+        ServiceResponse<Transaction> toResponse = createTransaction(
                 String.format("Transfer to %s", toAccount.getName()),
                 -1 * amountInDollars,
                 toAccount.getName(),
                 fromAccount);
 
         // Income into the toAccount
-        Transaction fromTransaction = createTransaction(
+        ServiceResponse<Transaction> fromResponse = createTransaction(
                 String.format("Transfer from %s", fromAccount.getName()),
                 amountInDollars,
                 fromAccount.getName(),
                 toAccount);
 
         // If either transaction creation fails, delete it all and bail out
-        if (toTransaction == null) {
-            transactionRepo.delete(fromTransaction);
-            return false;
+        if (toResponse.getResult() == null) {
+            transactionRepo.delete(fromResponse.getResult());
+            return new ServiceResponse<Boolean>(false,
+                    String.format("Failed to create to transaction: %s", toResponse.getMessage()));
         }
-        if (fromTransaction == null) {
-            transactionRepo.delete(toTransaction);
-            return false;
+        if (fromResponse.getResult() == null) {
+            transactionRepo.delete(toResponse.getResult());
+            return new ServiceResponse<Boolean>(false,
+                    String.format("Failed to create from transaction: %s", toResponse.getMessage()));
         }
-        return true;
+        return new ServiceResponse<Boolean>(true, "Transfer created");
     }
 }

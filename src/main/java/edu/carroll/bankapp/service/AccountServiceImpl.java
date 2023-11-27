@@ -3,7 +3,6 @@ package edu.carroll.bankapp.service;
 import edu.carroll.bankapp.jpa.model.Account;
 import edu.carroll.bankapp.jpa.model.SiteUser;
 import edu.carroll.bankapp.jpa.repo.AccountRepository;
-import edu.carroll.bankapp.web.controller.DashboardController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,14 +78,14 @@ public class AccountServiceImpl implements AccountService {
     /**
      * Create an account and save it in the database
      */
-    public Account createAccount(String accountName, Long balanceInDollars, SiteUser owner) {
+    public ServiceResponse<Account> createAccount(String accountName, Long balanceInDollars, SiteUser owner) {
         // Don't accept negative starting balance
         if (balanceInDollars < 0) {
-            return null;
+            return new ServiceResponse<Account>(null, "Account balance cannot be negative");
         }
         // Don't accept account names longer than the DB schema will allow
         if (accountName.length() > 255) {
-            return null;
+            return new ServiceResponse<Account>(null, "Account name too long");
         }
 
         List<Account> ownerAccounts = getUserAccounts(owner);
@@ -94,7 +93,7 @@ public class AccountServiceImpl implements AccountService {
         for (Account account : ownerAccounts) {
             if (account.getName().equals(accountName)) {
                 log.info("{} tried to create two accounts named {}", owner.getUsername(), accountName);
-                return null;
+                return new ServiceResponse<Account>(null, "You already have an account named " + accountName);
             }
         }
 
@@ -108,7 +107,7 @@ public class AccountServiceImpl implements AccountService {
         accountRepo.save(newAccount);
 
         transactionService.createTransaction("Starting Balance", balanceInDollars, "", newAccount);
-        return newAccount;
+        return new ServiceResponse<Account>(newAccount, "Account created successfully");
     }
 
     /**
@@ -118,13 +117,13 @@ public class AccountServiceImpl implements AccountService {
      * @param account      - the account to be deleted
      * @return true if successful, false if failed
      */
-    public boolean deleteAccount(SiteUser loggedInUser, Account account) {
+    public ServiceResponse<Boolean> deleteAccount(SiteUser loggedInUser, Account account) {
         // Make sure the user can delete this account, then delete it
         if (loggedInUser.owns(account)) {
             accountRepo.delete(account);
-            return true;
+            return new ServiceResponse<Boolean>(true, "Deleted account");
         }
-        return false;
+        return new ServiceResponse<Boolean>(false, "Failed to delete account");
     }
 
     /**
@@ -134,12 +133,12 @@ public class AccountServiceImpl implements AccountService {
      * @param accountID    - the id of the account to be deleted
      * @return true if successful, false if failed
      */
-    public boolean deleteAccount(SiteUser loggedInUser, int accountID) {
+    public ServiceResponse<Boolean> deleteAccount(SiteUser loggedInUser, int accountID) {
         // Look up the account
         Account account = getUserAccount(loggedInUser, accountID);
         if (account == null) {
             log.warn("{} tried to delete a null account", loggedInUser.getUsername());
-            return false;
+            return new ServiceResponse<Boolean>(false, "Failed to locate account");
         }
         // Try to delete it
         return deleteAccount(loggedInUser, account);

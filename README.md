@@ -1,4 +1,4 @@
-# BankApp
+# Budgetix
 Sometimes, budgeting can be difficult. With ever-increasing inflation, it is more important
 than ever to be tracking one's monthly expenses. We wanted to make an application that would keep
 track of your daily spending habits in an easy to view manner. After registering your account, 
@@ -6,7 +6,7 @@ you can create a banking wallet (i.e., 'Savings Account,' 'Checking Account,' et
 wallet, you can add a transaction with the press of a button! You can even transfer money between
 different wallets. Finally, you can delete transactions (say, you logged a transaction 
 unintentionally). You can even delete an entire wallet. And if you want to change your username
-or password, it's easy to do so! You are going to love our BankApp! We make tracking finances
+or password, it's easy to do so! You are going to love our Budgetix! We make tracking finances
 easy!
 
 ## Application Setup

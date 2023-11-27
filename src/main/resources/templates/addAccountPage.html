@@ -2,75 +2,74 @@
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml">
 
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>BudgetApp</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous"/>
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
 
 <body>
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">BudgetApp</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">BudgetApp</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNavDropdown">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
-                       data-bs-toggle="dropdown" aria-expanded="false" th:text="'Hi, '+${currentUser.username}">
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false" th:text="'Hi, '+${currentUser.username}">
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
 
                             <form th:action="@{/logout}" method="POST">
                                 <li>
                                     <button type="submit" class="dropdown-item">Logout</button>
                                 </li>
                             </form>
-                    </ul>
-                </li>
-            </ul>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-5">
+        <div th:if="${messages}">
+            <div th:each="message : ${messages}" class="alert alert-warning alert-dismissible fade show" role="alert">
+                <span th:text="${message}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+        <div class="card mx-auto my-auto p-5">
+            <form id="newAccountForm" action="#" th:action="@{/add-account}" th:object="${newAccountForm}"
+                method="POST">
+                <label for="newAccountName">Account Name</label>
+                <input type="text" class="mb-2 form-control" id="newAccountName" th:field="*{accountName}" required />
+                <label for="newAccountBalance">Starting Balance</label>
+                <input type="number" value="0" max="1000000" class="mb-2 form-control" id="newAccountBalance"
+                    th:field="*{accountBalance}" required />
+                <button type="submit" class="btn btn-success" form="newAccountForm">Add</button>
         </div>
     </div>
-</nav>
-<div class="container mt-5">
-    <div th:if="${messages}">
-        <div th:each="message : ${messages}" class="alert alert-warning alert-dismissible fade show" role="alert">
-            <span th:text="${message}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    </div>
-    <div class="card mx-auto my-auto p-5">
-        <form id="newAccountForm" action="#" th:action="@{/add-account}" th:object="${newAccountForm}"
-              method="POST">
-            <label for="newAccountName">Account Name</label>
-            <input type="text" class="mb-2 form-control" id="newAccountName" th:field="*{accountName}" required/>
-            <label for="newAccountBalance">Starting Balance</label>
-            <input type="number" value="0" class="mb-2 form-control" id="newAccountBalance"
-                   th:field="*{accountBalance}" required/>
-            <button type="submit" class="btn btn-success" form="newAccountForm">Add</button>
-    </div>
-</div>
-</form>
+    </form>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
-        crossorigin="anonymous">
-</script>
-<script>
-    // window.onload = function () {
-    //     var messages = document.querySelectorAll('.alert');
-    //     setTimeout(function () {
-    //         messages.forEach(function (message) {
-    //             message.style.display = 'none';
-    //         });
-    //     }, 5000); // Change this to the number of milliseconds you want to wait before the messages disappear
-    // };
-</script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous">
+        </script>
+    <script>
+        // window.onload = function () {
+        //     var messages = document.querySelectorAll('.alert');
+        //     setTimeout(function () {
+        //         messages.forEach(function (message) {
+        //             message.style.display = 'none';
+        //         });
+        //     }, 5000); // Change this to the number of milliseconds you want to wait before the messages disappear
+        // };
+    </script>
 
 </body>
 

@@ -167,8 +167,7 @@ public class DashboardController {
         }
         SiteUser loggedInUser = authHelper.getLoggedInUser();
 
-        log.info("{} tried to create an account with name {}, which is shorter than 4 characters",
-                loggedInUser.getUsername(), newAccountForm.getAccountName());
+
 
         // Create an account
         ServiceResponse<Account> response = accountService.createAccount(
